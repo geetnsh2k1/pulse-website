@@ -25,6 +25,19 @@ function SectionHead({ idx, kick, title, lede }: { idx: string; kick: string; ti
   );
 }
 
+// Competitor gaps get a visible ✗ so the compare table reads at a glance.
+function gap(v: string) {
+  if (v === "—" || v === "n/a" || v === "not available") {
+    return (
+      <>
+        <span className="text-tred">✗</span>
+        {v !== "—" && <span className="ml-1.5 text-faint">{v}</span>}
+      </>
+    );
+  }
+  return v;
+}
+
 const GitHubIcon = (
   <svg viewBox="0 0 16 16" fill="currentColor" className="h-4 w-4" aria-hidden="true">
     <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
@@ -99,6 +112,11 @@ export default function Page() {
           {/* the product IS the hero: real CLI, typed live */}
           <Terminal />
 
+          {/* the request path, one line, always moving */}
+          <div className="hidden w-full max-w-[880px] rounded-xl border border-edge/70 bg-panel/30 px-5 py-3 md:block">
+            <FlowDiagram compact />
+          </div>
+
           {/* numbers with a "compared to what" (measured, not marketed) */}
           <div className="grid w-full max-w-[880px] grid-cols-2 gap-3 lg:grid-cols-4" aria-label="performance, enforced by CI">
             {([
@@ -137,7 +155,7 @@ export default function Page() {
       <div className="mt-12 border-y border-edge bg-bg2/60 md:mt-18">
         <div className="mx-auto flex max-w-[1160px] flex-wrap items-center justify-center gap-x-3.5 gap-y-3 px-6 py-5">
           <span className="mr-2 font-mono text-[12.5px] text-faint">integrates with what you already use</span>
-          {["boto3", "AWS SDK JS v3", "SAM · CDK · Serverless Framework deploys", "GitHub Actions", "zsh · bash · fish"].map((t) => (
+          {["boto3", "AWS SDK JS v3", "SAM · CDK · Serverless Framework deploys", "GitHub Actions", "macOS · Linux", "zsh · bash · fish"].map((t) => (
             <span key={t} className="chip !text-fg/85">{t}</span>
           ))}
         </div>
@@ -152,6 +170,48 @@ export default function Page() {
       </p>
 
       <main className="mx-auto max-w-[1160px] px-6">
+        {/* ─────────────── follow one request (signature) ─────────────── */}
+        <section id="journey" className="pt-20 md:pt-28">
+          <Reveal section="journey">
+            <div className="max-w-[72ch]">
+              <p className="kick mb-4">follow one request</p>
+              <h2 className="text-balance text-[clamp(28px,4.5vw,44px)] font-bold leading-[1.08] tracking-tight">
+                One order, end to end — entirely on your laptop
+              </h2>
+              <p className="mt-4 text-[clamp(16px,2.1vw,18.5px)] leading-relaxed text-dim">
+                The whole lifecycle of a single request through pulse: it becomes an event, runs
+                your code, queues a job, lands in a table — and stays replayable forever. Every
+                line below is real output.
+              </p>
+            </div>
+          </Reveal>
+
+          <div className="mt-12 max-w-[780px]">
+            {journey.map(([title, sub, snippet], i) => (
+              <div key={title} className="grid grid-cols-[22px_1fr] gap-x-4 sm:gap-x-6">
+                <div className="flex flex-col items-center">
+                  <span className="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full border border-amber bg-bg shadow-[0_0_10px_rgba(255,171,51,0.5)]" />
+                  {i < journey.length - 1 && (
+                    <div className="vtrack my-1 w-0 flex-1">
+                      <span className="vdot" style={{ animationDelay: `${i * 0.3}s` }} />
+                    </div>
+                  )}
+                </div>
+                <Reveal delay={Math.min(i * 50, 200)} className={i < journey.length - 1 ? "pb-7" : ""}>
+                  <div className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
+                    <h3 className="text-[16px] font-semibold">{title}</h3>
+                    <span className="font-mono text-[11.5px] text-faint">{sub}</span>
+                  </div>
+                  <pre
+                    className="mt-2.5 overflow-x-auto rounded-lg border border-edge bg-bg2/80 px-4 py-2.5 font-mono text-[12.3px] leading-[1.7]"
+                    dangerouslySetInnerHTML={{ __html: snippet }}
+                  />
+                </Reveal>
+              </div>
+            ))}
+          </div>
+        </section>
+
         {/* ───────────────────── features (bento) ───────────────────── */}
         <section id="features" className="pt-20 md:pt-28">
           <Reveal section="features">
@@ -202,12 +262,14 @@ export default function Page() {
                   Instant hot reload for AWS Lambda: save a file and the next request runs the
                   new code. Restarts don&apos;t exist — code and <code className="font-mono text-[13px] text-amber-soft">pulse.yaml</code> apply live.
                 </p>
-                <div className="mt-6 font-mono">
-                  <CountUp to={17} suffix=" ms" className="text-[44px] font-bold leading-none tracking-tight text-amber" />
-                  <div className="mt-1.5 text-[12.5px] text-dim">warm invoke · engine ready in 99 ms</div>
-                  <div className="mt-4 border-t border-edge pt-3 text-[11.5px] text-faint">
-                    every commit runs these as tests — a slow pulse is a failed build
-                  </div>
+                <div className="cycle mt-5 space-y-1.5 font-mono text-[12px]">
+                  <div className="flex items-center gap-2.5 rounded-lg border border-edge bg-bg px-3.5 py-2"><span className="text-amber">⌘S</span> handler.py saved</div>
+                  <div className="flex items-center gap-2.5 rounded-lg border border-edge bg-bg px-3.5 py-2"><span className="text-amber">⟳</span> pulse hot-reloads the function</div>
+                  <div className="flex items-center gap-2.5 rounded-lg border border-edge bg-bg px-3.5 py-2"><span className="text-tgreen">→</span> next request runs the new code</div>
+                </div>
+                <div className="mt-4 font-mono text-[12.5px] text-dim">
+                  <CountUp to={17} suffix=" ms" className="font-bold text-amber" /> warm invoke · ready in 99 ms ·{" "}
+                  <span className="text-faint">a slow pulse is a failed build</span>
                 </div>
               </div>
             </Reveal>
@@ -255,7 +317,10 @@ export default function Page() {
                 <pre className="mt-5 overflow-x-auto rounded-lg border border-edge bg-bg px-4 py-3.5 font-mono text-[12.5px] leading-[1.8]">
                   <span className="text-faint"># handler.py — no pulse imports, no endpoint config</span>{"\n"}
                   <span className="text-tcyan">import</span> boto3{"\n"}
-                  sqs = boto3.client(<span className="text-tgreen">&quot;sqs&quot;</span>)  <span className="text-faint"># local → pulse · prod → AWS</span>
+                  sqs = boto3.client(<span className="text-tgreen">&quot;sqs&quot;</span>){"\n"}
+                  {"\n"}
+                  <span className="text-faint"># local  → AWS_ENDPOINT_URL points at pulse (set for you)</span>{"\n"}
+                  <span className="text-faint"># prod   → same code. no endpoint. talks to AWS.</span>
                 </pre>
               </div>
             </Reveal>
@@ -265,10 +330,18 @@ export default function Page() {
               <div className="bento h-full p-6.5">
                 <h3 className="text-[17px] font-semibold">State that survives restarts</h3>
                 <p className="mt-2 text-[14px] leading-relaxed text-dim">
-                  Local DynamoDB items, queued messages, event history — all in SQLite. Kill the
-                  engine, restart tomorrow: still there. Free, by default.
+                  Local DynamoDB items, queued messages, event history — all in SQLite. Free, by
+                  default.
                 </p>
-                <p className="mt-4 font-mono text-[12px] text-faint">.pulse/data · SQLite</p>
+                <div className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1.5 font-mono text-[11px]">
+                  <span className="rounded-md border border-edge bg-bg px-2 py-1 text-fg">PutItem</span>
+                  <span className="text-faint">→</span>
+                  <span className="rounded-md border border-edge bg-bg px-2 py-1 text-dim">.pulse/data</span>
+                  <span className="text-faint">→</span>
+                  <span className="rounded-md border border-edge bg-bg px-2 py-1 text-dim">restart ⟳</span>
+                  <span className="text-faint">→</span>
+                  <span className="rounded-md border border-tgreen/30 bg-bg px-2 py-1 text-tgreen">✓ still there</span>
+                </div>
               </div>
             </Reveal>
 
@@ -361,10 +434,15 @@ export default function Page() {
             <Reveal>
               <h3 className="text-[19px] font-semibold">Why pulse exists</h3>
               <div className="mt-3.5 space-y-4 text-[15px] leading-relaxed text-dim">
+                <p className="text-[16px] text-fg/90">
+                  <b>Rails</b> has a dev server. <b>Django</b> has one. <b>Vite</b> has one.{" "}
+                  <b>Next</b> has one. Even Express has <em className="not-italic text-amber">nodemon</em>.
+                </p>
+                <p className="text-[16px] font-medium text-fg">
+                  AWS Lambda never got one.
+                </p>
                 <p>
-                  Serverless made deployment easy and development weirdly hard. On every other
-                  stack you type one command and get a dev server with hot reload — Rails, Vite,
-                  Next. AWS serverless never got one.
+                  Serverless made deployment easy — and development weirdly hard.
                 </p>
                 <p>
                   So teams settle for workarounds. <b className="font-medium text-fg">Deploy to debug</b>:
@@ -542,8 +620,8 @@ export default function Page() {
                       <td className="border-t border-edge bg-[rgba(255,171,51,0.05)] px-5 py-3.5 font-medium">
                         {row[1].startsWith("✓") ? (<><span className="text-tgreen">✓</span>{row[1].slice(1)}</>) : row[1]}
                       </td>
-                      <td className="border-t border-edge px-5 py-3.5 text-dim">{row[2]}</td>
-                      <td className="border-t border-edge px-5 py-3.5 text-dim">{row[3]}</td>
+                      <td className="border-t border-edge px-5 py-3.5 text-dim">{gap(row[2])}</td>
+                      <td className="border-t border-edge px-5 py-3.5 text-dim">{gap(row[3])}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -683,6 +761,10 @@ export default function Page() {
                 <h2 className="text-balance text-[clamp(28px,4.5vw,44px)] font-bold tracking-tight">
                   Your local cloud, one command away
                 </h2>
+                <p className="mx-auto mt-4 max-w-[44ch] text-balance text-[15.5px] leading-relaxed text-dim">
+                  Every modern framework has a dev server.
+                  <span className="block font-medium text-fg">AWS serverless deserves one too.</span>
+                </p>
                 <div className="mt-8 flex justify-center">
                   <InstallTabs location="cta" />
                 </div>
@@ -869,6 +951,26 @@ const testimonials = [
     role: "Solo founder",
     org: "indie AWS shop",
   },
+];
+
+// The signature walkthrough: [stage, qualifier, real output line(s)].
+const journey: [string, string, string][] = [
+  ["A request arrives", "plain HTTP · port 3000",
+    '<span class="text-amber">$ curl -X POST localhost:3000/orders -d \'{"sku":"A1","qty":2}\'</span>'],
+  ["The gateway shapes it", "an API Gateway v2 event — exactly like production",
+    '<span class="text-dim">{"routeKey":"POST /orders","body":"{\\"sku\\":\\"A1\\",\\"qty\\":2}", …}</span>'],
+  ["Your Lambda handler runs", "real Runtime API · hot-reloaded code",
+    '<span class="text-dim">201</span> {"id":"e9b4…","status":"pending"}'],
+  ["It queues a background job", "local SQS · real wire protocol",
+    '<span class="text-tcyan">⚙ sqs order-events → worker · ok</span>'],
+  ["The worker processes it", "visibility timeouts · retries · DLQ if it keeps failing",
+    'worker <span class="text-dim">|</span> processed  <span class="text-dim">→ status:</span> <span class="text-tgreen">"processed"</span>'],
+  ["Everything was recorded", "payload, logs, outcome — byte for byte",
+    '  <b>7275f6ee</b>  <span class="text-dim">Aug  5 01:01</span>   http   <span class="text-dim">→</span> createOrder · <span class="text-tgreen">success</span> <span class="text-dim">· 1ms</span>'],
+  ["So you can time travel", "the exact payload, against your current code",
+    '<span class="text-amber">$ pulse events replay 7275f6ee</span>\n<span class="text-tgreen">✓ createOrder · success · 0ms</span>'],
+  ["Then ship it, unchanged", "pulse is dev-time only",
+    '<span class="text-amber">$ sam deploy</span>   <span class="text-dim"># the code that ran here is the code that ships</span>'],
 ];
 
 const useCases: [string, string][] = [

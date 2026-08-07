@@ -40,7 +40,7 @@ Deliberate events only — autocapture is off:
 | `copy_install` | `method: brew·curl·go`, `location: cta` | THE conversion — install command copied, per method |
 | `cta_click` | `cta: get-started·github`, `location: nav·hero·cta` | which door people choose, and where |
 | `outbound` | `target` | interest depth: docs, guide, releases, issues, perf-ci, share-feedback, footer links |
-| `section_view` | `section: features·how·inspect·why·use-cases·templates·compare·faq·testimonials·get-started` | scroll-milestone funnel — where the story loses people |
+| `section_view` | `section: journey·features·how·inspect·why·use-cases·templates·compare·faq·testimonials·get-started` | scroll-milestone funnel — where the story loses people |
 | `how_it_works_step` | `step: init·start·loop` | reader took manual control of the stepper |
 | `inspect_tab` | `tab: story·replay·monitor·tables` | which observability capability pulls people in |
 

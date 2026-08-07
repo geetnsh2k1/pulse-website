@@ -277,6 +277,43 @@ a:focus-visible, button:focus-visible {
   to { left: calc(100% + 4px); opacity: 0; }
 }
 
+/* ---------- vertical request-journey spine ---------- */
+
+.vtrack {
+  position: relative;
+  width: 0;
+  border-left: 1px dashed var(--color-edge2);
+}
+.vdot {
+  position: absolute;
+  left: -3.5px;
+  top: -6px;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--color-amber);
+  box-shadow: 0 0 9px rgba(255, 171, 51, 0.85);
+  animation: vflow 2.4s linear infinite;
+}
+@keyframes vflow {
+  from { top: -4px; opacity: 0; }
+  14% { opacity: 1; }
+  86% { opacity: 1; }
+  to { top: calc(100% - 4px); opacity: 0; }
+}
+
+/* hot-reload loop: three states glow in sequence, forever */
+.cycle > * {
+  opacity: 0.35;
+  animation: cyc 5.7s linear infinite;
+}
+.cycle > *:nth-child(2) { animation-delay: 1.9s; }
+.cycle > *:nth-child(3) { animation-delay: 3.8s; }
+@keyframes cyc {
+  0%, 28% { opacity: 1; }
+  36%, 100% { opacity: 0.35; }
+}
+
 /* ---------- how-it-works stepper ---------- */
 
 .stepbar {
@@ -403,6 +440,8 @@ a:focus-visible, button:focus-visible {
   .qdot { animation: none; opacity: 0; }
   .stepbar { animation: none; width: 100%; }
   .rise { animation: none; }
+  .vdot { animation: none; opacity: 0; }
+  .cycle > * { animation: none; opacity: 1; }
   .js .reveal { opacity: 1; transform: none; transition: none; }
   .bar { transition: none; width: var(--w); }
   .bento, .btn { transition: none; }

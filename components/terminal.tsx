@@ -60,14 +60,14 @@ export function Terminal() {
         const typeChar = () => {
           pos++;
           render(idx, s.text.slice(0, pos));
-          if (pos < s.text.length) later(typeChar, 24 + Math.random() * 32);
-          else { idx++; later(step, 340); }
+          if (pos < s.text.length) later(typeChar, 13 + Math.random() * 21);
+          else { idx++; later(step, 260); }
         };
         typeChar();
       } else {
         idx++;
         render(idx);
-        later(step, idx === script.length ? 60 : 950);
+        later(step, idx === script.length ? 60 : 620);
       }
     };
     step();
