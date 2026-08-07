@@ -242,9 +242,7 @@ export default function Page() {
                 One order, end to end — entirely on your laptop
               </h2>
               <p className="mt-4 text-[clamp(16px,2.1vw,18.5px)] leading-relaxed text-dim">
-                The whole lifecycle of a single request through pulse: it becomes an event, runs
-                your code, queues a job, lands in a table — and stays replayable forever. Every
-                line below is real output.
+                One request&apos;s whole lifecycle — every line below is real output.
               </p>
             </div>
           </Reveal>
@@ -282,7 +280,7 @@ export default function Page() {
               idx="01"
               kick="features"
               title="A local cloud that keeps up with your typing"
-              lede="pulse implements AWS's real Lambda Runtime API and speaks the real SQS and DynamoDB wire protocols — fidelity by construction, speed from native processes instead of containers."
+              lede="Fidelity from the real AWS protocols, speed from native processes — here's what that buys you every day."
             />
           </Reveal>
 
@@ -292,9 +290,8 @@ export default function Page() {
               <div className="bento h-full p-7">
                 <h3 className="text-[18px] font-semibold">The async loop, actually local</h3>
                 <p className="mt-2 max-w-[52ch] text-[14.5px] leading-relaxed text-dim">
-                  Local SQS queues deliver to worker functions with visibility timeouts, automatic
-                  retries, and dead-letter queues — the part <code className="font-mono text-[13px] text-amber-soft">sam local</code> can&apos;t
-                  run at all — narrated live in one console.
+                  Local SQS queues deliver to workers — visibility timeouts, retries, DLQs —
+                  narrated live in your console.
                 </p>
                 <div className="mt-7 flex items-center gap-3 font-mono text-[12px]">
                   <span className="shrink-0 rounded-lg border border-edge bg-bg2 px-3 py-2 text-fg">POST /orders</span>
@@ -322,8 +319,7 @@ export default function Page() {
               <div className="bento h-full p-7">
                 <h3 className="text-[18px] font-semibold">Hot reload, measured in CI</h3>
                 <p className="mt-2 text-[14.5px] leading-relaxed text-dim">
-                  Instant hot reload for AWS Lambda: save a file and the next request runs the
-                  new code. Restarts don&apos;t exist — code and <code className="font-mono text-[13px] text-amber-soft">pulse.yaml</code> apply live.
+                  Hot reload for AWS Lambda: save a file, the next request runs the new code.
                 </p>
                 <div className="cycle mt-5 space-y-1.5 font-mono text-[12px]">
                   <div className="flex items-center gap-2.5 rounded-lg border border-edge bg-bg px-3.5 py-2"><span className="text-amber">⌘S</span> handler.py saved</div>
@@ -342,8 +338,8 @@ export default function Page() {
               <div className="bento h-full p-7">
                 <h3 className="text-[18px] font-semibold">Time travel debugging</h3>
                 <p className="mt-2 text-[14.5px] leading-relaxed text-dim">
-                  Event replay, built in: every trigger is recorded with its exact payload.
-                  Yesterday&apos;s crash, today&apos;s fix, the <em className="not-italic text-fg">actual</em> event — replayed byte for byte.
+                  Every trigger recorded byte-for-byte — replay yesterday&apos;s crash against
+                  today&apos;s fix.
                 </p>
                 <div className="mt-5 space-y-1.5 font-mono text-[12px]">
                   <div className="flex items-center gap-3 rounded-lg border border-edge bg-bg px-3.5 py-2.5">
@@ -368,9 +364,8 @@ export default function Page() {
               <div className="bento h-full p-7">
                 <h3 className="text-[18px] font-semibold">Real protocols, not lookalikes</h3>
                 <p className="mt-2 max-w-[54ch] text-[14.5px] leading-relaxed text-dim">
-                  Your handlers call the plain AWS SDK. pulse points it at itself with one
-                  environment variable — so the code you iterate on locally is the code you
-                  deploy, with nothing to delete.
+                  Plain AWS SDK in your handlers, one env var from pulse — nothing to delete
+                  before you deploy.
                 </p>
                 <div className="mt-5 flex flex-wrap gap-2.5">
                   {["Lambda Runtime API", "SQS wire protocol", "DynamoDB expressions"].map((p) => (
@@ -393,8 +388,7 @@ export default function Page() {
               <div className="bento h-full p-6.5">
                 <h3 className="text-[17px] font-semibold">State that survives restarts</h3>
                 <p className="mt-2 text-[14px] leading-relaxed text-dim">
-                  Local DynamoDB items, queued messages, event history — all in SQLite. Free, by
-                  default.
+                  Local DynamoDB items, queues, history — SQLite under the hood. Free, by default.
                 </p>
                 <div className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1.5 font-mono text-[11px]">
                   <span className="rounded-md border border-edge bg-bg px-2 py-1 text-fg">PutItem</span>
@@ -507,46 +501,23 @@ export default function Page() {
                 </p>
                 <p className="text-[16px] font-medium text-fg">AWS Lambda never got one.</p>
                 <p className="text-[16px] font-semibold text-amber">pulse changes that.</p>
-                <p>
-                  Serverless made deployment easy — and development weirdly hard.
-                </p>
-                <p>
-                  So teams settle for workarounds. <b className="font-medium text-fg">Deploy to debug</b>:
-                  minutes per iteration and a real AWS bill just to see a log line.{" "}
-                  <b className="font-medium text-fg">Mock everything</b>: your tests pass against code
-                  that isn&apos;t real. <b className="font-medium text-fg">Emulate AWS in Docker</b>:
-                  gigabyte images, slow containers, and config drift between your laptop and the cloud.
-                </p>
-                <p>
-                  pulse exists because the inner loop — the five hundred iterations between idea
-                  and staging — deserves a real tool: one binary that runs your AWS Lambda
-                  functions, SQS queues, and DynamoDB tables natively on your laptop, with the
-                  feedback speed of a web framework.
-                </p>
+                <p>Serverless made deployment easy — and development weirdly hard. The workarounds:</p>
+                <ul className="space-y-2 text-[14.5px]">
+                  <li className="flex gap-2"><span className="shrink-0 text-tred">✗</span><span><b className="font-medium text-fg">Deploy to debug</b> — minutes per iteration, a real AWS bill per log line</span></li>
+                  <li className="flex gap-2"><span className="shrink-0 text-tred">✗</span><span><b className="font-medium text-fg">Mock everything</b> — tests that pass against code that isn&apos;t real</span></li>
+                  <li className="flex gap-2"><span className="shrink-0 text-tred">✗</span><span><b className="font-medium text-fg">Emulate in Docker</b> — GB images, slow containers, config drift</span></li>
+                </ul>
               </div>
 
             </Reveal>
 
             <Reveal delay={80}>
               <h3 className="text-[19px] font-semibold">Why not Docker?</h3>
-              <ul className="mt-3.5 space-y-3 text-[15px] leading-relaxed text-dim">
-                <li>
-                  <b className="font-medium text-fg">Startup.</b> Container stacks boot in tens of
-                  seconds. pulse&apos;s engine is ready in ~99 ms — measured in CI on every commit.
-                </li>
-                <li>
-                  <b className="font-medium text-fg">Memory.</b> Docker-based emulation idles at
-                  gigabytes. A whole pulse app runs in ~50 MB — fine on battery, next to your IDE.
-                </li>
-                <li>
-                  <b className="font-medium text-fg">Iteration.</b> Image rebuilds and container
-                  restarts turn every save into a wait. pulse hot-reloads code and config live.
-                </li>
-                <li>
-                  <b className="font-medium text-fg">Fidelity.</b> Docker doesn&apos;t make emulation
-                  accurate — protocols do. pulse implements the real Lambda Runtime API and the
-                  real SQS and DynamoDB wire protocols, so the AWS SDK can&apos;t tell the difference.
-                </li>
+              <ul className="mt-3.5 space-y-2.5 text-[15px] leading-relaxed text-dim">
+                <li><b className="font-medium text-fg">Startup.</b> Containers boot in tens of seconds; pulse is ready in ~99 ms.</li>
+                <li><b className="font-medium text-fg">Memory.</b> Gigabytes idle vs ~50 MB for a whole app.</li>
+                <li><b className="font-medium text-fg">Iteration.</b> Rebuild-and-restart vs save-and-it&apos;s-live.</li>
+                <li><b className="font-medium text-fg">Fidelity.</b> pulse speaks the real Lambda Runtime API and SQS/DynamoDB wire protocols — the AWS SDK can&apos;t tell the difference.</li>
               </ul>
 
               {/* the boot moment, visualized: services come online in ~100 ms */}
@@ -581,18 +552,15 @@ export default function Page() {
           <Reveal className="mt-14">
             <h3 className="text-[19px] font-semibold">How it&apos;s put together</h3>
             <p className="mt-2 max-w-[70ch] text-[14.5px] leading-relaxed text-dim">
-              One native process, one SQLite file. Watch a request travel the whole path —
-              this is what runs on your laptop when you type <code className="font-mono text-[13px] text-amber-soft">pulse start</code>:
+              One native process, one SQLite file — this is <code className="font-mono text-[13px] text-amber-soft">pulse start</code>:
             </p>
             <div className="mt-6 rounded-2xl border border-edge bg-panel/40 p-5 lg:p-6">
               <FlowDiagram />
             </div>
-            <p className="mt-4 max-w-[70ch] text-[14.5px] leading-relaxed text-dim">
-              The gateway turns HTTP into API Gateway events. Functions run against the real
-              Lambda Runtime API. The AWS SDK inside your handlers is pointed at pulse through
-              one environment variable — locally it talks to pulse, in production it talks to
-              AWS, and the code never changes. Queues deliver to workers with retries and
-              dead-letter queues; tables persist to disk and survive restarts.
+            <p className="mt-4 max-w-[72ch] text-[14px] leading-relaxed text-faint">
+              HTTP becomes API Gateway events, handlers run on the real Runtime API, the SDK
+              points at pulse through one env var, queues retry into DLQs, everything persists
+              to disk.
             </p>
           </Reveal>
         </section>
@@ -903,7 +871,7 @@ const steps: Step[] = [
     id: "start",
     cmd: "pulse start",
     title: "Start your local cloud",
-    blurb: "Routes answer, queues deliver, tables exist — in under 100 ms. Leave it running; it narrates everything.",
+    blurb: "Routes answer, queues deliver, tables exist — in under 100 ms.",
     frame:
       '<span class="text-amber">$ pulse start</span>\n<span class="text-amber">⚡ pulse</span> <span class="text-dim">0.1.0 —</span> <b>shop</b>\n  <span class="text-dim">api</span>        http://localhost:3000\n  <span class="text-dim">routes</span>     <b>POST</b> /orders <span class="text-dim">→</span> <span class="text-tcyan">createOrder</span>\n  <span class="text-dim">try</span>        <span class="text-amber">curl -X POST localhost:3000/orders -d \'{"sku":"A1","qty":2}\'</span>\n\n<span class="text-tgreen">ready in 99ms</span> <span class="text-dim">— edits apply live</span>',
   },
@@ -911,7 +879,7 @@ const steps: Step[] = [
     id: "loop",
     cmd: "curl → queue → worker",
     title: "Build like it's a web app",
-    blurb: "Save a file — the next request runs the new code. The same code deploys with SAM or CDK, unchanged.",
+    blurb: "Save a file — the next request runs the new code.",
     frame:
       '<span class="text-amber">$ curl -X POST localhost:3000/orders -d \'{"sku":"A1","qty":2}\'</span>\n<span class="text-dim">201</span> {"id":"e9b4…","status":"pending"}\n  <span class="text-tcyan">⚙ sqs order-events → worker · ok</span>\n<span class="text-amber">🎉 first background job processed — your async loop works end to end</span>\n\n<span class="text-amber">$ curl localhost:3000/orders/e9b4…</span>\n{"id":"e9b4…","status":<span class="text-tgreen">"processed"</span>}   <span class="text-dim">← the worker got there first</span>',
   },
@@ -1036,12 +1004,12 @@ const journey: [string, string, string][] = [
 ];
 
 const useCases: [string, string][] = [
-  ["REST APIs on Lambda", "Build a serverless REST API locally: routes hit real Lambda handlers through API Gateway-shaped events, with hot reload on every save."],
-  ["Webhook receivers", "Ack fast, process async. Test Stripe- or GitHub-style webhooks locally with retries and a dead-letter queue — then replay the exact delivery that failed."],
-  ["Background jobs & queue workers", "The SQS → worker loop runs fully on your machine: visibility timeouts, automatic retries, DLQs — every delivery narrated in the console."],
-  ["Event-driven systems", "Chain functions through local queues and inspect every event's story: the payload, the logs, the outcome, and a one-command replay."],
-  ["Learning AWS serverless", "No AWS account, no bill, no risk. Four templates form a learning path from your first Lambda function to a full API + queue + worker + table app."],
-  ["Prototyping", "Spike a whole product on a plane. When it's real, deploy the same vanilla-SDK code with SAM, CDK, or the Serverless Framework — unchanged."],
+  ["REST APIs on Lambda", "Routes hit real Lambda handlers, hot reload on every save."],
+  ["Webhook receivers", "Ack fast, retry async — then replay the exact delivery that failed."],
+  ["Background jobs & queue workers", "The full SQS → worker → DLQ loop, running on your machine."],
+  ["Event-driven systems", "Chain functions through queues; every event keeps its story."],
+  ["Learning AWS serverless", "No account, no bill — four templates from first function to full app."],
+  ["Prototyping", "Build offline on a plane; deploy the same code with SAM or CDK."],
 ];
 
 // Rendered as the FAQ accordions AND serialized into FAQPage JSON-LD below.
