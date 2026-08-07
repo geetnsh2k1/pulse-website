@@ -12,8 +12,6 @@ const GH = "https://github.com/geetnsh2k1/pulse";
 // ones — or flip this to false — before sharing the site publicly.
 const SHOW_TESTIMONIALS = true;
 
-const wave = ` ─╮ ╭─╮ ╭──\n  ╰─╯ ╰─╯`;
-
 function SectionHead({ idx, kick, title, lede }: { idx: string; kick: string; title: string; lede?: string }) {
   return (
     <div className="max-w-[72ch]">
@@ -439,7 +437,10 @@ export default function Page() {
       <footer className="mt-20 border-t border-edge bg-bg2/70 md:mt-28">
         <div className="mx-auto grid max-w-[1160px] grid-cols-2 gap-8 px-6 py-14 md:grid-cols-4">
           <div>
-            <span className="whitespace-pre font-mono text-[13px] leading-[1.1] text-amber">{wave}</span>
+            <span className="flex items-center gap-2.5 text-[17px] font-bold text-fg">
+              <PulseLine crop="tight" className="h-6 w-11" />
+              pulse
+            </span>
             <p className="mt-3.5 max-w-[34ch] text-sm leading-relaxed text-dim">
               The missing dev server for AWS serverless. Run the whole app locally, in milliseconds.
             </p>
