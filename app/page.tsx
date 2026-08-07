@@ -33,6 +33,14 @@ const GitHubIcon = (
 export default function Page() {
   return (
     <>
+      {/* structured data: SoftwareApplication + FAQPage (FAQ JSON is generated
+          from the same `faqs` array that renders below, so the schema always
+          matches the visible text — a Google requirement). */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+
       {/* ───────────────────────── nav ───────────────────────── */}
       <nav className="sticky top-0 z-50 border-b border-edge/70 bg-bg/75 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-[1160px] items-center gap-7 px-6">
@@ -70,15 +78,19 @@ export default function Page() {
             v0.1.0 · open source · Apache-2.0
           </span>
           <div>
-            <h1 className="mx-auto max-w-[19ch] text-balance text-[clamp(36px,7vw,78px)] font-bold leading-[1.02] tracking-[-0.025em]">
-              The missing <em className="not-italic text-amber">dev server</em> for AWS serverless
+            <h1 className="mx-auto max-w-[24ch] text-balance text-[clamp(31px,5.6vw,64px)] font-bold leading-[1.06] tracking-[-0.02em]">
+              Run AWS Lambda, SQS and DynamoDB <em className="not-italic text-amber">locally</em> — without Docker
             </h1>
+            <p className="mt-4 text-[clamp(16px,2.4vw,21px)] font-medium text-fg/90">
+              The missing dev server for AWS serverless.
+            </p>
             <PulseLine crop="mid" className="mx-auto mt-5 h-10 w-[min(400px,78%)]" />
           </div>
-          <p className="max-w-[62ch] text-balance text-[clamp(16px,2.2vw,19px)] leading-relaxed text-dim">
-            Every stack has one — Rails, Vite, Next. Serverless never did. pulse runs your whole
-            app — API, queues, workers, DynamoDB — natively on your laptop. No Docker. No AWS
-            account. Vanilla SDK code that deploys unchanged.
+          <p className="max-w-[68ch] text-balance text-[clamp(15.5px,2.1vw,18px)] leading-relaxed text-dim">
+            pulse is a fast local serverless development environment: build and debug AWS Lambda
+            functions with instant hot reload, real SQS queues, local DynamoDB tables, and event
+            replay. It speaks the real AWS protocols, so your production code runs unchanged —
+            no Docker, no AWS account, no mocks in your handlers.
           </p>
           <div className="flex flex-wrap justify-center gap-3.5">
             <TrackLink href="#get-started" event="cta_click" props={{ cta: "get-started", location: "hero" }} className="btn btn-primary">
@@ -121,8 +133,8 @@ export default function Page() {
       {/* ─────────────────── works-with strip ─────────────────── */}
       <div className="mt-12 border-y border-edge bg-bg2/60 md:mt-18">
         <div className="mx-auto flex max-w-[1160px] flex-wrap items-center justify-center gap-x-3.5 gap-y-3 px-6 py-5">
-          <span className="mr-2 font-mono text-[12.5px] text-faint">works with what you already use</span>
-          {["boto3", "AWS SDK JS v3", "SAM / CDK deploys", "GitHub Actions", "zsh · bash · fish"].map((t) => (
+          <span className="mr-2 font-mono text-[12.5px] text-faint">integrates with what you already use</span>
+          {["boto3", "AWS SDK JS v3", "SAM · CDK · Serverless Framework deploys", "GitHub Actions", "zsh · bash · fish"].map((t) => (
             <span key={t} className="chip !text-fg/85">{t}</span>
           ))}
         </div>
@@ -146,8 +158,8 @@ export default function Page() {
               <div className="bento h-full p-7">
                 <h3 className="text-[18px] font-semibold">The async loop, actually local</h3>
                 <p className="mt-2 max-w-[52ch] text-[14.5px] leading-relaxed text-dim">
-                  Queues deliver to workers with visibility timeouts, automatic retries, and
-                  dead-letter queues — the part <code className="font-mono text-[13px] text-amber-soft">sam local</code> can&apos;t
+                  Local SQS queues deliver to worker functions with visibility timeouts, automatic
+                  retries, and dead-letter queues — the part <code className="font-mono text-[13px] text-amber-soft">sam local</code> can&apos;t
                   run at all — narrated live in one console.
                 </p>
                 <div className="mt-7 flex items-center gap-3 font-mono text-[12px]">
@@ -174,10 +186,10 @@ export default function Page() {
             {/* millisecond loop */}
             <Reveal className="lg:col-span-5" delay={70}>
               <div className="bento h-full p-7">
-                <h3 className="text-[18px] font-semibold">Milliseconds, enforced by CI</h3>
+                <h3 className="text-[18px] font-semibold">Hot reload, measured in CI</h3>
                 <p className="mt-2 text-[14.5px] leading-relaxed text-dim">
-                  Save a file — the next request runs the new code. Restarts don&apos;t exist:
-                  code and <code className="font-mono text-[13px] text-amber-soft">pulse.yaml</code> apply live.
+                  Instant hot reload for AWS Lambda: save a file and the next request runs the
+                  new code. Restarts don&apos;t exist — code and <code className="font-mono text-[13px] text-amber-soft">pulse.yaml</code> apply live.
                 </p>
                 <div className="mt-6 font-mono">
                   <CountUp to={17} suffix=" ms" className="text-[44px] font-bold leading-none tracking-tight text-amber" />
@@ -194,8 +206,8 @@ export default function Page() {
               <div className="bento h-full p-7">
                 <h3 className="text-[18px] font-semibold">Time travel debugging</h3>
                 <p className="mt-2 text-[14.5px] leading-relaxed text-dim">
-                  Every trigger is recorded with its exact payload. Yesterday&apos;s crash, today&apos;s
-                  fix, the <em className="not-italic text-fg">actual</em> event — replayed byte for byte.
+                  Event replay, built in: every trigger is recorded with its exact payload.
+                  Yesterday&apos;s crash, today&apos;s fix, the <em className="not-italic text-fg">actual</em> event — replayed byte for byte.
                 </p>
                 <pre className="mt-5 overflow-x-auto rounded-lg border border-edge bg-bg px-4 py-3.5 font-mono text-[12.5px] leading-[1.8]" dangerouslySetInnerHTML={{ __html: replayMini }} />
               </div>
@@ -226,8 +238,8 @@ export default function Page() {
               <div className="bento h-full p-6.5">
                 <h3 className="text-[17px] font-semibold">State that survives restarts</h3>
                 <p className="mt-2 text-[14px] leading-relaxed text-dim">
-                  Table items, queued messages, event history — all in SQLite. Kill the engine,
-                  restart tomorrow: still there. Free, by default.
+                  Local DynamoDB items, queued messages, event history — all in SQLite. Kill the
+                  engine, restart tomorrow: still there. Free, by default.
                 </p>
                 <p className="mt-4 font-mono text-[12px] text-faint">.pulse/data · SQLite</p>
               </div>
@@ -288,7 +300,7 @@ export default function Page() {
               idx="03"
               kick="inspect"
               title="X-ray vision for your local cloud"
-              lede="Logs are where debugging starts, not where it ends. pulse records everything that happens and gives you four ways to look at it."
+              lede="Logs are where debugging starts, not where it ends. pulse records everything and gives you four ways to debug your Lambda functions, queues, and tables locally."
             />
           </Reveal>
           <Reveal className="mt-12">
@@ -296,11 +308,136 @@ export default function Page() {
           </Reveal>
         </section>
 
+        {/* ───────────────────── why pulse ───────────────────── */}
+        <section id="why" className="pt-20 md:pt-28">
+          <Reveal section="why">
+            <SectionHead
+              idx="04"
+              kick="why pulse"
+              title="Local serverless development is broken. Here's the fix."
+            />
+          </Reveal>
+
+          <div className="mt-10 grid gap-10 lg:grid-cols-2 lg:gap-14">
+            <Reveal>
+              <h3 className="text-[19px] font-semibold">Why pulse exists</h3>
+              <div className="mt-3.5 space-y-4 text-[15px] leading-relaxed text-dim">
+                <p>
+                  Serverless made deployment easy and development weirdly hard. On every other
+                  stack you type one command and get a dev server with hot reload — Rails, Vite,
+                  Next. AWS serverless never got one.
+                </p>
+                <p>
+                  So teams settle for workarounds. <b className="font-medium text-fg">Deploy to debug</b>:
+                  minutes per iteration and a real AWS bill just to see a log line.{" "}
+                  <b className="font-medium text-fg">Mock everything</b>: your tests pass against code
+                  that isn&apos;t real. <b className="font-medium text-fg">Emulate AWS in Docker</b>:
+                  gigabyte images, slow containers, and config drift between your laptop and the cloud.
+                </p>
+                <p>
+                  pulse exists because the inner loop — the five hundred iterations between idea
+                  and staging — deserves a real tool: one binary that runs your AWS Lambda
+                  functions, SQS queues, and DynamoDB tables natively on your laptop, with the
+                  feedback speed of a web framework.
+                </p>
+              </div>
+
+              <h3 className="mt-9 text-[19px] font-semibold">Why not Docker?</h3>
+              <ul className="mt-3.5 space-y-3 text-[15px] leading-relaxed text-dim">
+                <li>
+                  <b className="font-medium text-fg">Startup.</b> Container stacks boot in tens of
+                  seconds. pulse&apos;s engine is ready in ~99 ms — measured in CI on every commit.
+                </li>
+                <li>
+                  <b className="font-medium text-fg">Memory.</b> Docker-based emulation idles at
+                  gigabytes. A whole pulse app runs in ~50 MB — fine on battery, next to your IDE.
+                </li>
+                <li>
+                  <b className="font-medium text-fg">Iteration.</b> Image rebuilds and container
+                  restarts turn every save into a wait. pulse hot-reloads code and config live.
+                </li>
+                <li>
+                  <b className="font-medium text-fg">Fidelity.</b> Docker doesn&apos;t make emulation
+                  accurate — protocols do. pulse implements the real Lambda Runtime API and the
+                  real SQS and DynamoDB wire protocols, so the AWS SDK can&apos;t tell the difference.
+                </li>
+              </ul>
+            </Reveal>
+
+            <Reveal delay={80}>
+              <h3 className="text-[19px] font-semibold">How it&apos;s put together</h3>
+              <div className="term mt-3.5">
+                <div className="term-head">
+                  <span className="dot bg-[#ff5f57]" />
+                  <span className="dot bg-[#febc2e]" />
+                  <span className="dot bg-[#28c840]" />
+                  <span className="ml-2">architecture — one process, one SQLite file</span>
+                </div>
+                <div className="term-body text-[12.3px] leading-[1.8]">
+{`your terminal                pulse engine (one native process)
+─────────────                ─────────────────────────────────
+curl :3000/orders  ─HTTP──▶  gateway (API Gateway-shaped events)
+                                │ invoke
+                                ▼
+                             your Lambda functions
+                             real Runtime API · Node + Python
+                                │ boto3 / AWS SDK v3
+                                │ (AWS_ENDPOINT_URL — set for you)
+                                ▼
+                             SQS queues ──▶ worker functions
+                                │ retries ↻ · dead-letter queues
+                                ▼
+                             DynamoDB tables
+                                ▼
+                             SQLite (.pulse/data) — survives restarts`}
+                </div>
+              </div>
+              <p className="mt-4 max-w-[64ch] text-[14.5px] leading-relaxed text-dim">
+                The gateway turns HTTP requests into API Gateway events. Functions run against
+                the real Lambda Runtime API. The AWS SDK inside your handlers is pointed at pulse
+                through one environment variable — locally it talks to pulse, in production it
+                talks to AWS, and the code never changes. Queues deliver to workers with retries
+                and dead-letter queues; tables persist to disk.
+              </p>
+            </Reveal>
+          </div>
+        </section>
+
+        {/* ───────────────────── use cases ───────────────────── */}
+        <section id="use-cases" className="pt-20 md:pt-28">
+          <Reveal section="use-cases">
+            <SectionHead
+              idx="05"
+              kick="use cases"
+              title="What people build with pulse"
+              lede="If it's Lambda + HTTP + SQS + DynamoDB, it runs locally — the whole loop, not a fragment of it."
+            />
+          </Reveal>
+          <div className="mt-11 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {useCases.map(([title, body], i) => (
+              <Reveal key={title} delay={(i % 3) * 70}>
+                <div className="bento h-full p-6">
+                  <h3 className="text-[16.5px] font-semibold">{title}</h3>
+                  <p className="mt-2 text-[14px] leading-relaxed text-dim">{body}</p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+          <Reveal className="mt-8">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <span className="mr-1 font-mono text-[12.5px] text-faint">built for</span>
+              {["backend engineers", "AWS developers", "platform teams", "startups", "indie hackers", "students learning AWS"].map((w) => (
+                <span key={w} className="chip">{w}</span>
+              ))}
+            </div>
+          </Reveal>
+        </section>
+
         {/* ───────────────────── templates ───────────────────── */}
         <section id="templates" className="pt-20 md:pt-28">
           <Reveal section="templates">
             <SectionHead
-              idx="04"
+              idx="06"
               kick="templates"
               title="A learning path, not a pile of boilerplate"
               lede="Each starter adds exactly one concept. All ship in Python and Node, use the plain AWS SDK, and run unchanged in real AWS."
@@ -325,7 +462,12 @@ export default function Page() {
         {/* ───────────────────── compare ───────────────────── */}
         <section id="compare" className="pt-20 md:pt-28">
           <Reveal section="compare">
-            <SectionHead idx="05" kick="compare" title="Built for the inner loop" />
+            <SectionHead
+              idx="07"
+              kick="compare"
+              title="Built for the inner loop"
+              lede="Searching for a LocalStack alternative, or wondering how pulse compares to sam local? Different tools do different jobs — here's the honest version."
+            />
           </Reveal>
           <Reveal className="mt-10">
             <div className="overflow-x-auto rounded-2xl border border-edge">
@@ -366,13 +508,74 @@ export default function Page() {
               wrong. S3, SNS, EventBridge, Step Functions: on the roadmap, not pretended.
             </div>
           </Reveal>
+
+          {/* support matrix */}
+          <div className="mt-10 grid gap-4 md:grid-cols-2">
+            <Reveal>
+              <div className="bento h-full p-6.5">
+                <h3 className="font-mono text-[13px] uppercase tracking-[0.14em] text-tgreen">Works today</h3>
+                <ul className="mt-4 space-y-2 text-[14.5px] text-dim">
+                  {[
+                    "AWS Lambda functions — Node.js & Python, real Runtime API",
+                    "HTTP APIs — API Gateway v1/v2 events, {param} & {proxy+} routes",
+                    "SQS queues — visibility timeouts, retries, dead-letter queues",
+                    "DynamoDB — CRUD, Query/Scan, condition & update expressions",
+                    "Hot reload for code and pulse.yaml",
+                    "Event replay, request stories, live monitor, tables browser",
+                    "SQLite persistence across restarts",
+                  ].map((f) => (
+                    <li key={f} className="flex gap-2.5">
+                      <span className="mt-px shrink-0 text-tgreen">✓</span>
+                      <span>{f}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </Reveal>
+            <Reveal delay={70}>
+              <div className="bento h-full p-6.5">
+                <h3 className="font-mono text-[13px] uppercase tracking-[0.14em] text-dim">On the roadmap</h3>
+                <ul className="mt-4 space-y-2 text-[14.5px] text-dim">
+                  {["S3 buckets", "SNS topics", "EventBridge rules", "Step Functions"].map((f) => (
+                    <li key={f} className="flex gap-2.5">
+                      <span className="mt-px shrink-0 text-faint">○</span>
+                      <span>{f}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-5 border-t border-edge pt-4 text-[13.5px] leading-relaxed text-faint">
+                  Until then, touching an unsupported service fails loudly with a clear message —
+                  pulse never silently fakes a response it can&apos;t honor.
+                </p>
+              </div>
+            </Reveal>
+          </div>
+        </section>
+
+        {/* ───────────────────── FAQ ───────────────────── */}
+        <section id="faq" className="pt-20 md:pt-28">
+          <Reveal section="faq">
+            <SectionHead
+              idx="08"
+              kick="faq"
+              title="Questions people actually ask"
+            />
+          </Reveal>
+          <Reveal className="faq mt-10 max-w-[860px]">
+            {faqs.map(([q, a]) => (
+              <details key={q}>
+                <summary>{q}</summary>
+                <p className="a">{a}</p>
+              </details>
+            ))}
+          </Reveal>
         </section>
 
         {/* ───────────────────── testimonials ───────────────────── */}
         {SHOW_TESTIMONIALS && (
           <section id="testimonials" className="pt-20 md:pt-28">
             <Reveal section="testimonials">
-              <SectionHead idx="06" kick="early signal" title="What early users say" />
+              <SectionHead idx="09" kick="early signal" title="What early users say" />
             </Reveal>
             <div className="mt-11 grid grid-cols-1 gap-4 md:grid-cols-3">
               {testimonials.map((t, i) => (
@@ -420,6 +623,9 @@ export default function Page() {
                   then run <code className="font-mono text-[13.5px] text-amber">pulse tour</code> — five minutes, hands-on, nothing simulated
                 </p>
                 <div className="mt-7 flex flex-wrap justify-center gap-3.5">
+                  <TrackLink href={`${GH}#two-minutes-to-a-running-app`} event="outbound" props={{ target: "quickstart-cta" }} className="btn btn-ghost">
+                    2-minute quickstart
+                  </TrackLink>
                   <TrackLink href={`${GH}/blob/master/docs/GUIDE.md`} event="outbound" props={{ target: "guide-cta" }} className="btn btn-ghost">
                     Read the guide
                   </TrackLink>
@@ -558,6 +764,7 @@ const compare: [string, string, string, string][] = [
   ["Queue → worker → DLQ locally", "✓ out of the box", "not available", "via deploy cycle"],
   ["Event replay & request stories", "✓ built in", "—", "—"],
   ["Requirements", "one 20 MB binary", "Docker", "Docker, GB-scale image"],
+  ["Typical memory while developing", "~50 MB", "100s of MB (containers)", "GBs (Docker image)"],
   ["Data persists across restarts", "✓ free, default", "n/a", "paid tier"],
 ];
 
@@ -583,6 +790,56 @@ const testimonials = [
     org: "indie AWS shop",
   },
 ];
+
+const useCases: [string, string][] = [
+  ["REST APIs on Lambda", "Build a serverless REST API locally: routes hit real Lambda handlers through API Gateway-shaped events, with hot reload on every save."],
+  ["Webhook receivers", "Ack fast, process async. Test Stripe- or GitHub-style webhooks locally with retries and a dead-letter queue — then replay the exact delivery that failed."],
+  ["Background jobs & queue workers", "The SQS → worker loop runs fully on your machine: visibility timeouts, automatic retries, DLQs — every delivery narrated in the console."],
+  ["Event-driven systems", "Chain functions through local queues and inspect every event's story: the payload, the logs, the outcome, and a one-command replay."],
+  ["Learning AWS serverless", "No AWS account, no bill, no risk. Four templates form a learning path from your first Lambda function to a full API + queue + worker + table app."],
+  ["Prototyping", "Spike a whole product on a plane. When it's real, deploy the same vanilla-SDK code with SAM, CDK, or the Serverless Framework — unchanged."],
+];
+
+// Rendered as the FAQ accordions AND serialized into FAQPage JSON-LD below.
+const faqs: [string, string][] = [
+  ["Can I run AWS Lambda locally with pulse?", "Yes. pulse runs your Lambda functions natively on your machine against the real Lambda Runtime API — the same contract AWS uses in production. Node.js and Python are supported, no Docker is required, and the engine is ready in about 100 milliseconds."],
+  ["Is pulse a LocalStack alternative?", "For the inner development loop, yes. LocalStack emulates ~100 AWS services inside Docker and shines at testing infrastructure code. pulse does one workflow completely — Lambda, HTTP, SQS, DynamoDB — natively, in milliseconds, with dev-server ergonomics: hot reload, event replay, a live monitor. Many teams build with pulse and verify infra with LocalStack or a staging account."],
+  ["Does pulse replace sam local?", "They do different jobs. sam local spins up a container per invocation and can't run the queue → worker → dead-letter-queue loop continuously. pulse runs your whole app as a long-lived local cloud. Your deploy pipeline keeps using SAM (or CDK) — pulse never touches it."],
+  ["Does pulse require Docker?", "No. pulse is one ~20 MB binary that runs your functions as native processes. A complete app idles around 50 MB of memory — no images to pull, no containers to boot."],
+  ["Does pulse work with boto3 and the AWS SDK?", "Yes. Handlers use the plain AWS SDK — boto3 in Python, AWS SDK for JavaScript v3 in Node. pulse sets AWS_ENDPOINT_URL for your functions automatically, so the same code talks to pulse locally and to real AWS in production."],
+  ["Which languages does pulse support?", "Node.js and Python today. Every template ships in both, and handlers are plain SDK code with no pulse imports to remove later."],
+  ["Does pulse work offline?", "Yes. Functions, queues, tables, and event history all live on your machine in SQLite. Build on a plane — no AWS account needed."],
+  ["Can I debug SQS queues locally?", "Yes. pulse runs local SQS queues with visibility timeouts, automatic retries, and dead-letter queues. Peek at waiting messages without consuming them, watch deliveries live, and replay the exact event that failed."],
+  ["Does my data survive restarts?", "Yes. DynamoDB items, queued messages, and event history persist in .pulse/data (SQLite). Stop the engine, restart tomorrow — everything is still there, free, by default."],
+  ["How do I deploy an app built with pulse?", "With whatever you already use — SAM, CDK, or the Serverless Framework. pulse is development-time only and your code is vanilla AWS SDK throughout, so there is nothing to strip out before deploying."],
+];
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      name: "pulse",
+      applicationCategory: "DeveloperApplication",
+      operatingSystem: "macOS, Linux",
+      description:
+        "Run AWS Lambda, SQS and DynamoDB locally without Docker. pulse is a fast local serverless development environment with hot reload, event replay, queues and workers.",
+      url: "https://pulse-website-red-two.vercel.app",
+      downloadUrl: `${GH}/releases`,
+      license: "https://www.apache.org/licenses/LICENSE-2.0",
+      offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+      sameAs: [GH],
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: faqs.map(([q, a]) => ({
+        "@type": "Question",
+        name: q,
+        acceptedAnswer: { "@type": "Answer", text: a },
+      })),
+    },
+  ],
+};
 
 const footerCols = [
   { title: "Product", links: [["Features", "#features"], ["Compare", "#compare"], ["Releases", `${GH}/releases`]] as [string, string][] },

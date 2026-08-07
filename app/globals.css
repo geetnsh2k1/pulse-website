@@ -320,6 +320,48 @@ a:focus-visible, button:focus-visible {
 }
 .js .reveal.in { opacity: 1; transform: none; }
 
+/* ---------- FAQ accordions (native details/summary, zero JS) ---------- */
+
+.faq details {
+  border: 1px solid var(--color-edge);
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0) 60%), var(--color-panel);
+  transition: border-color 0.25s ease;
+}
+.faq details + details { margin-top: 10px; }
+.faq details[open] { border-color: rgba(255, 171, 51, 0.3); }
+.faq summary {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  cursor: pointer;
+  list-style: none;
+  padding: 15px 20px;
+  font-size: 15.5px;
+  font-weight: 600;
+}
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after {
+  content: "+";
+  font-family: var(--font-mono);
+  font-size: 18px;
+  line-height: 1;
+  color: var(--color-amber);
+  transition: transform 0.25s ease;
+}
+.faq details[open] summary::after { transform: rotate(45deg); }
+.faq .a {
+  max-width: 76ch;
+  padding: 0 20px 17px;
+  font-size: 14.5px;
+  line-height: 1.75;
+  color: var(--color-dim);
+}
+@media (prefers-reduced-motion: reduce) {
+  .faq summary::after { transition: none; }
+}
+
 /* ---------- small screens: denser terminals and tabs ---------- */
 
 @media (max-width: 640px) {

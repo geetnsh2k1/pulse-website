@@ -10,26 +10,29 @@ const SITE = "https://pulse-website-red-two.vercel.app"; // update when the doma
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),
-  title: "pulse — the missing dev server for AWS serverless",
+  title: "pulse — Run AWS Lambda, SQS & DynamoDB Locally Without Docker",
   description:
-    "Run your whole serverless app — API, queues, workers, DynamoDB — natively on your laptop in milliseconds. No Docker, no AWS account. Open source, Apache-2.0.",
+    "Run AWS Lambda, SQS and DynamoDB locally without Docker. pulse is a fast local serverless dev environment with hot reload, event replay, queues and workers.",
   keywords: [
-    "aws", "serverless", "lambda", "local development", "dynamodb local",
-    "sqs local", "sam local alternative", "localstack alternative", "dev server",
+    "local aws lambda", "aws lambda locally", "run aws lambda without docker",
+    "local serverless development", "aws lambda emulator", "lambda runtime api",
+    "local sqs", "local dynamodb", "localstack alternative", "sam local alternative",
+    "debug aws lambda locally", "hot reload lambda", "event replay lambda",
+    "serverless dev server", "boto3 local", "aws sdk local",
   ],
   openGraph: {
-    title: "pulse — the missing dev server for AWS serverless",
+    title: "pulse — Run AWS Lambda, SQS & DynamoDB Locally Without Docker",
     description:
-      "Your whole serverless app running locally in milliseconds. No Docker, no AWS account.",
+      "The missing dev server for AWS serverless: hot reload, real SQS queues, local DynamoDB, event replay. No Docker, no AWS account.",
     url: SITE,
     siteName: "pulse",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "pulse — the missing dev server for AWS serverless",
+    title: "pulse — Run AWS Lambda, SQS & DynamoDB Locally Without Docker",
     description:
-      "Your whole serverless app running locally in milliseconds. No Docker, no AWS account.",
+      "The missing dev server for AWS serverless: hot reload, real SQS queues, local DynamoDB, event replay. No Docker, no AWS account.",
   },
   robots: { index: true, follow: true },
 };
