@@ -1,36 +1,45 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# pulse-website
 
-## Getting Started
+The public site for [pulse](https://github.com/geetnsh2k1/pulse) — Next.js 15
+(App Router) + Tailwind v4, deployed on Vercel, analytics via PostHog.
 
-First, run the development server:
+## Develop
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev        # localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Deploy (one-time setup)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Create a GitHub repo `pulse-website` and push this folder.
+2. vercel.com → Add New → Project → import the repo (defaults are correct).
+3. Project → Settings → Environment Variables:
+   - `NEXT_PUBLIC_POSTHOG_KEY` — from posthog.com → Project settings
+   - `NEXT_PUBLIC_POSTHOG_HOST` — `https://us.i.posthog.com` (or EU host)
+4. Every push to master deploys; PRs get preview URLs.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Analytics degrade gracefully: with no key set, the site works and simply
+sends nothing.
 
-## Learn More
+## What gets tracked (PostHog)
 
-To learn more about Next.js, take a look at the following resources:
+Deliberate events only — autocapture is off:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Event | Props | Meaning |
+|---|---|---|
+| `$pageview` / `$pageleave` | — | visits, referrers, UTM |
+| `copy_install` | `method: brew` | THE conversion — install command copied |
+| `cta_click` | `target` | Get started / GitHub buttons |
+| `outbound` | `target` | docs / releases / github links |
+| `section_view` | `section: how·compare·get-started` | scroll-depth funnel |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Suggested funnel in PostHog: `$pageview → section_view(get-started) →
+copy_install`.
 
-## Deploy on Vercel
+## After deploy
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Update `SITE` in `app/layout.tsx` (and sitemap/robots URLs) when the
+  final domain lands.
+- Replace the GitHub Pages page in the pulse repo (`docs/index.html`) with
+  a redirect to this site.

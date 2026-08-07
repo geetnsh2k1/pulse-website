@@ -1,26 +1,63 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-bg: #0b0c10;
+  --color-bg2: #101218;
+  --color-panel: #14161d;
+  --color-edge: #262935;
+  --color-fg: #e9e7e1;
+  --color-dim: #9297ab;
+  --color-amber: #ffab33;
+  --color-amber-soft: #ffc46b;
+  --color-amber-dark: #131313;
+  --color-tgreen: #7adb8f;
+  --color-tred: #ff7a7a;
+  --color-tcyan: #6fd7e0;
+  --font-sans: var(--font-geist), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, "SF Mono", Menlo, monospace;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+html {
+  scroll-behavior: smooth;
+  color-scheme: dark;
 }
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-fg);
+}
+
+::selection {
+  background: var(--color-amber);
+  color: var(--color-amber-dark);
+}
+
+a:focus-visible, button:focus-visible {
+  outline: 2px solid var(--color-amber);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.cursor-blink {
+  display: inline-block;
+  width: 0.6em;
+  height: 1.1em;
+  background: var(--color-amber);
+  vertical-align: -0.15em;
+  animation: blink 1s steps(1) infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .cursor-blink { animation: none; } }
+
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
 }
