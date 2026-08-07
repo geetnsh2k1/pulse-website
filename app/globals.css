@@ -314,18 +314,30 @@ a:focus-visible, button:focus-visible {
   36%, 100% { opacity: 0.35; }
 }
 
+/* pulse-start boot panel: services flip online once, on scroll into view */
+.boot-row { opacity: 0.25; }
+.reveal.in .boot-row { animation: bootin 0.4s ease forwards; }
+.reveal.in .boot-row:nth-child(1) { animation-delay: 0.15s; }
+.reveal.in .boot-row:nth-child(2) { animation-delay: 0.5s; }
+.reveal.in .boot-row:nth-child(3) { animation-delay: 0.85s; }
+.reveal.in .boot-row:nth-child(4) { animation-delay: 1.2s; }
+.reveal.in .boot-row:nth-child(5) { animation-delay: 1.6s; }
+@keyframes bootin { to { opacity: 1; } }
+
 /* ---------- how-it-works stepper ---------- */
 
+/* scaleX (not width) so the bar can never escape its left/right insets */
 .stepbar {
   display: block;
   height: 2px;
-  width: 0;
   background: var(--color-amber);
   border-radius: 999px;
+  transform-origin: left center;
+  transform: scaleX(0);
   animation: stepfill var(--dur, 6500ms) linear forwards;
 }
 .paused .stepbar { animation-play-state: paused; }
-@keyframes stepfill { to { width: 100%; } }
+@keyframes stepfill { to { transform: scaleX(1); } }
 
 /* frame entrance when a tab/step swaps */
 .rise { animation: rise 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
@@ -438,7 +450,8 @@ a:focus-visible, button:focus-visible {
   .cursor-blink, .blip::after { animation: none; }
   .ecg-path { animation: none; stroke-dasharray: none; stroke-dashoffset: 0; }
   .qdot { animation: none; opacity: 0; }
-  .stepbar { animation: none; width: 100%; }
+  .stepbar { animation: none; transform: none; }
+  .boot-row { opacity: 1; animation: none; }
   .rise { animation: none; }
   .vdot { animation: none; opacity: 0; }
   .cycle > * { animation: none; opacity: 1; }

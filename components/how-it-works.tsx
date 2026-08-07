@@ -67,7 +67,7 @@ export function HowItWorks({ steps, dur = 7000 }: { steps: Step[]; dur?: number 
               {on && auto && (
                 <span
                   key={active}
-                  className="stepbar absolute inset-x-5 bottom-0"
+                  className="stepbar absolute inset-x-5 bottom-1.5"
                   style={{ "--dur": `${dur}ms` } as React.CSSProperties}
                   onAnimationEnd={() => setActive((a) => (a + 1) % steps.length)}
                 />

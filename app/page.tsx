@@ -548,6 +548,32 @@ export default function Page() {
                   real SQS and DynamoDB wire protocols, so the AWS SDK can&apos;t tell the difference.
                 </li>
               </ul>
+
+              {/* the boot moment, visualized: services come online in ~100 ms */}
+              <div className="mt-7 rounded-xl border border-edge bg-panel/60 p-5">
+                <p className="font-mono text-[11.5px] uppercase tracking-[0.14em] text-faint">
+                  pulse start — your local cloud coming online
+                </p>
+                <div className="mt-3.5 space-y-2.5 font-mono text-[12.5px]">
+                  {([
+                    ["gateway", "http · localhost:3000"],
+                    ["functions", "Lambda Runtime API · Node + Python"],
+                    ["queues", "SQS · retries · DLQs"],
+                    ["tables", "DynamoDB · SQLite-backed"],
+                  ] as [string, string][]).map(([name, sub]) => (
+                    <div key={name} className="boot-row flex items-center gap-2.5">
+                      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-tgreen shadow-[0_0_6px_rgba(122,219,143,0.7)]" />
+                      <span className="text-fg">{name}</span>
+                      <span className="ml-auto text-right text-[10.5px] text-faint">{sub}</span>
+                    </div>
+                  ))}
+                  <div className="boot-row flex items-center gap-2.5 border-t border-edge pt-2.5">
+                    <span className="blip" aria-hidden="true" />
+                    <span className="font-bold text-amber">ready in 99 ms</span>
+                    <span className="ml-auto text-[10.5px] text-faint">edits apply live</span>
+                  </div>
+                </div>
+              </div>
             </Reveal>
           </div>
 
