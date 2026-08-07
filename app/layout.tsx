@@ -6,7 +6,7 @@ import "./globals.css";
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist" });
 const jetbrains = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains" });
 
-const SITE = "https://pulse-website.vercel.app"; // update when the domain lands
+const SITE = "https://pulse-website-red-two.vercel.app"; // update when the domain lands
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),
