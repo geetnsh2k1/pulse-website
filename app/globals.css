@@ -320,6 +320,19 @@ a:focus-visible, button:focus-visible {
 }
 .js .reveal.in { opacity: 1; transform: none; }
 
+/* ---------- small screens: denser terminals and tabs ---------- */
+
+@media (max-width: 640px) {
+  .term-body {
+    padding: 15px 14px 18px;
+    font-size: 12.3px;
+    line-height: 1.7;
+  }
+  .term-head { padding: 9px 13px; }
+  .seg button { padding: 0.38rem 0.7rem; font-size: 12px; }
+  .bento { border-radius: 14px; }
+}
+
 /* ---------- reduced motion: everything settles instantly ---------- */
 
 @media (prefers-reduced-motion: reduce) {

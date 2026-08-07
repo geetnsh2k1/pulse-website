@@ -36,7 +36,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${geist.variable} ${jetbrains.variable}`}>
+    // suppressHydrationWarning: the inline script below adds .js to <html>
+    // before hydration (progressive enhancement) — that class delta is the
+    // only expected mismatch on this element.
+    <html lang="en" suppressHydrationWarning className={`${geist.variable} ${jetbrains.variable}`}>
       <head>
         {/* Progressive enhancement flag: scroll-reveal styles only apply when
             JS actually runs (html.js), so crawlers, reader mode, and no-JS

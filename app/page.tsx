@@ -42,7 +42,7 @@ export default function Page() {
             <PulseLine crop="tight" className="h-6 w-11" />
             pulse
           </a>
-          <div className="ml-4 hidden gap-6 md:flex">
+          <div className="ml-4 hidden gap-5 whitespace-nowrap md:flex lg:gap-6">
             <a className="text-[14px] text-dim transition-colors hover:text-fg" href="#features">Features</a>
             <a className="text-[14px] text-dim transition-colors hover:text-fg" href="#how">How it works</a>
             <a className="text-[14px] text-dim transition-colors hover:text-fg" href="#inspect">Inspect</a>
@@ -51,10 +51,10 @@ export default function Page() {
               Docs
             </TrackLink>
           </div>
-          <div className="ml-auto flex items-center gap-3">
-            <TrackLink href={GH} event="cta_click" props={{ cta: "github", location: "nav" }} className="btn btn-ghost !px-3.5 !py-2 text-[14px]">
+          <div className="ml-auto flex items-center gap-3 whitespace-nowrap">
+            <TrackLink href={GH} event="cta_click" props={{ cta: "github", location: "nav" }} className="btn btn-ghost !px-3.5 !py-2 text-[14px]" aria-label="pulse on GitHub">
               {GitHubIcon}
-              <span className="hidden sm:inline">GitHub</span>
+              <span className="hidden sm:inline md:hidden lg:inline">GitHub</span>
             </TrackLink>
             <TrackLink href="#get-started" event="cta_click" props={{ cta: "get-started", location: "nav" }} className="btn btn-primary !px-4 !py-2 text-[14px]">
               Get started
@@ -66,13 +66,13 @@ export default function Page() {
       {/* ───────────────────────── hero ───────────────────────── */}
       <header id="top" className="relative overflow-hidden">
         <div className="pointer-events-none absolute inset-x-[-25%] top-[-45%] h-[95%] bg-[radial-gradient(58%_55%_at_50%_0%,rgba(255,171,51,0.14),transparent_70%)]" />
-        <div className="relative mx-auto grid max-w-[1160px] justify-items-center gap-7 px-6 pt-24 text-center md:pt-28">
+        <div className="relative mx-auto grid max-w-[1160px] justify-items-center gap-7 px-6 pt-16 text-center sm:pt-24 md:pt-28">
           <span className="chip">
             <span className="blip" aria-hidden="true" />
             v0.1.0 · open source · Apache-2.0
           </span>
           <div>
-            <h1 className="mx-auto max-w-[19ch] text-balance text-[clamp(40px,7vw,78px)] font-bold leading-[1.02] tracking-[-0.025em]">
+            <h1 className="mx-auto max-w-[19ch] text-balance text-[clamp(36px,7vw,78px)] font-bold leading-[1.02] tracking-[-0.025em]">
               The missing <em className="not-italic text-amber">dev server</em> for AWS serverless
             </h1>
             <PulseLine crop="mid" className="mx-auto mt-5 h-10 w-[min(400px,78%)]" />
@@ -121,7 +121,7 @@ export default function Page() {
       </header>
 
       {/* ─────────────────── works-with strip ─────────────────── */}
-      <div className="mt-18 border-y border-edge bg-bg2/60">
+      <div className="mt-12 border-y border-edge bg-bg2/60 md:mt-18">
         <div className="mx-auto flex max-w-[1160px] flex-wrap items-center justify-center gap-x-3.5 gap-y-3 px-6 py-5">
           <span className="mr-2 font-mono text-[12.5px] text-faint">works with what you already use</span>
           {["boto3", "AWS SDK JS v3", "SAM / CDK deploys", "GitHub Actions", "zsh · bash · fish"].map((t) => (
@@ -132,7 +132,7 @@ export default function Page() {
 
       <main className="mx-auto max-w-[1160px] px-6">
         {/* ───────────────────── features (bento) ───────────────────── */}
-        <section id="features" className="pt-28">
+        <section id="features" className="pt-20 md:pt-28">
           <Reveal section="features">
             <SectionHead
               idx="01"
@@ -142,9 +142,9 @@ export default function Page() {
             />
           </Reveal>
 
-          <Spotlight className="mt-12 grid grid-cols-1 gap-4 lg:grid-cols-12">
+          <Spotlight className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-12">
             {/* async loop — the differentiator */}
-            <Reveal className="lg:col-span-7" delay={0}>
+            <Reveal className="md:col-span-2 lg:col-span-7" delay={0}>
               <div className="bento h-full p-7">
                 <h3 className="text-[18px] font-semibold">The async loop, actually local</h3>
                 <p className="mt-2 max-w-[52ch] text-[14.5px] leading-relaxed text-dim">
@@ -204,7 +204,7 @@ export default function Page() {
             </Reveal>
 
             {/* real protocols */}
-            <Reveal className="lg:col-span-7" delay={70}>
+            <Reveal className="md:col-span-2 lg:col-span-7" delay={70}>
               <div className="bento h-full p-7">
                 <h3 className="text-[18px] font-semibold">Real protocols, not lookalikes</h3>
                 <p className="mt-2 max-w-[54ch] text-[14.5px] leading-relaxed text-dim">
@@ -247,7 +247,7 @@ export default function Page() {
             </Reveal>
 
             {/* one binary */}
-            <Reveal className="lg:col-span-4" delay={140}>
+            <Reveal className="md:col-span-2 lg:col-span-4" delay={140}>
               <div className="bento h-full p-6.5">
                 <h3 className="text-[17px] font-semibold">One 20 MB binary</h3>
                 <p className="mt-2 text-[14px] leading-relaxed text-dim">
@@ -269,7 +269,7 @@ export default function Page() {
         </section>
 
         {/* ───────────────────── how it works ───────────────────── */}
-        <section id="how" className="pt-28">
+        <section id="how" className="pt-20 md:pt-28">
           <Reveal section="how">
             <SectionHead
               idx="02"
@@ -284,7 +284,7 @@ export default function Page() {
         </section>
 
         {/* ───────────────────── inspect ───────────────────── */}
-        <section id="inspect" className="pt-28">
+        <section id="inspect" className="pt-20 md:pt-28">
           <Reveal section="inspect">
             <SectionHead
               idx="03"
@@ -299,7 +299,7 @@ export default function Page() {
         </section>
 
         {/* ───────────────────── templates ───────────────────── */}
-        <section id="templates" className="pt-28">
+        <section id="templates" className="pt-20 md:pt-28">
           <Reveal section="templates">
             <SectionHead
               idx="04"
@@ -325,7 +325,7 @@ export default function Page() {
         </section>
 
         {/* ───────────────────── compare ───────────────────── */}
-        <section id="compare" className="pt-28">
+        <section id="compare" className="pt-20 md:pt-28">
           <Reveal section="compare">
             <SectionHead idx="05" kick="compare" title="Built for the inner loop" />
           </Reveal>
@@ -372,7 +372,7 @@ export default function Page() {
 
         {/* ───────────────────── testimonials ───────────────────── */}
         {SHOW_TESTIMONIALS && (
-          <section id="testimonials" className="pt-28">
+          <section id="testimonials" className="pt-20 md:pt-28">
             <Reveal section="testimonials">
               <SectionHead idx="06" kick="early signal" title="What early users say" />
             </Reveal>
@@ -406,9 +406,9 @@ export default function Page() {
         )}
 
         {/* ───────────────────── CTA ───────────────────── */}
-        <section id="get-started" className="pt-28">
+        <section id="get-started" className="pt-20 md:pt-28">
           <Reveal section="get-started">
-            <div className="relative overflow-hidden rounded-3xl border border-edge bg-gradient-to-b from-panel to-bg2 px-7 py-16 text-center">
+            <div className="relative overflow-hidden rounded-3xl border border-edge bg-gradient-to-b from-panel to-bg2 px-5 py-12 text-center md:px-7 md:py-16">
               <PulseLine className="pointer-events-none absolute left-1/2 top-9 h-8 w-[720px] -translate-x-1/2 opacity-25" />
               <div className="relative">
                 <p className="kick mb-4">get started</p>
@@ -436,7 +436,7 @@ export default function Page() {
       </main>
 
       {/* ───────────────────── footer ───────────────────── */}
-      <footer className="mt-28 border-t border-edge bg-bg2/70">
+      <footer className="mt-20 border-t border-edge bg-bg2/70 md:mt-28">
         <div className="mx-auto grid max-w-[1160px] grid-cols-2 gap-8 px-6 py-14 md:grid-cols-4">
           <div>
             <span className="whitespace-pre font-mono text-[13px] leading-[1.1] text-amber">{wave}</span>
