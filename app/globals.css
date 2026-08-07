@@ -320,6 +320,26 @@ a:focus-visible, button:focus-visible {
 }
 .js .reveal.in { opacity: 1; transform: none; }
 
+/* ---------- full-bleed section bands (scroll rhythm) ---------- */
+
+.band {
+  position: relative;
+  isolation: isolate;
+}
+.band::before {
+  content: "";
+  position: absolute;
+  inset: 0 -100vw;
+  z-index: -1;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgba(16, 18, 24, 0.72) 9%,
+    rgba(16, 18, 24, 0.72) 91%,
+    transparent
+  );
+}
+
 /* ---------- FAQ accordions (native details/summary, zero JS) ---------- */
 
 .faq details {

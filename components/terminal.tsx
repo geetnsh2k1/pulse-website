@@ -76,7 +76,7 @@ export function Terminal() {
   }, []);
 
   return (
-    <div className="term mx-auto mt-12 w-full max-w-[880px]">
+    <div className="term mx-auto mt-3 w-full max-w-[880px]">
       <div className="term-head">
         <span className="dot bg-[#ff5f57]" />
         <span className="dot bg-[#febc2e]" />

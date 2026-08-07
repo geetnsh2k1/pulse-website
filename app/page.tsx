@@ -4,6 +4,7 @@ import { InstallTabs } from "@/components/install-tabs";
 import { HowItWorks, type Step } from "@/components/how-it-works";
 import { InspectTabs, type InspectTab } from "@/components/inspect-tabs";
 import { PulseLine } from "@/components/pulse-line";
+import { FlowDiagram } from "@/components/flow-diagram";
 import { Spotlight, CountUp } from "@/components/fx";
 
 const GH = "https://github.com/geetnsh2k1/pulse";
@@ -86,12 +87,6 @@ export default function Page() {
             </p>
             <PulseLine crop="mid" className="mx-auto mt-5 h-10 w-[min(400px,78%)]" />
           </div>
-          <p className="max-w-[68ch] text-balance text-[clamp(15.5px,2.1vw,18px)] leading-relaxed text-dim">
-            pulse is a fast local serverless development environment: build and debug AWS Lambda
-            functions with instant hot reload, real SQS queues, local DynamoDB tables, and event
-            replay. It speaks the real AWS protocols, so your production code runs unchanged —
-            no Docker, no AWS account, no mocks in your handlers.
-          </p>
           <div className="flex flex-wrap justify-center gap-3.5">
             <TrackLink href="#get-started" event="cta_click" props={{ cta: "get-started", location: "hero" }} className="btn btn-primary">
               Install pulse
@@ -101,32 +96,40 @@ export default function Page() {
             </TrackLink>
           </div>
 
-          <div className="mt-4 flex flex-wrap items-start justify-center gap-x-12 gap-y-4" aria-label="performance, enforced by CI">
+          {/* the product IS the hero: real CLI, typed live */}
+          <Terminal />
+
+          {/* numbers with a "compared to what" (measured, not marketed) */}
+          <div className="grid w-full max-w-[880px] grid-cols-2 gap-3 lg:grid-cols-4" aria-label="performance, enforced by CI">
             {([
-              [99, " ms", "engine ready"],
-              [17, " ms", "warm invoke"],
-              [50, " MB", "memory, app running"],
-            ] as [number, string, string][]).map(([n, s, l]) => (
-              <div key={l} className="font-mono">
-                <CountUp to={n} suffix={s} className="text-[23px] font-bold tabular-nums text-amber" />
-                <span className="mt-0.5 block text-[12.5px] text-dim">{l}</span>
-              </div>
-            ))}
-            <div className="font-mono">
-              <b className="text-[23px] font-bold tabular-nums text-amber">$0</b>
-              <span className="mt-0.5 block text-[12.5px] text-dim">no AWS bill to learn</span>
-            </div>
+              [99, " ms", "engine ready", "containers: 10–30 s"],
+              [17, " ms", "warm invoke", "no cold containers"],
+              [50, " MB", "memory, app running", "Docker stacks: 2 GB+"],
+              [0, "", "", ""],
+            ] as [number, string, string, string][]).map(([n, s, l, c]) =>
+              l ? (
+                <div key={l} className="rounded-xl border border-edge bg-panel/50 px-4 py-3.5 text-center font-mono">
+                  <CountUp to={n} suffix={s} className="text-[22px] font-bold tabular-nums text-amber" />
+                  <span className="mt-0.5 block text-[12px] text-dim">{l}</span>
+                  <span className="mt-2 block border-t border-edge/70 pt-1.5 text-[10.5px] text-faint">{c}</span>
+                </div>
+              ) : (
+                <div key="zero" className="rounded-xl border border-edge bg-panel/50 px-4 py-3.5 text-center font-mono">
+                  <b className="text-[22px] font-bold tabular-nums text-amber">$0</b>
+                  <span className="mt-0.5 block text-[12px] text-dim">to learn & build</span>
+                  <span className="mt-2 block border-t border-edge/70 pt-1.5 text-[10.5px] text-faint">no AWS account needed</span>
+                </div>
+              )
+            )}
           </div>
           <TrackLink
             href={`${GH}/blob/master/internal/perf/perf_test.go`}
             event="outbound"
             props={{ target: "perf-ci" }}
-            className="-mt-3 font-mono text-[12px] text-faint underline decoration-edge underline-offset-4 transition-colors hover:text-dim"
+            className="-mt-2 font-mono text-[12px] text-faint underline decoration-edge underline-offset-4 transition-colors hover:text-dim"
           >
-            not marketing numbers — CI fails if these regress ↗
+            measured on every CI run — a slower pulse is a failed build ↗
           </TrackLink>
-
-          <Terminal />
         </div>
       </header>
 
@@ -139,6 +142,14 @@ export default function Page() {
           ))}
         </div>
       </div>
+
+      {/* SEO lede — what pulse is, in one crawlable paragraph */}
+      <p className="mx-auto mt-14 max-w-[72ch] px-6 text-center text-[clamp(15px,2vw,17.5px)] leading-relaxed text-dim">
+        pulse is a fast local serverless development environment: build and debug AWS Lambda
+        functions with instant hot reload, real SQS queues, local DynamoDB tables, and event
+        replay. It speaks the real AWS protocols, so your production code runs unchanged —
+        no Docker, no AWS account, no mocks in your handlers.
+      </p>
 
       <main className="mx-auto max-w-[1160px] px-6">
         {/* ───────────────────── features (bento) ───────────────────── */}
@@ -209,7 +220,21 @@ export default function Page() {
                   Event replay, built in: every trigger is recorded with its exact payload.
                   Yesterday&apos;s crash, today&apos;s fix, the <em className="not-italic text-fg">actual</em> event — replayed byte for byte.
                 </p>
-                <pre className="mt-5 overflow-x-auto rounded-lg border border-edge bg-bg px-4 py-3.5 font-mono text-[12.5px] leading-[1.8]" dangerouslySetInnerHTML={{ __html: replayMini }} />
+                <div className="mt-5 space-y-1.5 font-mono text-[12px]">
+                  <div className="flex items-center gap-3 rounded-lg border border-edge bg-bg px-3.5 py-2.5">
+                    <span className="text-faint">yesterday</span>
+                    <span className="truncate text-fg">sqs event → worker</span>
+                    <span className="ml-auto shrink-0 text-tred">✗ error</span>
+                  </div>
+                  <div className="flex items-center gap-2 pl-3.5 text-[11.5px] text-faint">
+                    <span className="text-amber">↻</span> pulse events replay 8931cf5b
+                  </div>
+                  <div className="flex items-center gap-3 rounded-lg border border-tgreen/25 bg-bg px-3.5 py-2.5">
+                    <span className="text-faint">today</span>
+                    <span className="truncate text-fg">same event · fixed code</span>
+                    <span className="ml-auto shrink-0 text-tgreen">✓ success</span>
+                  </div>
+                </div>
               </div>
             </Reveal>
 
@@ -222,14 +247,16 @@ export default function Page() {
                   environment variable — so the code you iterate on locally is the code you
                   deploy, with nothing to delete.
                 </p>
-                <div className="mt-6 flex flex-wrap gap-2.5">
+                <div className="mt-5 flex flex-wrap gap-2.5">
                   {["Lambda Runtime API", "SQS wire protocol", "DynamoDB expressions"].map((p) => (
                     <span key={p} className="chip !text-fg/90">{p}</span>
                   ))}
                 </div>
-                <p className="mt-4 font-mono text-[12px] text-faint">
-                  AWS_ENDPOINT_URL=<span className="text-dim">…</span> <span className="text-faint"># set for you by pulse start</span>
-                </p>
+                <pre className="mt-5 overflow-x-auto rounded-lg border border-edge bg-bg px-4 py-3.5 font-mono text-[12.5px] leading-[1.8]">
+                  <span className="text-faint"># handler.py — no pulse imports, no endpoint config</span>{"\n"}
+                  <span className="text-tcyan">import</span> boto3{"\n"}
+                  sqs = boto3.client(<span className="text-tgreen">&quot;sqs&quot;</span>)  <span className="text-faint"># local → pulse · prod → AWS</span>
+                </pre>
               </div>
             </Reveal>
 
@@ -276,16 +303,28 @@ export default function Page() {
               </div>
             </Reveal>
           </Spotlight>
+
+          <Reveal className="mt-10">
+            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-3 rounded-2xl border border-edge bg-panel/40 px-6 py-5">
+              <span className="font-mono text-[13px] text-dim">sold on the loop?</span>
+              <TrackLink href="#get-started" event="cta_click" props={{ cta: "get-started", location: "features" }} className="btn btn-primary !py-2.5">
+                Install pulse
+              </TrackLink>
+              <TrackLink href={`${GH}#two-minutes-to-a-running-app`} event="outbound" props={{ target: "quickstart-features" }} className="btn btn-ghost !py-2.5">
+                2-minute quickstart
+              </TrackLink>
+            </div>
+          </Reveal>
         </section>
 
         {/* ───────────────────── how it works ───────────────────── */}
-        <section id="how" className="pt-20 md:pt-28">
+        <section id="how" className="band pb-16 pt-20 md:pb-20 md:pt-28">
           <Reveal section="how">
             <SectionHead
               idx="02"
               kick="how it works"
-              title="Zero to a running serverless app in two minutes"
-              lede="Three commands. The frames below are real output, not mockups — click a step or let it play."
+              title="Empty directory to deployed, in five steps"
+              lede="The complete journey — create, run, build, debug, ship. Every frame below is real output, not a mockup. Click a step or let it play."
             />
           </Reveal>
           <Reveal className="mt-12">
@@ -365,42 +404,58 @@ export default function Page() {
             </Reveal>
 
             <Reveal delay={80}>
-              <h3 className="text-[19px] font-semibold">How it&apos;s put together</h3>
-              <div className="term mt-3.5">
-                <div className="term-head">
-                  <span className="dot bg-[#ff5f57]" />
-                  <span className="dot bg-[#febc2e]" />
-                  <span className="dot bg-[#28c840]" />
-                  <span className="ml-2">architecture — one process, one SQLite file</span>
+              <h3 className="text-[19px] font-semibold">The old loop vs the pulse loop</h3>
+              <div className="mt-3.5 grid gap-3 sm:grid-cols-2">
+                <div className="rounded-xl border border-edge bg-bg2/60 p-5">
+                  <p className="font-mono text-[11.5px] uppercase tracking-[0.14em] text-faint">traditional</p>
+                  <ul className="mt-3 space-y-2.5 text-[13.5px] leading-snug text-dim">
+                    {[
+                      "start Docker, pull GB images",
+                      "wait 10–30 s for containers",
+                      "hand-wire endpoints & env vars",
+                      "restart after every change",
+                      "docker-compose sprawl",
+                    ].map((t) => (
+                      <li key={t} className="flex gap-2"><span className="shrink-0 text-tred">✗</span>{t}</li>
+                    ))}
+                  </ul>
                 </div>
-                <div className="term-body text-[12.3px] leading-[1.8]">
-{`your terminal                pulse engine (one native process)
-─────────────                ─────────────────────────────────
-curl :3000/orders  ─HTTP──▶  gateway (API Gateway-shaped events)
-                                │ invoke
-                                ▼
-                             your Lambda functions
-                             real Runtime API · Node + Python
-                                │ boto3 / AWS SDK v3
-                                │ (AWS_ENDPOINT_URL — set for you)
-                                ▼
-                             SQS queues ──▶ worker functions
-                                │ retries ↻ · dead-letter queues
-                                ▼
-                             DynamoDB tables
-                                ▼
-                             SQLite (.pulse/data) — survives restarts`}
+                <div className="rounded-xl border border-amber/30 bg-panel p-5">
+                  <p className="font-mono text-[11.5px] uppercase tracking-[0.14em] text-amber">pulse</p>
+                  <ul className="mt-3 space-y-2.5 text-[13.5px] leading-snug text-dim">
+                    {[
+                      "pulse start — one binary",
+                      "ready in 99 ms",
+                      "endpoints auto-configured",
+                      "save a file — it's live",
+                      "one readable pulse.yaml",
+                    ].map((t) => (
+                      <li key={t} className="flex gap-2"><span className="shrink-0 text-tgreen">✓</span>{t}</li>
+                    ))}
+                  </ul>
                 </div>
               </div>
-              <p className="mt-4 max-w-[64ch] text-[14.5px] leading-relaxed text-dim">
-                The gateway turns HTTP requests into API Gateway events. Functions run against
-                the real Lambda Runtime API. The AWS SDK inside your handlers is pointed at pulse
-                through one environment variable — locally it talks to pulse, in production it
-                talks to AWS, and the code never changes. Queues deliver to workers with retries
-                and dead-letter queues; tables persist to disk.
-              </p>
             </Reveal>
           </div>
+
+          {/* architecture, animated */}
+          <Reveal className="mt-14">
+            <h3 className="text-[19px] font-semibold">How it&apos;s put together</h3>
+            <p className="mt-2 max-w-[70ch] text-[14.5px] leading-relaxed text-dim">
+              One native process, one SQLite file. Watch a request travel the whole path —
+              this is what runs on your laptop when you type <code className="font-mono text-[13px] text-amber-soft">pulse start</code>:
+            </p>
+            <div className="mt-6 rounded-2xl border border-edge bg-panel/40 p-5 lg:p-6">
+              <FlowDiagram />
+            </div>
+            <p className="mt-4 max-w-[70ch] text-[14.5px] leading-relaxed text-dim">
+              The gateway turns HTTP into API Gateway events. Functions run against the real
+              Lambda Runtime API. The AWS SDK inside your handlers is pointed at pulse through
+              one environment variable — locally it talks to pulse, in production it talks to
+              AWS, and the code never changes. Queues deliver to workers with retries and
+              dead-letter queues; tables persist to disk and survive restarts.
+            </p>
+          </Reveal>
         </section>
 
         {/* ───────────────────── use cases ───────────────────── */}
@@ -460,7 +515,7 @@ curl :3000/orders  ─HTTP──▶  gateway (API Gateway-shaped events)
         </section>
 
         {/* ───────────────────── compare ───────────────────── */}
-        <section id="compare" className="pt-20 md:pt-28">
+        <section id="compare" className="band pb-16 pt-20 md:pb-20 md:pt-28">
           <Reveal section="compare">
             <SectionHead
               idx="07"
@@ -550,6 +605,18 @@ curl :3000/orders  ─HTTP──▶  gateway (API Gateway-shaped events)
               </div>
             </Reveal>
           </div>
+
+          <Reveal className="mt-10">
+            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-3 rounded-2xl border border-edge bg-panel/40 px-6 py-5">
+              <span className="font-mono text-[13px] text-dim">the inner loop is yours</span>
+              <TrackLink href="#get-started" event="cta_click" props={{ cta: "get-started", location: "compare" }} className="btn btn-primary !py-2.5">
+                Install pulse
+              </TrackLink>
+              <TrackLink href={GH} event="cta_click" props={{ cta: "github", location: "compare" }} className="btn btn-ghost !py-2.5">
+                {GitHubIcon} Star on GitHub
+              </TrackLink>
+            </div>
+          </Reveal>
         </section>
 
         {/* ───────────────────── FAQ ───────────────────── */}
@@ -704,6 +771,22 @@ const steps: Step[] = [
     frame:
       '<span class="text-amber">$ curl -X POST localhost:3000/orders -d \'{"sku":"A1","qty":2}\'</span>\n<span class="text-dim">201</span> {"id":"e9b4…","status":"pending"}\n  <span class="text-tcyan">⚙ sqs order-events → worker · ok</span>\n<span class="text-amber">🎉 first background job processed — your async loop works end to end</span>\n\n<span class="text-amber">$ curl localhost:3000/orders/e9b4…</span>\n{"id":"e9b4…","status":<span class="text-tgreen">"processed"</span>}   <span class="text-dim">← the worker got there first</span>',
   },
+  {
+    id: "replay",
+    cmd: "pulse events replay",
+    title: "Debug with time travel",
+    blurb: "Every trigger is recorded byte for byte. Read one request's whole story, fix the handler, replay the actual event.",
+    frame:
+      '<span class="text-amber">$ pulse logs --request d90e5295</span>\n<span class="text-amber">⚡ request</span> <b>d90e5295</b>  <span class="text-tcyan">sqs</span> <span class="text-dim">→</span> processWebhook · <span class="text-tred">error</span> <span class="text-dim">· 2ms</span>\n<span class="text-amber">error</span>   <span class="text-tred">RuntimeError: webhook 3625d493 failed on purpose (attempt 3)</span>\n\n<span class="text-dim"># fix the handler, then fire the exact same payload:</span>\n<span class="text-amber">$ pulse events replay d90e5295</span>\n<span class="text-tgreen">✓ processWebhook · success · 0ms</span>  <span class="text-dim">← same event, fixed code</span>',
+  },
+  {
+    id: "deploy",
+    cmd: "sam deploy · cdk deploy",
+    title: "Deploy unchanged",
+    blurb: "pulse is dev-time only. Your handlers are plain AWS SDK code — ship them with SAM, CDK, or the Serverless Framework.",
+    frame:
+      '<span class="text-amber">$ sam deploy</span>   <span class="text-dim"># or: cdk deploy · serverless deploy</span>\n\n<span class="text-dim"># nothing to remove before shipping:</span>\n<span class="text-dim">#</span>   handlers   <span class="text-tgreen">✓</span> plain boto3 / AWS SDK v3\n<span class="text-dim">#</span>   config     <span class="text-tgreen">✓</span> no pulse imports anywhere\n<span class="text-dim">#</span>   endpoints  <span class="text-tgreen">✓</span> AWS_ENDPOINT_URL simply absent in prod\n\n<span class="text-dim">the code you iterated on locally is the code that ships.</span>',
+  },
 ];
 
 const inspectTabs: InspectTab[] = [
@@ -744,9 +827,6 @@ const inspectTabs: InspectTab[] = [
       '<span class="text-amber">$ pulse tables orders</span>\n<b>orders</b> <span class="text-dim">— 2 item(s) shown</span>\n  <b>e9b4e51a-…</b>  <span class="text-dim">createdAt="…" ·</span> qty="2" · sku="A1" · status=<span class="text-tgreen">"processed"</span>\n  <b>parked-1</b>    <span class="text-dim">processedAt="…" ·</span> status=<span class="text-tgreen">"processed"</span>\n\n<span class="text-amber">$ pulse peek order-events</span>\n<b>order-events</b> <span class="text-dim">— 1 message(s), oldest first (peeking doesn\'t consume)</span>\n  <b>473b4539</b>  <span class="text-tgreen">visible</span>  {"id":"parked-1"}',
   },
 ];
-
-const replayMini =
-  '<span class="text-amber">$ pulse events replay 8931cf5b</span>\n<span class="text-tgreen">✓ processWebhook · success · 0ms</span>\n<span class="text-dim">same payload · fixed code · passing</span>';
 
 const pickerMini =
   '<span class="text-amber">$ pulse invoke</span>\n<span class="text-dim">? which function ›</span>\n<span class="text-amber">▸ createOrder</span>\n  <span class="text-dim">worker</span>';
