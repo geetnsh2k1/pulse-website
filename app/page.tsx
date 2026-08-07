@@ -6,8 +6,26 @@ import { InspectTabs, type InspectTab } from "@/components/inspect-tabs";
 import { PulseLine } from "@/components/pulse-line";
 import { FlowDiagram } from "@/components/flow-diagram";
 import { Spotlight, CountUp } from "@/components/fx";
+import { ScrollProgress } from "@/components/scroll-progress";
 
 const GH = "https://github.com/geetnsh2k1/pulse";
+const GUIDE = `${GH}/blob/master/docs/GUIDE.md`;
+
+// Small right-aligned doc pathway at the end of a section.
+function LearnMore({ href, target, label }: { href: string; target: string; label: string }) {
+  return (
+    <div className="mt-7 text-right">
+      <TrackLink
+        href={href}
+        event="outbound"
+        props={{ target }}
+        className="font-mono text-[13px] text-amber transition-colors hover:text-amber-soft"
+      >
+        {label} →
+      </TrackLink>
+    </div>
+  );
+}
 
 // ⚠️ PLACEHOLDER QUOTES below (see `testimonials`). Replace them with real
 // ones — or flip this to false — before sharing the site publicly.
@@ -54,6 +72,7 @@ export default function Page() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
+      <ScrollProgress />
 
       {/* ───────────────────────── nav ───────────────────────── */}
       <nav className="sticky top-0 z-50 border-b border-edge/70 bg-bg/75 backdrop-blur-xl">
@@ -170,8 +189,52 @@ export default function Page() {
       </p>
 
       <main className="mx-auto max-w-[1160px] px-6">
+        {/* ───────── the switch: what you do today vs with pulse ───────── */}
+        <section id="switch" className="pt-16 md:pt-20">
+          <Reveal section="switch">
+            <div className="mx-auto max-w-[900px]">
+              <p className="text-center text-[15.5px] text-dim">
+                Already using <b className="font-medium text-fg">LocalStack</b>,{" "}
+                <b className="font-medium text-fg">sam local</b>, or a hand-rolled{" "}
+                <b className="font-medium text-fg">docker-compose</b>? Here&apos;s the trade
+                you&apos;re making today:
+              </p>
+              <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                <div className="rounded-xl border border-edge bg-bg2/60 p-5">
+                  <p className="font-mono text-[11.5px] uppercase tracking-[0.14em] text-faint">your current loop</p>
+                  <ul className="mt-3 space-y-2.5 text-[13.5px] leading-snug text-dim">
+                    {[
+                      "start Docker, pull GB images",
+                      "wait 10–30 s for containers",
+                      "hand-wire endpoints & env vars",
+                      "restart after every change",
+                      "lose the event that crashed it",
+                    ].map((t) => (
+                      <li key={t} className="flex gap-2"><span className="shrink-0 text-tred">✗</span>{t}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="rounded-xl border border-amber/30 bg-panel p-5">
+                  <p className="font-mono text-[11.5px] uppercase tracking-[0.14em] text-amber">the pulse loop</p>
+                  <ul className="mt-3 space-y-2.5 text-[13.5px] leading-snug text-dim">
+                    {[
+                      "pulse start — one binary",
+                      "ready in 99 ms",
+                      "endpoints auto-configured",
+                      "save a file — it's live",
+                      "replay any event, byte for byte",
+                    ].map((t) => (
+                      <li key={t} className="flex gap-2"><span className="shrink-0 text-tgreen">✓</span>{t}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </Reveal>
+        </section>
+
         {/* ─────────────── follow one request (signature) ─────────────── */}
-        <section id="journey" className="pt-20 md:pt-28">
+        <section id="journey" className="pt-20 md:pt-32">
           <Reveal section="journey">
             <div className="max-w-[72ch]">
               <p className="kick mb-4">follow one request</p>
@@ -213,7 +276,7 @@ export default function Page() {
         </section>
 
         {/* ───────────────────── features (bento) ───────────────────── */}
-        <section id="features" className="pt-20 md:pt-28">
+        <section id="features" className="pt-20 md:pt-32">
           <Reveal section="features">
             <SectionHead
               idx="01"
@@ -376,8 +439,9 @@ export default function Page() {
               </div>
             </Reveal>
           </Spotlight>
+          <LearnMore href={`${GUIDE}#3-build`} target="guide-features" label="Every feature, hands-on, in the guide" />
 
-          <Reveal className="mt-10">
+          <Reveal className="mt-6">
             <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-3 rounded-2xl border border-edge bg-panel/40 px-6 py-5">
               <span className="font-mono text-[13px] text-dim">sold on the loop?</span>
               <TrackLink href="#get-started" event="cta_click" props={{ cta: "get-started", location: "features" }} className="btn btn-primary !py-2.5">
@@ -391,7 +455,7 @@ export default function Page() {
         </section>
 
         {/* ───────────────────── how it works ───────────────────── */}
-        <section id="how" className="band pb-16 pt-20 md:pb-20 md:pt-28">
+        <section id="how" className="band pb-16 pt-20 md:pb-24 md:pt-32">
           <Reveal section="how">
             <SectionHead
               idx="02"
@@ -403,10 +467,11 @@ export default function Page() {
           <Reveal className="mt-12">
             <HowItWorks steps={steps} />
           </Reveal>
+          <LearnMore href={`${GUIDE}#1-start-here`} target="guide-how" label="The full start-here walkthrough" />
         </section>
 
         {/* ───────────────────── inspect ───────────────────── */}
-        <section id="inspect" className="pt-20 md:pt-28">
+        <section id="inspect" className="pt-20 md:pt-32">
           <Reveal section="inspect">
             <SectionHead
               idx="03"
@@ -418,10 +483,11 @@ export default function Page() {
           <Reveal className="mt-12">
             <InspectTabs tabs={inspectTabs} />
           </Reveal>
+          <LearnMore href={`${GUIDE}#4-inspect`} target="guide-inspect" label="All four views, step by step" />
         </section>
 
         {/* ───────────────────── why pulse ───────────────────── */}
-        <section id="why" className="pt-20 md:pt-28">
+        <section id="why" className="pt-20 md:pt-32">
           <Reveal section="why">
             <SectionHead
               idx="04"
@@ -435,12 +501,12 @@ export default function Page() {
               <h3 className="text-[19px] font-semibold">Why pulse exists</h3>
               <div className="mt-3.5 space-y-4 text-[15px] leading-relaxed text-dim">
                 <p className="text-[16px] text-fg/90">
-                  <b>Rails</b> has a dev server. <b>Django</b> has one. <b>Vite</b> has one.{" "}
-                  <b>Next</b> has one. Even Express has <em className="not-italic text-amber">nodemon</em>.
+                  Express has <em className="not-italic text-amber">nodemon</em>. Next has{" "}
+                  <em className="not-italic text-amber">next dev</em>. Vite <i>is</i> the dev
+                  server. Rails has <em className="not-italic text-amber">bin/dev</em>.
                 </p>
-                <p className="text-[16px] font-medium text-fg">
-                  AWS Lambda never got one.
-                </p>
+                <p className="text-[16px] font-medium text-fg">AWS Lambda never got one.</p>
+                <p className="text-[16px] font-semibold text-amber">pulse changes that.</p>
                 <p>
                   Serverless made deployment easy — and development weirdly hard.
                 </p>
@@ -459,7 +525,10 @@ export default function Page() {
                 </p>
               </div>
 
-              <h3 className="mt-9 text-[19px] font-semibold">Why not Docker?</h3>
+            </Reveal>
+
+            <Reveal delay={80}>
+              <h3 className="text-[19px] font-semibold">Why not Docker?</h3>
               <ul className="mt-3.5 space-y-3 text-[15px] leading-relaxed text-dim">
                 <li>
                   <b className="font-medium text-fg">Startup.</b> Container stacks boot in tens of
@@ -479,40 +548,6 @@ export default function Page() {
                   real SQS and DynamoDB wire protocols, so the AWS SDK can&apos;t tell the difference.
                 </li>
               </ul>
-            </Reveal>
-
-            <Reveal delay={80}>
-              <h3 className="text-[19px] font-semibold">The old loop vs the pulse loop</h3>
-              <div className="mt-3.5 grid gap-3 sm:grid-cols-2">
-                <div className="rounded-xl border border-edge bg-bg2/60 p-5">
-                  <p className="font-mono text-[11.5px] uppercase tracking-[0.14em] text-faint">traditional</p>
-                  <ul className="mt-3 space-y-2.5 text-[13.5px] leading-snug text-dim">
-                    {[
-                      "start Docker, pull GB images",
-                      "wait 10–30 s for containers",
-                      "hand-wire endpoints & env vars",
-                      "restart after every change",
-                      "docker-compose sprawl",
-                    ].map((t) => (
-                      <li key={t} className="flex gap-2"><span className="shrink-0 text-tred">✗</span>{t}</li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="rounded-xl border border-amber/30 bg-panel p-5">
-                  <p className="font-mono text-[11.5px] uppercase tracking-[0.14em] text-amber">pulse</p>
-                  <ul className="mt-3 space-y-2.5 text-[13.5px] leading-snug text-dim">
-                    {[
-                      "pulse start — one binary",
-                      "ready in 99 ms",
-                      "endpoints auto-configured",
-                      "save a file — it's live",
-                      "one readable pulse.yaml",
-                    ].map((t) => (
-                      <li key={t} className="flex gap-2"><span className="shrink-0 text-tgreen">✓</span>{t}</li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
             </Reveal>
           </div>
 
@@ -537,7 +572,7 @@ export default function Page() {
         </section>
 
         {/* ───────────────────── use cases ───────────────────── */}
-        <section id="use-cases" className="pt-20 md:pt-28">
+        <section id="use-cases" className="pt-20 md:pt-32">
           <Reveal section="use-cases">
             <SectionHead
               idx="05"
@@ -567,7 +602,7 @@ export default function Page() {
         </section>
 
         {/* ───────────────────── templates ───────────────────── */}
-        <section id="templates" className="pt-20 md:pt-28">
+        <section id="templates" className="pt-20 md:pt-32">
           <Reveal section="templates">
             <SectionHead
               idx="06"
@@ -590,10 +625,11 @@ export default function Page() {
               </Reveal>
             ))}
           </div>
+          <LearnMore href={`${GUIDE}#3-build`} target="guide-templates" label="What each template teaches" />
         </section>
 
         {/* ───────────────────── compare ───────────────────── */}
-        <section id="compare" className="band pb-16 pt-20 md:pb-20 md:pt-28">
+        <section id="compare" className="band pb-16 pt-20 md:pb-24 md:pt-32">
           <Reveal section="compare">
             <SectionHead
               idx="07"
@@ -615,7 +651,7 @@ export default function Page() {
                 </thead>
                 <tbody>
                   {compare.map((row) => (
-                    <tr key={row[0]}>
+                    <tr key={row[0]} className="transition-colors hover:bg-white/[0.02]">
                       <td className="border-t border-edge px-5 py-3.5 text-dim">{row[0]}</td>
                       <td className="border-t border-edge bg-[rgba(255,171,51,0.05)] px-5 py-3.5 font-medium">
                         {row[1].startsWith("✓") ? (<><span className="text-tgreen">✓</span>{row[1].slice(1)}</>) : row[1]}
@@ -698,7 +734,7 @@ export default function Page() {
         </section>
 
         {/* ───────────────────── FAQ ───────────────────── */}
-        <section id="faq" className="pt-20 md:pt-28">
+        <section id="faq" className="pt-20 md:pt-32">
           <Reveal section="faq">
             <SectionHead
               idx="08"
@@ -718,7 +754,7 @@ export default function Page() {
 
         {/* ───────────────────── testimonials ───────────────────── */}
         {SHOW_TESTIMONIALS && (
-          <section id="testimonials" className="pt-20 md:pt-28">
+          <section id="testimonials" className="pt-20 md:pt-32">
             <Reveal section="testimonials">
               <SectionHead idx="09" kick="early signal" title="What early users say" />
             </Reveal>
@@ -752,7 +788,7 @@ export default function Page() {
         )}
 
         {/* ───────────────────── CTA ───────────────────── */}
-        <section id="get-started" className="pt-20 md:pt-28">
+        <section id="get-started" className="pt-20 md:pt-32">
           <Reveal section="get-started">
             <div className="relative overflow-hidden rounded-3xl border border-edge bg-gradient-to-b from-panel to-bg2 px-5 py-12 text-center md:px-7 md:py-16">
               <PulseLine className="pointer-events-none absolute left-1/2 top-9 h-8 w-[720px] -translate-x-1/2 opacity-25" />
@@ -1024,7 +1060,7 @@ const structuredData = {
 };
 
 const footerCols = [
-  { title: "Product", links: [["Features", "#features"], ["Compare", "#compare"], ["Releases", `${GH}/releases`]] as [string, string][] },
-  { title: "Docs", links: [["The guide", `${GH}/blob/master/docs/GUIDE.md`], ["Quickstart", `${GH}#two-minutes-to-a-running-app`], ["Cheat sheet", `${GH}/blob/master/docs/GUIDE.md#7-command-cheat-sheet`]] as [string, string][] },
-  { title: "Community", links: [["GitHub", GH], ["Issues", `${GH}/issues`]] as [string, string][] },
+  { title: "Product", links: [["Features", "#features"], ["Compare", "#compare"], ["Changelog", `${GH}/releases`], ["Roadmap", `${GH}/blob/master/PLAN.md`]] as [string, string][] },
+  { title: "Docs", links: [["The guide", GUIDE], ["Quickstart", `${GH}#two-minutes-to-a-running-app`], ["Templates", `${GUIDE}#3-build`], ["Cheat sheet", `${GUIDE}#7-command-cheat-sheet`]] as [string, string][] },
+  { title: "Community", links: [["GitHub", GH], ["Issues", `${GH}/issues`], ["Share feedback", `${GH}/issues/new`]] as [string, string][] },
 ];
