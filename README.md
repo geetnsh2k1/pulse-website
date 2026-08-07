@@ -1,7 +1,15 @@
 # pulse-website
 
-The public site for [pulse](https://github.com/geetnsh2k1/pulse) — Next.js 15
+The public site for [pulse](https://github.com/geetnsh2k1/pulse) — Next.js
 (App Router) + Tailwind v4, deployed on Vercel, analytics via PostHog.
+Live: https://pulse-website-red-two.vercel.app
+
+Design system: dark + amber "signal" theme — animated ECG pulse-line motif,
+dot-grid + grain texture, bento feature grid with cursor spotlight, an
+auto-playing How-it-works stepper, and a tabbed terminal showcase. Every
+terminal frame on the page is verbatim CLI output, never a mockup.
+Scroll-reveal is progressive enhancement (`html.js` gate): with JS disabled
+the full page is still visible.
 
 ## Develop
 
@@ -28,14 +36,21 @@ Deliberate events only — autocapture is off:
 
 | Event | Props | Meaning |
 |---|---|---|
-| `$pageview` / `$pageleave` | — | visits, referrers, UTM |
-| `copy_install` | `method: brew` | THE conversion — install command copied |
-| `cta_click` | `target` | Get started / GitHub buttons |
-| `outbound` | `target` | docs / releases / github links |
-| `section_view` | `section: how·compare·get-started` | scroll-depth funnel |
+| `$pageview` / `$pageleave` | — | visits; referrer + `utm_*` captured automatically |
+| `copy_install` | `method: brew·curl·go`, `location: cta` | THE conversion — install command copied, per method |
+| `cta_click` | `cta: get-started·github`, `location: nav·hero·cta` | which door people choose, and where |
+| `outbound` | `target` | interest depth: docs, guide, releases, issues, perf-ci, share-feedback, footer links |
+| `section_view` | `section: features·how·inspect·templates·compare·testimonials·get-started` | scroll-milestone funnel — where the story loses people |
+| `how_it_works_step` | `step: init·start·loop` | reader took manual control of the stepper |
+| `inspect_tab` | `tab: story·replay·monitor·tables` | which observability capability pulls people in |
+
+Visitors, geography, and device come free with `$pageview` (PostHog → Web
+analytics). Referrers and UTM tags are automatic — tag launch links like
+`?utm_source=hn`.
 
 Suggested funnel in PostHog: `$pageview → section_view(get-started) →
-copy_install`.
+copy_install`. Break `copy_install` down by `method` to see brew vs curl
+vs go.
 
 ## After deploy
 

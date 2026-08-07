@@ -37,6 +37,12 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${geist.variable} ${jetbrains.variable}`}>
+      <head>
+        {/* Progressive enhancement flag: scroll-reveal styles only apply when
+            JS actually runs (html.js), so crawlers, reader mode, and no-JS
+            visitors always see the full page. */}
+        <script dangerouslySetInnerHTML={{ __html: `document.documentElement.classList.add("js")` }} />
+      </head>
       <body className="font-sans antialiased">
         <PostHogProvider>{children}</PostHogProvider>
       </body>

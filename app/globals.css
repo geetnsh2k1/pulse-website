@@ -4,9 +4,12 @@
   --color-bg: #0b0c10;
   --color-bg2: #101218;
   --color-panel: #14161d;
+  --color-panel2: #181b24;
   --color-edge: #262935;
+  --color-edge2: #3a3f4f;
   --color-fg: #e9e7e1;
   --color-dim: #9297ab;
+  --color-faint: #5e6375;
   --color-amber: #ffab33;
   --color-amber-soft: #ffc46b;
   --color-amber-dark: #131313;
@@ -28,7 +31,23 @@ html {
 body {
   background: var(--color-bg);
   color: var(--color-fg);
+  overflow-x: hidden;
 }
+
+/* ambient texture: dot grid + film grain, fixed behind everything */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.035 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    radial-gradient(rgba(233, 231, 225, 0.05) 1px, transparent 1px);
+  background-size: 160px 160px, 28px 28px;
+}
+
+section[id] { scroll-margin-top: 92px; }
 
 ::selection {
   background: var(--color-amber);
@@ -38,8 +57,246 @@ body {
 a:focus-visible, button:focus-visible {
   outline: 2px solid var(--color-amber);
   outline-offset: 3px;
-  border-radius: 2px;
+  border-radius: 4px;
 }
+
+/* ---------- type helpers ---------- */
+
+.kick {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-amber);
+}
+.kick .idx { color: var(--color-faint); }
+
+/* ---------- buttons ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  border-radius: 10px;
+  padding: 0.72rem 1.2rem;
+  font-size: 14.5px;
+  font-weight: 600;
+  border: 1px solid transparent;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+  cursor: pointer;
+}
+.btn-primary {
+  background: var(--color-amber);
+  border-color: var(--color-amber);
+  color: var(--color-amber-dark);
+}
+.btn-primary:hover {
+  background: var(--color-amber-soft);
+  border-color: var(--color-amber-soft);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 34px -10px rgba(255, 171, 51, 0.5);
+}
+.btn-ghost {
+  border-color: var(--color-edge);
+  color: var(--color-fg);
+  background: transparent;
+}
+.btn-ghost:hover {
+  border-color: var(--color-edge2);
+  background: rgba(255, 255, 255, 0.03);
+  transform: translateY(-1px);
+}
+
+/* ---------- chips / segmented controls ---------- */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid var(--color-edge);
+  border-radius: 999px;
+  padding: 0.34rem 0.85rem;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--color-dim);
+  transition: border-color 0.25s ease, color 0.25s ease;
+}
+.chip:hover { border-color: var(--color-edge2); color: var(--color-fg); }
+
+.seg {
+  display: inline-flex;
+  gap: 4px;
+  border: 1px solid var(--color-edge);
+  border-radius: 10px;
+  background: var(--color-bg2);
+  padding: 4px;
+}
+.seg button {
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--color-dim);
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  padding: 0.4rem 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.seg button:hover { color: var(--color-fg); }
+.seg button[aria-selected="true"] {
+  background: rgba(255, 171, 51, 0.14);
+  color: var(--color-amber);
+}
+
+/* ---------- terminal frames ---------- */
+
+.term {
+  border: 1px solid var(--color-edge);
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0) 60%), var(--color-bg2);
+  box-shadow: 0 30px 90px -30px rgba(0, 0, 0, 0.8), 0 30px 120px -40px rgba(255, 171, 51, 0.14);
+  overflow: hidden;
+  text-align: left;
+}
+.term-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-bottom: 1px solid var(--color-edge);
+  padding: 11px 16px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-faint);
+}
+.term-head .dot { width: 11px; height: 11px; border-radius: 999px; }
+.term-body {
+  padding: 20px 22px 24px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.75;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-x: auto;
+}
+
+/* ---------- ECG pulse line ---------- */
+
+.ecg-base { stroke: var(--color-edge); }
+.ecg-path {
+  stroke: var(--color-amber);
+  filter: drop-shadow(0 0 5px rgba(255, 171, 51, 0.55));
+  stroke-dasharray: 120 2200;
+  stroke-dashoffset: 2320;
+  animation: ecg-sweep 4.2s linear infinite;
+}
+@keyframes ecg-sweep {
+  to { stroke-dashoffset: 0; }
+}
+
+/* live indicator */
+.blip {
+  position: relative;
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--color-tgreen);
+}
+.blip::after {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  border-radius: 999px;
+  border: 1px solid var(--color-tgreen);
+  animation: blipring 1.9s ease-out infinite;
+}
+@keyframes blipring {
+  from { transform: scale(0.35); opacity: 0.9; }
+  to { transform: scale(1.35); opacity: 0; }
+}
+
+/* ---------- bento cards ---------- */
+
+.bento {
+  position: relative;
+  border: 1px solid var(--color-edge);
+  border-radius: 16px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.028), rgba(255, 255, 255, 0) 52%),
+    var(--color-panel);
+  overflow: hidden;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+.bento::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  background: radial-gradient(460px circle at var(--mx, 50%) var(--my, 40%), rgba(255, 171, 51, 0.09), transparent 65%);
+}
+.bento:hover {
+  border-color: rgba(255, 171, 51, 0.3);
+  box-shadow: 0 22px 60px -28px rgba(255, 171, 51, 0.28);
+  transform: translateY(-2px);
+}
+.bento:hover::before { opacity: 1; }
+
+/* ---------- micro-animations for bento content ---------- */
+
+/* fill-in bars (RAM comparison) — triggered when the reveal wrapper gets .in */
+.bar {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 999px;
+  transition: width 1.15s cubic-bezier(0.22, 0.7, 0.25, 1) 0.25s;
+}
+.reveal.in .bar { width: var(--w); }
+
+/* queue flow dots */
+.qtrack { position: relative; }
+.qdot {
+  position: absolute;
+  top: 50%;
+  left: -8px;
+  width: 6px;
+  height: 6px;
+  margin-top: -3px;
+  border-radius: 999px;
+  background: var(--color-amber);
+  box-shadow: 0 0 9px rgba(255, 171, 51, 0.85);
+  animation: qflow 3s linear infinite;
+}
+@keyframes qflow {
+  from { left: -6px; opacity: 0; }
+  10% { opacity: 1; }
+  88% { opacity: 1; }
+  to { left: calc(100% + 4px); opacity: 0; }
+}
+
+/* ---------- how-it-works stepper ---------- */
+
+.stepbar {
+  display: block;
+  height: 2px;
+  width: 0;
+  background: var(--color-amber);
+  border-radius: 999px;
+  animation: stepfill var(--dur, 6500ms) linear forwards;
+}
+.paused .stepbar { animation-play-state: paused; }
+@keyframes stepfill { to { width: 100%; } }
+
+/* frame entrance when a tab/step swaps */
+.rise { animation: rise 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px); }
+}
+
+/* ---------- typing cursor ---------- */
 
 .cursor-blink {
   display: inline-block;
@@ -50,14 +307,28 @@ a:focus-visible, button:focus-visible {
   animation: blink 1s steps(1) infinite;
 }
 @keyframes blink { 50% { opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { .cursor-blink { animation: none; } }
 
-.reveal {
+/* ---------- scroll reveal ---------- */
+/* Hidden-until-scrolled applies ONLY under html.js (set by an inline script):
+   no JS → no hiding → the page is always fully readable. */
+
+.js .reveal {
   opacity: 0;
-  transform: translateY(14px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
+  transform: translateY(16px);
+  transition: opacity 0.65s ease, transform 0.65s ease;
+  transition-delay: var(--reveal-delay, 0ms);
 }
-.reveal.in { opacity: 1; transform: none; }
+.js .reveal.in { opacity: 1; transform: none; }
+
+/* ---------- reduced motion: everything settles instantly ---------- */
+
 @media (prefers-reduced-motion: reduce) {
-  .reveal { opacity: 1; transform: none; transition: none; }
+  .cursor-blink, .blip::after { animation: none; }
+  .ecg-path { animation: none; stroke-dasharray: none; stroke-dashoffset: 0; }
+  .qdot { animation: none; opacity: 0; }
+  .stepbar { animation: none; width: 100%; }
+  .rise { animation: none; }
+  .js .reveal { opacity: 1; transform: none; transition: none; }
+  .bar { transition: none; width: var(--w); }
+  .bento, .btn { transition: none; }
 }

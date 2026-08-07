@@ -76,17 +76,18 @@ export function Terminal() {
   }, []);
 
   return (
-    <div className="mx-auto mt-11 w-full max-w-[860px] rounded-xl border border-edge bg-bg2 text-left shadow-[0_40px_120px_-40px_rgba(255,171,51,0.18)]">
-      <div className="flex items-center gap-1.5 border-b border-edge px-4 py-3 font-mono text-xs text-dim">
-        <span className="h-[11px] w-[11px] rounded-full bg-edge" />
-        <span className="h-[11px] w-[11px] rounded-full bg-edge" />
-        <span className="h-[11px] w-[11px] rounded-full bg-edge" />
-        <span className="ml-2">the whole loop — live demo</span>
+    <div className="term mx-auto mt-12 w-full max-w-[880px]">
+      <div className="term-head">
+        <span className="dot bg-[#ff5f57]" />
+        <span className="dot bg-[#febc2e]" />
+        <span className="dot bg-[#28c840]" />
+        <span className="ml-2">~/shop — the whole loop, typed live</span>
+        <span className="ml-auto flex items-center gap-2 normal-case">
+          <span className="blip" aria-hidden="true" />
+          <span className="text-tgreen">live</span>
+        </span>
       </div>
-      <div
-        ref={ref}
-        className="min-h-[25em] whitespace-pre-wrap break-words p-5 pb-6 font-mono text-[13.5px] leading-[1.75]"
-      >
+      <div ref={ref} className="term-body min-h-[25em] text-[13.5px]">
         <span className="cursor-blink" />
       </div>
     </div>
