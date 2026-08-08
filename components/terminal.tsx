@@ -29,6 +29,17 @@ function esc(x: string) {
   return x.replace(/&/g, "&amp;").replace(/</g, "&lt;");
 }
 
+// Server-rendered final frame: the terminal paints full at first paint (it is
+// the largest element on mobile — an empty box would push LCP to whenever the
+// typing loop finishes). Desktop fades from this into the live typing.
+const FINAL_FRAME = script
+  .map((s) =>
+    s.t === "type"
+      ? `<div><span class="text-amber">$ ${esc(s.text)}</span></div>`
+      : `<div class="tout tout-ssr">${s.html}</div>`
+  )
+  .join("");
+
 export function Terminal() {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -49,17 +60,13 @@ export function Terminal() {
       return d;
     };
 
-    // Static final frame for reduced motion — no timers, no loop.
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      script.forEach((s) => {
-        if (s.t === "type") {
-          const line = document.createElement("div");
-          line.innerHTML = `<span class="text-amber">$ ${esc(s.text)}</span>`;
-          el.appendChild(line);
-        } else {
-          el.appendChild(outBlock(s.html));
-        }
-      });
+    // Keep the SSR frame static for reduced motion — and on phones, where
+    // the CPU cost of a 30s typing loop isn't worth it and the static
+    // transcript reads better.
+    if (
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+      window.matchMedia("(max-width: 767px)").matches
+    ) {
       return;
     }
 
@@ -114,8 +121,18 @@ export function Terminal() {
       }
     };
 
-    el.appendChild(cursor);
-    run(0);
+    // Desktop: hold the SSR frame briefly (it just painted as LCP), then
+    // fade out and replay the session live.
+    later(() => {
+      el.classList.add("term-dim");
+      later(() => {
+        el.innerHTML = "";
+        el.appendChild(cursor);
+        el.scrollTop = 0;
+        el.classList.remove("term-dim");
+        later(() => run(0), 200);
+      }, 480);
+    }, 700);
 
     return () => { cancelled = true; timers.forEach(clearTimeout); };
   }, []);
@@ -135,6 +152,7 @@ export function Terminal() {
       <div
         ref={ref}
         className="term-body term-stream h-[25em] overflow-y-auto overscroll-contain text-[13.5px] [scrollbar-width:thin]"
+        dangerouslySetInnerHTML={{ __html: FINAL_FRAME }}
       />
     </div>
   );

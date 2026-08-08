@@ -406,6 +406,8 @@ a:focus-visible, button:focus-visible {
   margin: 0 0 1.55em;
   animation: tout 0.3s ease both;
 }
+/* server-rendered frame: paint immediately, no entrance fade (it IS the LCP) */
+.term-stream .tout-ssr { animation: none; }
 @keyframes tout {
   from { opacity: 0; transform: translateY(4px); }
 }
