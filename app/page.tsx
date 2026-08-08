@@ -140,7 +140,10 @@ export default function Page() {
           <Terminal />
 
           {/* the request path, one line, always moving */}
-          <div className="hidden w-full max-w-[880px] rounded-xl border border-edge/70 bg-panel/30 px-5 py-3 md:block">
+          <div className="hidden w-full max-w-[880px] rounded-xl border border-edge/70 bg-panel/30 px-5 pb-3 pt-2.5 md:block">
+            <p className="mb-2 text-center font-mono text-[11px] text-faint">
+              edit · save · replay · deploy — never wait for Docker again
+            </p>
             <FlowDiagram compact />
           </div>
 
@@ -370,7 +373,7 @@ export default function Page() {
             {/* real protocols */}
             <Reveal className="md:col-span-2 lg:col-span-7" delay={70}>
               <div className="bento h-full p-7">
-                <h3 className="text-[18px] font-semibold">Real protocols, not lookalikes</h3>
+                <h3 className="text-[18px] font-semibold">Runs like AWS — because it speaks AWS</h3>
                 <p className="mt-2 max-w-[54ch] text-[14.5px] leading-relaxed text-dim">
                   Plain AWS SDK in your handlers, one env var from pulse — nothing to delete
                   before you deploy.
@@ -768,6 +771,13 @@ export default function Page() {
               </TrackLink>
             </div>
           </Reveal>
+
+          <p className="mt-6 text-center font-mono text-[13px] text-dim">
+            deep dives:{" "}
+            <a className="text-amber transition-colors hover:text-amber-soft" href="/vs/localstack">pulse vs LocalStack →</a>
+            {"  ·  "}
+            <a className="text-amber transition-colors hover:text-amber-soft" href="/vs/sam-local">pulse vs sam local →</a>
+          </p>
         </section>
 
         {/* ───────────────────── FAQ ───────────────────── */}
@@ -1098,7 +1108,7 @@ const faqLd = {
 };
 
 const footerCols = [
-  { title: "Product", links: [["Features", "#features"], ["Compare", "#compare"], ["Changelog", `${GH}/releases`], ["Roadmap", `${GH}/blob/master/PLAN.md`]] as [string, string][] },
+  { title: "Product", links: [["Features", "#features"], ["vs LocalStack", "/vs/localstack"], ["vs sam local", "/vs/sam-local"], ["Changelog", `${GH}/releases`], ["Roadmap", `${GH}/blob/master/PLAN.md`]] as [string, string][] },
   { title: "Docs", links: [["The guide", GUIDE], ["Quickstart", `${GH}#two-minutes-to-a-running-app`], ["Templates", `${GUIDE}#3-build`], ["Cheat sheet", `${GUIDE}#7-command-cheat-sheet`]] as [string, string][] },
   { title: "Community", links: [["GitHub", GH], ["Issues", `${GH}/issues`], ["Share feedback", `${GH}/issues/new`]] as [string, string][] },
 ];
