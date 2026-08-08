@@ -978,9 +978,9 @@ const inspectTabs: InspectTab[] = [
     label: "live monitor",
     cmd: "pulse monitor",
     caption:
-      "The full-screen cockpit: ✓/✗ per function, live queue depths — a filling dead-letter queue turns red — streaming logs with incremental filtering, and Enter replays the selected event.",
+      "The full-screen cockpit: ✓ counts per function, live queue depths, streaming logs, and Enter replays the selected event. This is a real, unretouched screenshot.",
     frame:
-      '<span class="text-amber">⚡ pulse</span> <b>shop</b> · <span class="text-tgreen">● live</span>\n\n<span class="text-amber">functions</span>              <span class="text-amber">logs</span> <span class="text-dim">— / filters</span>\n createOrder <span class="text-dim">12✓</span>        <span class="text-dim">14:02</span> createOrder <span class="text-dim">|</span> order saved\n worker      <span class="text-dim">11✓</span> <span class="text-tred">1✗</span>     <span class="text-dim">14:02</span> <span class="text-tcyan">⚙ order-events → worker</span>\n\n<span class="text-amber">queues</span>                 <span class="text-dim">14:02</span> worker <span class="text-dim">|</span> processed\n order-events <span class="text-dim">0·0·0</span>\n orders-dlq   <span class="text-tred">1·0·0 !</span>\n\n<span class="text-amber">events</span> <span class="text-dim">— ↑↓ · Enter replays</span>\n<span class="text-amber">▸</span> <b>8931cf5b</b> sqs → worker · <span class="text-tred">error</span>',
+      '<img src="/monitor.png" alt="pulse monitor — live function success counts, queue depths, streaming logs, and replayable events" style="width:100%;display:block;border-radius:8px" />',
   },
   {
     id: "tables",
