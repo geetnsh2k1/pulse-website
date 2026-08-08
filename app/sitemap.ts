@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const SITE = "https://pulse-website-red-two.vercel.app";
+const SITE = "https://getpulse.run";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [

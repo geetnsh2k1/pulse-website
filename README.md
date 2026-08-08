@@ -2,7 +2,7 @@
 
 The public site for [pulse](https://github.com/geetnsh2k1/pulse) — Next.js
 (App Router) + Tailwind v4, deployed on Vercel, analytics via PostHog.
-Live: https://pulse-website-red-two.vercel.app
+Live: https://getpulse.run
 
 Design system: dark + amber "signal" theme — animated ECG pulse-line motif,
 dot-grid + grain texture, bento feature grid with cursor spotlight, an
