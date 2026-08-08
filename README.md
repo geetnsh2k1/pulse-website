@@ -51,6 +51,13 @@ Suggested funnel in PostHog: `$pageview → section_view(get-started) →
 copy_install`. Break `copy_install` down by `method` to see brew vs curl
 vs go.
 
+## Release checklist
+
+- `public/version.json` feeds the CLI's once-a-day update check
+  (`{"latest":"x.y.z"}`). **Bump it as part of every pulse release** —
+  right after the tag builds green. Users on older versions then see one
+  dim upgrade hint; `PULSE_NO_UPDATE_CHECK=1` opts out client-side.
+
 ## After deploy
 
 - Update `SITE` in `app/layout.tsx` (and sitemap/robots URLs) when the
