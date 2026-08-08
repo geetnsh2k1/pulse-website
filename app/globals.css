@@ -355,6 +355,26 @@ a:focus-visible, button:focus-visible {
   50% { box-shadow: 0 6px 28px -6px rgba(255, 171, 51, 0.45); }
 }
 
+/* ---------- hero terminal stream ---------- */
+/* Fixed-height, scrolls like a real terminal — the page below never moves.
+   Output blocks ease in; the loop restart fades instead of hard-wiping. */
+
+.term-stream {
+  transition: opacity 0.45s ease;
+}
+.term-stream.term-dim { opacity: 0; }
+.term-stream .tout {
+  margin: 0 0 1.55em;
+  animation: tout 0.3s ease both;
+}
+@keyframes tout {
+  from { opacity: 0; transform: translateY(4px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .term-stream { transition: none; }
+  .term-stream .tout { animation: none; }
+}
+
 /* ---------- typing cursor ---------- */
 
 .cursor-blink {

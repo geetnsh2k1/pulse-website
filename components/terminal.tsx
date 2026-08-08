@@ -1,8 +1,14 @@
 "use client";
 
 // The hero terminal: types the real golden demo in a loop. Verbatim outputs
-// from the actual CLI — nothing invented. Reduced-motion users get the
-// final frame, static.
+// from the actual CLI — nothing invented.
+//
+// Smoothness rules:
+// - the body is FIXED height and scrolls internally like a real terminal,
+//   so the page below never shifts as lines appear;
+// - typing mutates one text node (no full re-render per keystroke);
+// - output blocks fade in; the loop restart fades out instead of wiping;
+// - reduced-motion users get the final frame, static.
 import { useEffect, useRef } from "react";
 
 type Step = { t: "type"; text: string } | { t: "out"; html: string };
@@ -36,41 +42,80 @@ export function Terminal() {
       timers.push(id);
     };
 
-    const render = (upTo: number, partial?: string) => {
-      let html = "";
-      for (let i = 0; i < upTo; i++) {
-        const s = script[i];
-        html += s.t === "type" ? `<span class="text-amber">$ ${esc(s.text)}</span>\n` : s.html + "\n\n";
-      }
-      if (partial !== undefined) html += `<span class="text-amber">$ ${esc(partial)}</span>`;
-      el.innerHTML = html + '<span class="cursor-blink"></span>';
+    const outBlock = (html: string) => {
+      const d = document.createElement("div");
+      d.className = "tout";
+      d.innerHTML = html;
+      return d;
     };
 
+    // Static final frame for reduced motion — no timers, no loop.
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      render(script.length);
+      script.forEach((s) => {
+        if (s.t === "type") {
+          const line = document.createElement("div");
+          line.innerHTML = `<span class="text-amber">$ ${esc(s.text)}</span>`;
+          el.appendChild(line);
+        } else {
+          el.appendChild(outBlock(s.html));
+        }
+      });
       return;
     }
 
-    let idx = 0;
-    const step = () => {
-      if (idx >= script.length) { later(() => { idx = 0; step(); }, 9000); return; }
+    const cursor = document.createElement("span");
+    cursor.className = "cursor-blink";
+    const tail = () => { el.scrollTop = el.scrollHeight; };
+
+    const typeLine = (text: string, done: () => void) => {
+      const line = document.createElement("div");
+      const prompt = document.createElement("span");
+      prompt.className = "text-amber";
+      prompt.textContent = "$ ";
+      const typed = document.createElement("span");
+      typed.className = "text-amber";
+      line.append(prompt, typed, cursor); // appendChild moves the cursor here
+      el.appendChild(line);
+      tail();
+      let pos = 0;
+      const tick = () => {
+        pos++;
+        typed.textContent = text.slice(0, pos); // one text-node mutation per key
+        tail();
+        if (pos < text.length) later(tick, 13 + Math.random() * 21);
+        else later(done, 260);
+      };
+      tick();
+    };
+
+    const run = (idx: number) => {
+      if (idx >= script.length) {
+        // hold the finished frame, then fade → clear → fade back in
+        later(() => {
+          el.classList.add("term-dim");
+          later(() => {
+            el.innerHTML = "";
+            el.appendChild(cursor);
+            el.scrollTop = 0;
+            el.classList.remove("term-dim");
+            later(() => run(0), 250);
+          }, 480);
+        }, 7000);
+        return;
+      }
       const s = script[idx];
       if (s.t === "type") {
-        let pos = 0;
-        const typeChar = () => {
-          pos++;
-          render(idx, s.text.slice(0, pos));
-          if (pos < s.text.length) later(typeChar, 13 + Math.random() * 21);
-          else { idx++; later(step, 260); }
-        };
-        typeChar();
+        typeLine(s.text, () => run(idx + 1));
       } else {
-        idx++;
-        render(idx);
-        later(step, idx === script.length ? 60 : 620);
+        el.appendChild(outBlock(s.html));
+        el.appendChild(cursor); // cursor waits on its own line below the output
+        tail();
+        later(() => run(idx + 1), idx === script.length - 1 ? 60 : 620);
       }
     };
-    step();
+
+    el.appendChild(cursor);
+    run(0);
 
     return () => { cancelled = true; timers.forEach(clearTimeout); };
   }, []);
@@ -87,9 +132,10 @@ export function Terminal() {
           <span className="text-tgreen">live</span>
         </span>
       </div>
-      <div ref={ref} className="term-body min-h-[25em] text-[13.5px]">
-        <span className="cursor-blink" />
-      </div>
+      <div
+        ref={ref}
+        className="term-body term-stream h-[25em] overflow-y-auto overscroll-contain text-[13.5px] [scrollbar-width:thin]"
+      />
     </div>
   );
 }
