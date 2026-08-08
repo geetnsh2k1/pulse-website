@@ -1,29 +1,36 @@
 "use client";
 
 // PostHog wiring: initializes only when NEXT_PUBLIC_POSTHOG_KEY is set, so
-// local builds and previews work without an account. Pageviews are captured
-// automatically; custom events go through track() below.
-import posthog from "posthog-js";
+// local builds and previews work without an account. The library is
+// dynamically imported AFTER hydration — analytics never costs the visitor
+// startup time. Pageviews are captured automatically on init; custom events
+// go through track() below.
 import { useEffect } from "react";
 
-let initialized = false;
+type PostHog = (typeof import("posthog-js"))["default"];
+
+let ph: PostHog | null = null;
+let started = false;
 
 export function PostHogProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const key = process.env.NEXT_PUBLIC_POSTHOG_KEY;
-    if (!key || initialized) return;
-    posthog.init(key, {
-      api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com",
-      capture_pageview: true,
-      capture_pageleave: true,
-      autocapture: false, // we send deliberate events only
-      respect_dnt: true,
+    if (!key || started) return;
+    started = true;
+    import("posthog-js").then(({ default: posthog }) => {
+      posthog.init(key, {
+        api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com",
+        capture_pageview: true,
+        capture_pageleave: true,
+        autocapture: false, // we send deliberate events only
+        respect_dnt: true,
+      });
+      ph = posthog;
     });
-    initialized = true;
   }, []);
   return <>{children}</>;
 }
 
 export function track(event: string, props?: Record<string, string>) {
-  if (initialized) posthog.capture(event, props);
+  ph?.capture(event, props);
 }

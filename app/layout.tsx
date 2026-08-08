@@ -10,9 +10,10 @@ const SITE = "https://pulse-website-red-two.vercel.app"; // update when the doma
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),
-  title: "pulse — Run AWS Lambda, SQS & DynamoDB Locally Without Docker",
+  alternates: { canonical: "/" },
+  title: "pulse — Run AWS Lambda, SQS & DynamoDB Locally, No Docker",
   description:
-    "Run AWS Lambda, SQS and DynamoDB locally without Docker. pulse is a fast local serverless dev environment with hot reload, event replay, queues and workers.",
+    "Run AWS Lambda, SQS and DynamoDB locally — no Docker. Hot reload, event replay, queues and workers in a fast local dev server.",
   keywords: [
     "local aws lambda", "aws lambda locally", "run aws lambda without docker",
     "local serverless development", "aws lambda emulator", "lambda runtime api",
@@ -21,7 +22,7 @@ export const metadata: Metadata = {
     "serverless dev server", "boto3 local", "aws sdk local",
   ],
   openGraph: {
-    title: "pulse — Run AWS Lambda, SQS & DynamoDB Locally Without Docker",
+    title: "pulse — Run AWS Lambda, SQS & DynamoDB Locally, No Docker",
     description:
       "The missing dev server for AWS serverless: hot reload, real SQS queues, local DynamoDB, event replay. No Docker, no AWS account.",
     url: SITE,
@@ -30,7 +31,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "pulse — Run AWS Lambda, SQS & DynamoDB Locally Without Docker",
+    title: "pulse — Run AWS Lambda, SQS & DynamoDB Locally, No Docker",
     description:
       "The missing dev server for AWS serverless: hot reload, real SQS queues, local DynamoDB, event replay. No Docker, no AWS account.",
   },
