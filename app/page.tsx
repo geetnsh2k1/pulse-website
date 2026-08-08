@@ -1,7 +1,6 @@
 import { Terminal } from "@/components/terminal";
 import { TrackLink, Reveal } from "@/components/interactive";
 import { InstallTabs } from "@/components/install-tabs";
-import { HowItWorks, type Step } from "@/components/how-it-works";
 import { InspectTabs, type InspectTab } from "@/components/inspect-tabs";
 import { PulseLine } from "@/components/pulse-line";
 import { FlowDiagram } from "@/components/flow-diagram";
@@ -29,7 +28,7 @@ function LearnMore({ href, target, label }: { href: string; target: string; labe
 
 // ⚠️ PLACEHOLDER QUOTES below (see `testimonials`). Replace them with real
 // ones — or flip this to false — before sharing the site publicly.
-const SHOW_TESTIMONIALS = true;
+const SHOW_TESTIMONIALS = false; // flip when real quotes exist
 
 function SectionHead({ idx, kick, title, lede }: { idx: string; kick: string; title: string; lede?: string }) {
   return (
@@ -88,7 +87,7 @@ export default function Page() {
           </a>
           <div className="ml-4 hidden gap-5 whitespace-nowrap md:flex lg:gap-6">
             <a className="text-[14px] text-dim transition-colors hover:text-fg" href="#features">Features</a>
-            <a className="text-[14px] text-dim transition-colors hover:text-fg" href="#how">How it works</a>
+            <a className="text-[14px] text-dim transition-colors hover:text-fg" href="#journey">How it works</a>
             <a className="text-[14px] text-dim transition-colors hover:text-fg" href="#inspect">Inspect</a>
             <a className="text-[14px] text-dim transition-colors hover:text-fg" href="#compare">Compare</a>
             <TrackLink className="text-[14px] text-dim transition-colors hover:text-fg" href={`${GH}/blob/master/docs/GUIDE.md`} event="outbound" props={{ target: "docs" }}>
@@ -253,7 +252,7 @@ export default function Page() {
                 One order, end to end — entirely on your laptop
               </h2>
               <p className="mt-4 text-[clamp(16px,2.1vw,18.5px)] leading-relaxed text-dim">
-                One request&apos;s whole lifecycle — every line below is real output.
+                From an empty directory to a replayable request — every line below is real output.
               </p>
             </div>
           </Reveal>
@@ -282,6 +281,7 @@ export default function Page() {
               </div>
             ))}
           </div>
+          <LearnMore href={`${GUIDE}#1-start-here`} target="guide-journey" label="The full start-here walkthrough" />
         </section>
 
         {/* ───────────────────── features (bento) ───────────────────── */}
@@ -459,27 +459,11 @@ export default function Page() {
           </Reveal>
         </section>
 
-        {/* ───────────────────── how it works ───────────────────── */}
-        <section id="how" className="band pb-16 pt-20 md:pb-24 md:pt-32">
-          <Reveal section="how">
-            <SectionHead
-              idx="02"
-              kick="how it works"
-              title="Empty directory to deployed, in five steps"
-              lede="The complete journey — create, run, build, debug, ship. Every frame below is real output, not a mockup. Click a step or let it play."
-            />
-          </Reveal>
-          <Reveal className="mt-12">
-            <HowItWorks steps={steps} />
-          </Reveal>
-          <LearnMore href={`${GUIDE}#1-start-here`} target="guide-how" label="The full start-here walkthrough" />
-        </section>
-
         {/* ───────────────────── inspect ───────────────────── */}
         <section id="inspect" className="pt-20 md:pt-32">
           <Reveal section="inspect">
             <SectionHead
-              idx="03"
+              idx="02"
               kick="inspect"
               title="X-ray vision for your local cloud"
               lede="Logs are where debugging starts, not where it ends. pulse records everything and gives you four ways to debug your Lambda functions, queues, and tables locally."
@@ -495,7 +479,7 @@ export default function Page() {
         <section id="why" className="band pb-16 pt-20 md:pb-24 md:pt-32">
           <Reveal section="why">
             <SectionHead
-              idx="04"
+              idx="03"
               kick="why pulse"
               title="Local serverless development is broken. Here's the fix."
             />
@@ -580,7 +564,7 @@ export default function Page() {
         <section id="use-cases" className="pt-20 md:pt-32">
           <Reveal section="use-cases">
             <SectionHead
-              idx="05"
+              idx="04"
               kick="use cases"
               title="What people build with pulse"
               lede="If it's Lambda + HTTP + SQS + DynamoDB, it runs locally — the whole loop, not a fragment of it."
@@ -610,7 +594,7 @@ export default function Page() {
         <section id="templates" className="pt-20 md:pt-32">
           <Reveal section="templates">
             <SectionHead
-              idx="06"
+              idx="05"
               kick="templates"
               title="A learning path, not a pile of boilerplate"
               lede="Each starter adds exactly one concept. All ship in Python and Node, use the plain AWS SDK, and run unchanged in real AWS."
@@ -637,7 +621,7 @@ export default function Page() {
         <section id="compare" className="band pb-16 pt-20 md:pb-24 md:pt-32">
           <Reveal section="compare">
             <SectionHead
-              idx="07"
+              idx="06"
               kick="compare"
               title="Built for the inner loop"
               lede="Searching for a LocalStack alternative, or wondering how pulse compares to sam local? Different tools do different jobs — here's the honest version."
@@ -784,7 +768,7 @@ export default function Page() {
         <section id="faq" className="pt-20 md:pt-32">
           <Reveal section="faq">
             <SectionHead
-              idx="08"
+              idx="07"
               kick="faq"
               title="Questions people actually ask"
             />
@@ -803,7 +787,7 @@ export default function Page() {
         {SHOW_TESTIMONIALS && (
           <section id="testimonials" className="pt-20 md:pt-32">
             <Reveal section="testimonials">
-              <SectionHead idx="09" kick="early signal" title="What early users say" />
+              <SectionHead idx="08" kick="early signal" title="What early users say" />
             </Reveal>
             <div className="mt-11 grid grid-cols-1 gap-4 md:grid-cols-3">
               {testimonials.map((t, i) => (
@@ -911,49 +895,6 @@ export default function Page() {
    Every terminal frame below is verbatim output from the real CLI
    (captured in docs/GUIDE.md and live sessions) — nothing invented. */
 
-const steps: Step[] = [
-  {
-    id: "init",
-    cmd: "pulse init",
-    title: "Create a project",
-    blurb: "Three questions — or script it with flags. Working sample code, dependencies installed for you.",
-    frame:
-      '<span class="text-amber">$ pulse init</span>\n<span class="text-dim">? project name › </span>shop\n<span class="text-dim">? template     › </span>api-and-worker ★ <span class="text-dim">— api + queue + worker + table</span>\n<span class="text-dim">? language     › </span>python\n\n<span class="text-tgreen">✓</span> created project <b>shop</b> <span class="text-dim">from template api-and-worker (python)</span>\n  <span class="text-tgreen">✓</span> <span class="text-dim">installing python dependencies — done (6.6s)</span>',
-  },
-  {
-    id: "start",
-    cmd: "pulse start",
-    title: "Start your local cloud",
-    blurb: "Routes answer, queues deliver, tables exist — in under 100 ms.",
-    frame:
-      '<span class="text-amber">$ pulse start</span>\n<span class="text-amber">⚡ pulse</span> <span class="text-dim">0.1.0 —</span> <b>shop</b>\n  <span class="text-dim">api</span>        http://localhost:3000\n  <span class="text-dim">routes</span>     <b>POST</b> /orders <span class="text-dim">→</span> <span class="text-tcyan">createOrder</span>\n  <span class="text-dim">try</span>        <span class="text-amber">curl -X POST localhost:3000/orders -d \'{"sku":"A1","qty":2}\'</span>\n\n<span class="text-tgreen">ready in 99ms</span> <span class="text-dim">— edits apply live</span>',
-  },
-  {
-    id: "loop",
-    cmd: "curl → queue → worker",
-    title: "Build like it's a web app",
-    blurb: "Save a file — the next request runs the new code.",
-    frame:
-      '<span class="text-amber">$ curl -X POST localhost:3000/orders -d \'{"sku":"A1","qty":2}\'</span>\n<span class="text-dim">201</span> {"id":"e9b4…","status":"pending"}\n  <span class="text-tcyan">⚙ sqs order-events → worker · ok</span>\n<span class="text-amber">🎉 first background job processed — your async loop works end to end</span>\n\n<span class="text-amber">$ curl localhost:3000/orders/e9b4…</span>\n{"id":"e9b4…","status":<span class="text-tgreen">"processed"</span>}   <span class="text-dim">← the worker got there first</span>',
-  },
-  {
-    id: "replay",
-    cmd: "pulse events replay",
-    title: "Debug with time travel",
-    blurb: "Every trigger is recorded byte for byte. Read one request's whole story, fix the handler, replay the actual event.",
-    frame:
-      '<span class="text-amber">$ pulse logs --request d90e5295</span>\n<span class="text-amber">⚡ request</span> <b>d90e5295</b>  <span class="text-tcyan">sqs</span> <span class="text-dim">→</span> processWebhook · <span class="text-tred">error</span> <span class="text-dim">· 2ms</span>\n<span class="text-amber">error</span>   <span class="text-tred">RuntimeError: webhook 3625d493 failed on purpose (attempt 3)</span>\n\n<span class="text-dim"># fix the handler, then fire the exact same payload:</span>\n<span class="text-amber">$ pulse events replay d90e5295</span>\n<span class="text-tgreen">✓ processWebhook · success · 0ms</span>  <span class="text-dim">← same event, fixed code</span>',
-  },
-  {
-    id: "deploy",
-    cmd: "sam deploy · cdk deploy",
-    title: "Deploy unchanged",
-    blurb: "pulse is dev-time only. Your handlers are plain AWS SDK code — ship them with SAM, CDK, or the Serverless Framework.",
-    frame:
-      '<span class="text-amber">$ sam deploy</span>   <span class="text-dim"># or: cdk deploy · serverless deploy</span>\n\n<span class="text-dim"># nothing to remove before shipping:</span>\n<span class="text-dim">#</span>   handlers   <span class="text-tgreen">✓</span> plain boto3 / AWS SDK v3\n<span class="text-dim">#</span>   config     <span class="text-tgreen">✓</span> no pulse imports anywhere\n<span class="text-dim">#</span>   endpoints  <span class="text-tgreen">✓</span> AWS_ENDPOINT_URL simply absent in prod\n\n<span class="text-dim">the code you iterated on locally is the code that ships.</span>',
-  },
-];
-
 const inspectTabs: InspectTab[] = [
   {
     id: "story",
@@ -1038,6 +979,8 @@ const testimonials = [
 
 // The signature walkthrough: [stage, qualifier, real output line(s)].
 const journey: [string, string, string][] = [
+  ["Sixty seconds of setup", "one command scaffolds it, one starts it",
+    '<span class="text-amber">$ pulse init shop -t api-and-worker --lang python && cd shop</span>\n<span class="text-tgreen">✓</span> created project <b>shop</b> <span class="text-dim">· installing python dependencies — done (6.6s)</span>\n<span class="text-amber">$ pulse start</span>\n<span class="text-tgreen">ready in 99ms</span> <span class="text-dim">— edits apply live</span>'],
   ["A request arrives", "plain HTTP · port 3000",
     '<span class="text-amber">$ curl -X POST localhost:3000/orders -d \'{"sku":"A1","qty":2}\'</span>'],
   ["The gateway shapes it", "an API Gateway v2 event — exactly like production",

@@ -364,21 +364,6 @@ a:focus-visible, button:focus-visible {
 .reveal.in .boot-row:nth-child(5) { animation-delay: 1.6s; }
 @keyframes bootin { to { opacity: 1; } }
 
-/* ---------- how-it-works stepper ---------- */
-
-/* scaleX (not width) so the bar can never escape its left/right insets */
-.stepbar {
-  display: block;
-  height: 2px;
-  background: var(--color-amber);
-  border-radius: 999px;
-  transform-origin: left center;
-  transform: scaleX(0);
-  animation: stepfill var(--dur, 6500ms) linear forwards;
-}
-.paused .stepbar { animation-play-state: paused; }
-@keyframes stepfill { to { transform: scaleX(1); } }
-
 /* frame entrance when a tab/step swaps */
 .rise { animation: rise 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
 @keyframes rise {
@@ -521,7 +506,6 @@ a:focus-visible, button:focus-visible {
   .cursor-blink, .blip::after { animation: none; }
   .ecg-path { animation: none; stroke-dasharray: none; stroke-dashoffset: 0; }
   .qdot { animation: none; opacity: 0; }
-  .stepbar { animation: none; transform: none; }
   .boot-row { opacity: 1; animation: none; }
   .btn-beat { animation: none; }
   .rise { animation: none; }
