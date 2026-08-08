@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "pulse — Run AWS Lambda, SQS & DynamoDB Locally, No Docker",
     description:
-      "The missing dev server for AWS serverless: hot reload, real SQS queues, local DynamoDB, event replay. No Docker, no AWS account.",
+      "The dev server AWS Lambda never had: hot reload, real SQS queues, local DynamoDB, event replay. No Docker, no AWS account.",
     url: SITE,
     siteName: "pulse",
     type: "website",
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "pulse — Run AWS Lambda, SQS & DynamoDB Locally, No Docker",
     description:
-      "The missing dev server for AWS serverless: hot reload, real SQS queues, local DynamoDB, event replay. No Docker, no AWS account.",
+      "The dev server AWS Lambda never had: hot reload, real SQS queues, local DynamoDB, event replay. No Docker, no AWS account.",
   },
   robots: { index: true, follow: true },
 };

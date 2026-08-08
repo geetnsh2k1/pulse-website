@@ -1,1 +1,1 @@
-pulse — run AWS Lambda, SQS and DynamoDB locally without Docker
+pulse — the dev server AWS Lambda never had: run Lambda, SQS and DynamoDB locally without Docker

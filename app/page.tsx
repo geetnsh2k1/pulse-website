@@ -123,7 +123,7 @@ export default function Page() {
               Run AWS Lambda, SQS and DynamoDB <em className="not-italic text-amber">locally</em> — without Docker
             </h1>
             <p className="mt-4 text-[clamp(16px,2.4vw,21px)] font-medium text-fg/90">
-              The missing dev server for AWS serverless.
+              The dev server AWS Lambda never had.
             </p>
             <PulseLine crop="mid" className="mx-auto mt-5 h-10 w-[min(400px,78%)]" />
           </div>
@@ -846,7 +846,7 @@ export default function Page() {
                 </h2>
                 <p className="mx-auto mt-4 max-w-[44ch] text-balance text-[15.5px] leading-relaxed text-dim">
                   Every modern framework has a dev server.
-                  <span className="block font-medium text-fg">AWS serverless deserves one too.</span>
+                  <span className="block font-medium text-fg">AWS Lambda finally has one.</span>
                 </p>
                 <div className="mt-8 flex justify-center">
                   <InstallTabs location="cta" />
@@ -880,7 +880,7 @@ export default function Page() {
               pulse
             </span>
             <p className="mt-3.5 max-w-[34ch] text-sm leading-relaxed text-dim">
-              The missing dev server for AWS serverless. Run the whole app locally, in milliseconds.
+              The dev server AWS Lambda never had. Run the whole app locally, in milliseconds.
             </p>
             <TrackLink href={`${GH}/releases`} event="outbound" props={{ target: "releases-footer" }} className="chip mt-4">
               v0.1.0 · changelog
