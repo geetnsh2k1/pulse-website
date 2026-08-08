@@ -10,7 +10,10 @@ const SITE = "https://pulse-website-red-two.vercel.app"; // update when the doma
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),
-  alternates: { canonical: "/" },
+  alternates: {
+    canonical: "/",
+    languages: { en: "/", "x-default": "/" },
+  },
   title: "pulse — Run AWS Lambda, SQS & DynamoDB Locally, No Docker",
   description:
     "Run AWS Lambda, SQS and DynamoDB locally — no Docker. Hot reload, event replay, queues and workers in a fast local dev server.",

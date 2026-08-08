@@ -65,12 +65,17 @@ const GitHubIcon = (
 export default function Page() {
   return (
     <>
-      {/* structured data: SoftwareApplication + FAQPage (FAQ JSON is generated
+      {/* structured data: SoftwareApplication + FAQPage as two top-level
+          scripts (naive validators can't read @graph). FAQ JSON is generated
           from the same `faqs` array that renders below, so the schema always
-          matches the visible text — a Google requirement). */}
+          matches the visible text — a Google requirement. */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(appLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }}
       />
       <ScrollProgress />
 
@@ -1064,34 +1069,32 @@ const faqs: [string, string][] = [
   ["How do I deploy an app built with pulse?", "With whatever you already use — SAM, CDK, or the Serverless Framework. pulse is development-time only and your code is vanilla AWS SDK throughout, so there is nothing to strip out before deploying."],
 ];
 
-const structuredData = {
+const appLd = {
   "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "SoftwareApplication",
-      name: "pulse",
-      applicationCategory: "DeveloperApplication",
-      operatingSystem: "macOS, Linux",
-      softwareVersion: "0.1.0",
-      description:
-        "Run AWS Lambda, SQS and DynamoDB locally without Docker. pulse is a fast local serverless development environment with hot reload, event replay, queues and workers.",
-      url: "https://pulse-website-red-two.vercel.app",
-      image: "https://pulse-website-red-two.vercel.app/opengraph-image.png",
-      downloadUrl: `${GH}/releases`,
-      license: "https://www.apache.org/licenses/LICENSE-2.0",
-      offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
-      author: { "@type": "Person", name: "Geetansh Garg", url: GH },
-      sameAs: [GH],
-    },
-    {
-      "@type": "FAQPage",
-      mainEntity: faqs.map(([q, a]) => ({
-        "@type": "Question",
-        name: q,
-        acceptedAnswer: { "@type": "Answer", text: a },
-      })),
-    },
-  ],
+  "@type": "SoftwareApplication",
+  name: "pulse",
+  applicationCategory: "DeveloperApplication",
+  operatingSystem: "macOS, Linux",
+  softwareVersion: "0.1.0",
+  description:
+    "Run AWS Lambda, SQS and DynamoDB locally without Docker. pulse is a fast local serverless development environment with hot reload, event replay, queues and workers.",
+  url: "https://pulse-website-red-two.vercel.app",
+  image: "https://pulse-website-red-two.vercel.app/opengraph-image.png",
+  downloadUrl: `${GH}/releases`,
+  license: "https://www.apache.org/licenses/LICENSE-2.0",
+  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  author: { "@type": "Person", name: "Geetansh Garg", url: GH },
+  sameAs: [GH],
+};
+
+const faqLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map(([q, a]) => ({
+    "@type": "Question",
+    name: q,
+    acceptedAnswer: { "@type": "Answer", text: a },
+  })),
 };
 
 const footerCols = [
