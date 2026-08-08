@@ -44,7 +44,7 @@ export function FlowDiagram({ compact = false }: { compact?: boolean }) {
               <div className="qtrack hidden min-w-7 flex-1 self-center border-b border-dashed border-edge2 lg:block lg:h-5">
                 <span className="qdot" style={{ animationDelay: `${i * 0.5}s` }} />
               </div>
-              <span aria-hidden="true" className="font-mono text-[13px] text-faint lg:hidden">↓</span>
+              <span aria-hidden="true" className="font-mono text-[13px] text-amber/50 lg:hidden">↓</span>
             </>
           )}
         </Fragment>

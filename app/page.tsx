@@ -105,6 +105,9 @@ export default function Page() {
       {/* ───────────────────────── hero ───────────────────────── */}
       <header id="top" className="relative overflow-hidden">
         <div className="pointer-events-none absolute inset-x-[-25%] top-[-45%] h-[95%] bg-[radial-gradient(58%_55%_at_50%_0%,rgba(255,171,51,0.14),transparent_70%)]" />
+        {/* near-invisible request pulses drifting through the hero — the motif */}
+        <PulseLine className="pointer-events-none absolute left-[-6%] top-[22%] h-8 w-[46%] opacity-[0.055]" />
+        <PulseLine className="pointer-events-none absolute right-[-8%] top-[38%] h-8 w-[52%] opacity-[0.045]" />
         <div className="relative mx-auto grid max-w-[1160px] justify-items-center gap-7 px-6 pt-16 text-center sm:pt-24 md:pt-28">
           <span className="chip">
             <span className="blip" aria-hidden="true" />
@@ -120,7 +123,7 @@ export default function Page() {
             <PulseLine crop="mid" className="mx-auto mt-5 h-10 w-[min(400px,78%)]" />
           </div>
           <div className="flex flex-wrap justify-center gap-3.5">
-            <TrackLink href="#get-started" event="cta_click" props={{ cta: "get-started", location: "hero" }} className="btn btn-primary">
+            <TrackLink href="#get-started" event="cta_click" props={{ cta: "get-started", location: "hero" }} className="btn btn-primary btn-beat">
               Install pulse
             </TrackLink>
             <TrackLink href={GH} event="cta_click" props={{ cta: "github", location: "hero" }} className="btn btn-ghost">
@@ -481,7 +484,7 @@ export default function Page() {
         </section>
 
         {/* ───────────────────── why pulse ───────────────────── */}
-        <section id="why" className="pt-20 md:pt-32">
+        <section id="why" className="band pb-16 pt-20 md:pb-24 md:pt-32">
           <Reveal section="why">
             <SectionHead
               idx="04"
@@ -632,13 +635,48 @@ export default function Page() {
               lede="Searching for a LocalStack alternative, or wondering how pulse compares to sam local? Different tools do different jobs — here's the honest version."
             />
           </Reveal>
+          {/* the gap, drawn to linear scale — the sliver is the point */}
           <Reveal className="mt-10">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="bento p-6">
+                <p className="font-mono text-[11.5px] uppercase tracking-[0.14em] text-faint">cold start to working</p>
+                <div className="mt-4 space-y-4 font-mono text-[12px]">
+                  <div>
+                    <div className="mb-1.5 flex justify-between"><span className="text-fg">pulse</span><b className="text-amber">99 ms</b></div>
+                    <div className="h-2 rounded-full bg-bg"><span className="bar bg-amber shadow-[0_0_8px_rgba(255,171,51,0.5)]" style={{ "--w": "2%", minWidth: 5 } as React.CSSProperties} /></div>
+                  </div>
+                  <div>
+                    <div className="mb-1.5 flex justify-between text-dim"><span>container stacks</span><span>10–30 s</span></div>
+                    <div className="h-2 rounded-full bg-bg"><span className="bar bg-edge2" style={{ "--w": "100%" } as React.CSSProperties} /></div>
+                  </div>
+                </div>
+              </div>
+              <div className="bento p-6">
+                <p className="font-mono text-[11.5px] uppercase tracking-[0.14em] text-faint">memory while developing</p>
+                <div className="mt-4 space-y-4 font-mono text-[12px]">
+                  <div>
+                    <div className="mb-1.5 flex justify-between"><span className="text-fg">pulse</span><b className="text-amber">~50 MB</b></div>
+                    <div className="h-2 rounded-full bg-bg"><span className="bar bg-amber shadow-[0_0_8px_rgba(255,171,51,0.5)]" style={{ "--w": "2.4%", minWidth: 5 } as React.CSSProperties} /></div>
+                  </div>
+                  <div>
+                    <div className="mb-1.5 flex justify-between text-dim"><span>Docker stacks</span><span>2 GB+</span></div>
+                    <div className="h-2 rounded-full bg-bg"><span className="bar bg-edge2" style={{ "--w": "100%" } as React.CSSProperties} /></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p className="mt-3 text-center font-mono text-[11px] text-faint">
+              bars drawn to linear scale — the sliver is the point
+            </p>
+          </Reveal>
+
+          <Reveal className="mt-8">
             <div className="overflow-x-auto rounded-2xl border border-edge">
               <table className="w-full min-w-[660px] border-collapse text-[14.5px] tabular-nums">
                 <thead>
                   <tr className="bg-panel text-dim">
                     <th className="px-5 py-3.5 text-left font-medium"></th>
-                    <th className="bg-[rgba(255,171,51,0.07)] px-5 py-3.5 text-left font-semibold text-amber">pulse</th>
+                    <th className="border-x border-amber/15 bg-[rgba(255,171,51,0.07)] px-5 py-3.5 text-left font-semibold text-amber">pulse</th>
                     <th className="px-5 py-3.5 text-left font-medium">sam local</th>
                     <th className="px-5 py-3.5 text-left font-medium">LocalStack</th>
                   </tr>
@@ -647,7 +685,7 @@ export default function Page() {
                   {compare.map((row) => (
                     <tr key={row[0]} className="transition-colors hover:bg-white/[0.02]">
                       <td className="border-t border-edge px-5 py-3.5 text-dim">{row[0]}</td>
-                      <td className="border-t border-edge bg-[rgba(255,171,51,0.05)] px-5 py-3.5 font-medium">
+                      <td className="border-t border-edge border-x border-amber/15 bg-[rgba(255,171,51,0.05)] px-5 py-3.5 font-medium">
                         {row[1].startsWith("✓") ? (<><span className="text-tgreen">✓</span>{row[1].slice(1)}</>) : row[1]}
                       </td>
                       <td className="border-t border-edge px-5 py-3.5 text-dim">{gap(row[2])}</td>
