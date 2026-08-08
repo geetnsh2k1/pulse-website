@@ -3,8 +3,11 @@ import { Geist, JetBrains_Mono } from "next/font/google";
 import { PostHogProvider } from "@/components/posthog-provider";
 import "./globals.css";
 
-const geist = Geist({ subsets: ["latin"], variable: "--font-geist" });
-const jetbrains = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains" });
+// display "optional": if the webfont isn't ready within the swap window the
+// fallback stays — no mid-view font swap, no layout shift on the big
+// headline (Lighthouse flagged CLS 0.11 from exactly that).
+const geist = Geist({ subsets: ["latin"], variable: "--font-geist", display: "optional" });
+const jetbrains = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains", display: "optional" });
 
 const SITE = "https://pulse-website-red-two.vercel.app"; // update when the domain lands
 

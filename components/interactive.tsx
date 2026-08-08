@@ -6,12 +6,13 @@ import { useEffect, useRef } from "react";
 import { track } from "./posthog-provider";
 
 export function TrackLink({
-  href, event, props, className, children,
+  href, event, props, className, children, "aria-label": ariaLabel,
 }: {
-  href: string; event: string; props?: Record<string, string>; className?: string; children: React.ReactNode;
+  href: string; event: string; props?: Record<string, string>; className?: string;
+  children: React.ReactNode; "aria-label"?: string;
 }) {
   return (
-    <a href={href} className={className} onClick={() => track(event, props)}>
+    <a href={href} className={className} aria-label={ariaLabel} onClick={() => track(event, props)}>
       {children}
     </a>
   );

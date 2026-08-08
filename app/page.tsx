@@ -878,7 +878,7 @@ export default function Page() {
           </div>
           {footerCols.map((col) => (
             <div key={col.title}>
-              <h4 className="mb-3.5 font-mono text-[12px] font-semibold uppercase tracking-[0.14em] text-faint">{col.title}</h4>
+              <h3 className="mb-3.5 font-mono text-[12px] font-semibold uppercase tracking-[0.14em] text-faint">{col.title}</h3>
               {col.links.map(([label, href]) => (
                 <TrackLink key={label} href={href} event="outbound" props={{ target: label.toLowerCase().replace(/\s/g, "-") }}
                   className="my-2 block text-[14.5px] text-fg/85 transition-colors hover:text-amber">

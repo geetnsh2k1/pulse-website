@@ -24,6 +24,8 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
         capture_pageleave: true,
         autocapture: false, // we send deliberate events only
         respect_dnt: true,
+        disable_surveys: true, // don't load surveys.js (~33 KB we never use)
+        capture_dead_clicks: false, // nor dead-clicks-autocapture.js
       });
       ph = posthog;
     });
