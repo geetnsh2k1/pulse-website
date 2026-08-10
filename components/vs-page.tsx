@@ -1,6 +1,8 @@
 // Shared template for the /vs/* comparison pages. Same design system as the
 // homepage, honest verdicts by construction: every page says plainly when
 // the other tool is the right choice.
+import Link from "next/link";
+
 import { PulseLine } from "./pulse-line";
 import { TrackLink, Reveal } from "./interactive";
 import { InstallTabs } from "./install-tabs";
@@ -45,13 +47,13 @@ export function VsPage({ data }: { data: VsData }) {
       {/* slim header */}
       <nav className="sticky top-0 z-50 border-b border-edge/70 bg-bg/75 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-[1000px] items-center gap-5 px-6">
-          <a href="/" className="flex items-center gap-2.5 text-[17px] font-bold text-fg">
+          <Link href="/" className="flex items-center gap-2.5 text-[17px] font-bold text-fg">
             <PulseLine crop="tight" className="h-6 w-11" />
             pulse
-          </a>
-          <a href="/" className="hidden text-[14px] text-dim transition-colors hover:text-fg sm:block">
+          </Link>
+          <Link href="/" className="hidden text-[14px] text-dim transition-colors hover:text-fg sm:block">
             ← everything pulse does
-          </a>
+          </Link>
           <div className="ml-auto">
             <TrackLink
               href={GH}
@@ -190,8 +192,8 @@ export function VsPage({ data }: { data: VsData }) {
                 then run <code className="font-mono text-[13px] text-amber">pulse tour</code> — five minutes, hands-on, nothing simulated
               </p>
               <div className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 font-mono text-[13px]">
-                <a className="text-amber transition-colors hover:text-amber-soft" href="/">everything pulse does →</a>
-                <a className="text-amber transition-colors hover:text-amber-soft" href={data.otherHref}>{data.otherLabel} →</a>
+                <Link className="text-amber transition-colors hover:text-amber-soft" href="/">everything pulse does →</Link>
+                <Link className="text-amber transition-colors hover:text-amber-soft" href={data.otherHref}>{data.otherLabel} →</Link>
                 <TrackLink
                   href={`${GH}/blob/master/docs/GUIDE.md`}
                   event="outbound"
@@ -208,9 +210,9 @@ export function VsPage({ data }: { data: VsData }) {
 
       <footer className="border-t border-edge bg-bg2/70">
         <div className="mx-auto flex max-w-[1000px] flex-wrap items-center gap-x-5 gap-y-2 px-6 py-6 text-[13px] text-faint">
-          <a href="/" className="flex items-center gap-2 font-bold text-fg">
+          <Link href="/" className="flex items-center gap-2 font-bold text-fg">
             <PulseLine crop="tight" className="h-4 w-8" /> pulse
-          </a>
+          </Link>
           <span>Apache-2.0 © Geetansh Garg</span>
           <span>Not affiliated with Amazon Web Services{data.competitor === "LocalStack" ? " or LocalStack GmbH" : ""}. All trademarks belong to their owners.</span>
         </div>

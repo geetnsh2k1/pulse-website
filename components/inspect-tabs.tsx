@@ -25,7 +25,7 @@ export function InspectTabs({ tabs }: { tabs: InspectTab[] }) {
   };
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[350px_1fr] lg:gap-8">
+    <div className="grid gap-5 lg:grid-cols-[350px_minmax(0,1fr)] lg:gap-8">
       {/* rail */}
       <div role="tablist" aria-label="inspect views" className="grid grid-cols-2 gap-2.5 lg:grid-cols-1">
         {tabs.map((t, i) => {

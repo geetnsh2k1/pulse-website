@@ -257,9 +257,12 @@ export default function Page() {
             </div>
           </Reveal>
 
+          {/* minmax(0,1fr), not 1fr: a plain fr track has min-width:auto, so a
+              wide <pre> would stretch the row past the viewport instead of
+              scrolling inside its own box (mobile overflow). */}
           <div className="mt-12 max-w-[780px]">
             {journey.map(([title, sub, snippet], i) => (
-              <div key={title} className="grid grid-cols-[22px_1fr] gap-x-4 sm:gap-x-6">
+              <div key={title} className="grid grid-cols-[22px_minmax(0,1fr)] gap-x-4 sm:gap-x-6">
                 <div className="flex flex-col items-center">
                   <span className="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full border border-amber bg-bg shadow-[0_0_10px_rgba(255,171,51,0.5)]" />
                   {i < journey.length - 1 && (
@@ -268,7 +271,7 @@ export default function Page() {
                     </div>
                   )}
                 </div>
-                <Reveal delay={Math.min(i * 50, 200)} className={i < journey.length - 1 ? "pb-7" : ""}>
+                <Reveal delay={Math.min(i * 50, 200)} className={`min-w-0 ${i < journey.length - 1 ? "pb-7" : ""}`}>
                   <div className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
                     <h3 className="text-[16px] font-semibold">{title}</h3>
                     <span className="font-mono text-[11.5px] text-faint">{sub}</span>
