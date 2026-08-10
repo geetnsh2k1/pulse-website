@@ -9,7 +9,7 @@ import "./globals.css";
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist", display: "optional" });
 const jetbrains = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains", display: "optional" });
 
-const SITE = "https://getpulse.run";
+const SITE = "https://www.getpulse.run";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),

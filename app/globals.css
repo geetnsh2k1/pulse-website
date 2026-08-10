@@ -23,6 +23,7 @@
 html {
   scroll-behavior: smooth;
   color-scheme: dark;
+  overflow-x: clip;
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
@@ -31,7 +32,7 @@ html {
 body {
   background: var(--color-bg);
   color: var(--color-fg);
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 /* ambient texture: dot grid + film grain, fixed behind everything */
@@ -434,7 +435,11 @@ a:focus-visible, button:focus-visible {
 .band::before {
   content: "";
   position: absolute;
-  inset: 0 -100vw;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
   z-index: -1;
   background: linear-gradient(
     180deg,

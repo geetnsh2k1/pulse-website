@@ -1031,8 +1031,8 @@ const appLd = {
   softwareVersion: "0.1.0",
   description:
     "Run AWS Lambda, SQS and DynamoDB locally without Docker. pulse is a fast local serverless development environment with hot reload, event replay, queues and workers.",
-  url: "https://getpulse.run",
-  image: "https://getpulse.run/opengraph-image.png",
+  url: "https://www.getpulse.run",
+  image: "https://www.getpulse.run/opengraph-image.png",
   downloadUrl: `${GH}/releases`,
   license: "https://www.apache.org/licenses/LICENSE-2.0",
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },

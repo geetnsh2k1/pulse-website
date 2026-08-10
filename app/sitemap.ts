@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const SITE = "https://getpulse.run";
+const SITE = "https://www.getpulse.run";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
