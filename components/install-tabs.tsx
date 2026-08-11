@@ -17,7 +17,8 @@ const METHODS = [
     id: "curl",
     label: "curl",
     note: "macOS · Linux",
-    cmd: "curl -fsSL https://raw.githubusercontent.com/geetnsh2k1/pulse/master/scripts/install.sh | sh",
+    // /install.sh is a rewrite to the script in the CLI repo — see next.config.ts
+    cmd: "curl -fsSL https://getpulse.run/install.sh | sh",
   },
   {
     id: "go",

@@ -4,6 +4,7 @@ import { InstallTabs } from "@/components/install-tabs";
 import { InspectTabs, type InspectTab } from "@/components/inspect-tabs";
 import { PulseLine } from "@/components/pulse-line";
 import { PulseLogo } from "@/components/mark";
+import { NavMenu } from "@/components/nav-menu";
 import { CountUp } from "@/components/fx";
 
 const GH = "https://github.com/geetnsh2k1/pulse";
@@ -128,6 +129,7 @@ export default function Page() {
             >
               Get started
             </TrackLink>
+            <NavMenu links={navLinks} githubHref={GH} />
           </div>
         </div>
       </nav>
@@ -806,12 +808,17 @@ const templates: [string, string, React.ReactNode][] = [
 // one array, so the schema can never drift from the visible text (a Google
 // requirement). Adding a question here adds it to both.
 //
-// The five the design ships. Five more (replaces sam local? / requires Docker?
-// / which languages? / works offline? / debug SQS locally?) were written and
-// then cut for length — recover them from git history rather than rewriting.
+// Eight, ordered the way a skeptic asks them: does it work → what's the catch
+// → how does it compare → will it fit my code → what happens after. Each one
+// answers a distinct objection; anything already answered by a section above
+// (can I debug queues? does it work offline?) is deliberately left out so the
+// list stays readable.
 const faqs: [string, string][] = [
   ["Can I really run AWS Lambda locally?", "Yes. pulse runs your functions natively against the real Lambda Runtime API — the same contract AWS uses in production. Node.js and Python, no Docker, ready in about 100 milliseconds."],
+  ["Does pulse require Docker?", "No. pulse is one ~20 MB binary that runs your functions as native processes — no images to pull, no containers to boot, no daemon idling in the background. A complete app with an API, a queue, a worker and a table sits around 50 MB of memory, which is why it starts in milliseconds instead of tens of seconds."],
+  ["Which languages does pulse support?", "Node.js and Python today. Every template ships in both, and handlers are plain AWS SDK code with no pulse imports to remove later. The other Lambda runtimes — Java, Go, .NET, Ruby — are not supported yet, and pulse says so plainly rather than half-running them."],
   ["Is pulse a LocalStack alternative?", "For the inner development loop, yes. LocalStack emulates ~100 AWS services inside Docker and shines at testing infrastructure code. pulse does one workflow completely — Lambda, HTTP, SQS, DynamoDB — natively, with dev-server ergonomics: hot reload, event replay, a live monitor."],
+  ["Does pulse replace sam local?", "They do different jobs. sam local starts a container per invocation and cannot run the queue → worker → dead-letter-queue loop continuously; pulse runs your whole app as a long-lived local cloud with hot reload. Your deploy pipeline keeps using SAM or CDK — pulse is development-time only and never touches it."],
   ["Does it work with boto3 and the AWS SDK?", "Yes — plain boto3 in Python, AWS SDK for JavaScript v3 in Node. pulse sets AWS_ENDPOINT_URL for your functions automatically, so the same code talks to pulse locally and to real AWS in production."],
   ["Does my data survive restarts?", "Yes. DynamoDB items, queued messages and event history persist in .pulse/data (SQLite). Stop the engine, restart tomorrow — everything is still there, free, by default."],
   ["How do I deploy an app built with pulse?", "With whatever you already use — SAM, CDK or the Serverless Framework. pulse is development-time only and your code is vanilla AWS SDK throughout, so there is nothing to strip out."],
@@ -827,7 +834,10 @@ const appLd = {
   description:
     "Run AWS Lambda, SQS and DynamoDB locally without Docker. pulse is a fast local serverless development environment with hot reload, event replay, queues and workers.",
   url: "https://www.getpulse.run",
-  image: "https://www.getpulse.run/opengraph-image.png",
+  // the generated route, not a file — /opengraph-image.png no longer exists.
+  // Next appends a cache-busting query to the <meta> tag, but the bare path
+  // serves the same PNG and is stable across deploys, which is what schema wants.
+  image: "https://www.getpulse.run/opengraph-image",
   downloadUrl: `${GH}/releases`,
   license: "https://www.apache.org/licenses/LICENSE-2.0",
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
