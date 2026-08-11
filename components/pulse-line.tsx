@@ -16,29 +16,36 @@ const VIEWS = {
   tight: "222 0 116 64",
 } as const;
 
+// stretch: fill the box non-uniformly — for the long flat runs that connect
+// two labels in a row. Strokes stop scaling with it, so the line stays 2px
+// however wide the gap gets.
 export function PulseLine({
   className = "",
   crop = "full",
+  stretch = false,
 }: {
   className?: string;
   crop?: keyof typeof VIEWS;
+  stretch?: boolean;
 }) {
   const sw = crop === "tight" ? 3 : 2;
+  const ve = stretch ? "non-scaling-stroke" : undefined;
   return (
     <svg
       viewBox={VIEWS[crop]}
       fill="none"
       aria-hidden="true"
       className={className}
-      preserveAspectRatio="xMidYMid meet"
+      preserveAspectRatio={stretch ? "none" : "xMidYMid meet"}
     >
-      <path d={D} className="ecg-base" strokeWidth={sw} strokeLinejoin="round" />
+      <path d={D} className="ecg-base" strokeWidth={sw} strokeLinejoin="round" vectorEffect={ve} />
       <path
         d={D}
         className="ecg-path"
         strokeWidth={sw}
         strokeLinecap="round"
         strokeLinejoin="round"
+        vectorEffect={ve}
       />
     </svg>
   );

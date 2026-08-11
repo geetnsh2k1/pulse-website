@@ -1,7 +1,8 @@
 "use client";
 
-// The hero terminal: types the real golden demo in a loop. Verbatim outputs
-// from the actual CLI — nothing invented.
+// The hero terminal: types the real golden demo in a loop — init, start, one
+// curl, and the background job that follows it. Verbatim outputs from the
+// actual CLI — nothing invented.
 //
 // Smoothness rules:
 // - the body is FIXED height and scrolls internally like a real terminal,
@@ -14,15 +15,12 @@ import { useEffect, useRef } from "react";
 type Step = { t: "type"; text: string } | { t: "out"; html: string };
 
 const script: Step[] = [
-  { t: "type", text: "pulse init shop --template api-and-worker --lang python" },
-  { t: "out", html: '<span class="text-tgreen">✓</span> created project <b>shop</b> <span class="text-dim">from template api-and-worker (python)</span>\n  <span class="text-tgreen">✓</span> <span class="text-dim">installing python dependencies — done (6.6s)</span>' },
+  { t: "type", text: "pulse init shop -t api-and-worker --lang python" },
+  { t: "out", html: '<span class="text-tgreen">✓</span> created project <b class="font-medium text-fg">shop</b> <span class="text-faint">· installing dependencies — done (6.6s)</span>' },
   { t: "type", text: "pulse start" },
-  { t: "out", html: '<span class="text-amber">⚡ pulse</span> <span class="text-dim">0.1.0 —</span> <b>shop</b>\n  <span class="text-dim">api</span>        http://localhost:3000\n  <span class="text-dim">routes</span>     <b>POST</b> /orders <span class="text-dim">→</span> <span class="text-tcyan">createOrder</span>\n  <span class="text-dim">try</span>        <span class="text-amber">curl -X POST localhost:3000/orders -d \'{"sku":"A1","qty":2}\'</span>\n<span class="text-tgreen">ready in 99ms</span> <span class="text-dim">— edits apply live</span>' },
+  { t: "out", html: '<span class="text-faint">  functions</span>  createOrder · getOrder · worker\n<span class="text-faint">  api</span>        http://localhost:3000\n<span class="text-faint">  routes</span>     POST /orders <span class="text-faint">→</span> <span class="text-tcyan">createOrder</span>\n<span class="text-tgreen">ready in 99ms</span> <span class="text-faint">— code &amp; pulse.yaml changes apply live</span>' },
   { t: "type", text: 'curl -X POST localhost:3000/orders -d \'{"sku":"A1","qty":2}\'' },
-  { t: "out", html: '<span class="text-dim">201</span> {"id":"e9b4…","status":"pending"}\n  <span class="text-tcyan">⚙ sqs order-events → worker · ok</span>\n<span class="text-amber">🎉 first background job processed — your async loop works end to end</span>' },
-  { t: "type", text: "curl localhost:3000/orders/e9b4…" },
-  { t: "out", html: '{"id":"e9b4…","status":<span class="text-tgreen">"processed"</span>}   <span class="text-dim">← the worker got there first</span>' },
-  { t: "out", html: '<span class="text-dim">— an API, a queue, a worker, and a database. all local. —</span>' },
+  { t: "out", html: '<span class="text-faint">201</span> {"id":"e9b4…","status":"pending"}\n<span class="text-tcyan">  ⚙ sqs order-events → worker · batch of 1 · ok</span>\n<span class="text-amber">🎉 first background job processed — your async loop works end to end</span>' },
 ];
 
 function esc(x: string) {
@@ -31,12 +29,13 @@ function esc(x: string) {
 
 // Server-rendered final frame: the terminal paints full at first paint (it is
 // the largest element on mobile — an empty box would push LCP to whenever the
-// typing loop finishes). Desktop fades from this into the live typing.
+// typing loop finishes). Desktop fades from this into the live typing. The
+// caret rides at the end of the last line, where a real prompt would sit.
 const FINAL_FRAME = script
-  .map((s) =>
+  .map((s, i) =>
     s.t === "type"
       ? `<div><span class="text-amber">$ ${esc(s.text)}</span></div>`
-      : `<div class="tout tout-ssr">${s.html}</div>`
+      : `<div class="tout tout-ssr">${s.html}${i === script.length - 1 ? ' <span class="cursor-blink"></span>' : ""}</div>`
   )
   .join("");
 
@@ -114,8 +113,9 @@ export function Terminal() {
       if (s.t === "type") {
         typeLine(s.text, () => run(idx + 1));
       } else {
-        el.appendChild(outBlock(s.html));
-        el.appendChild(cursor); // cursor waits on its own line below the output
+        const block = outBlock(s.html);
+        el.appendChild(block);
+        block.appendChild(cursor); // caret rides at the end of the last line
         tail();
         later(() => run(idx + 1), idx === script.length - 1 ? 60 : 620);
       }
@@ -138,20 +138,25 @@ export function Terminal() {
   }, []);
 
   return (
-    <div className="term mx-auto mt-3 w-full max-w-[880px]">
+    <div className="term mt-3.5 w-full shadow-[0_40px_100px_-40px_rgba(0,0,0,0.9),0_30px_110px_-50px_rgba(255,171,51,0.18)]">
       <div className="term-head">
         <span className="dot bg-[#ff5f57]" />
         <span className="dot bg-[#febc2e]" />
         <span className="dot bg-[#28c840]" />
-        <span className="ml-2">~/shop — the whole loop, typed live</span>
-        <span className="ml-auto flex items-center gap-2 normal-case">
+        <span className="ml-2 truncate">~/shop — the whole loop</span>
+        <span className="ml-auto flex items-center gap-2">
           <span className="blip" aria-hidden="true" />
           <span className="text-tgreen">live</span>
         </span>
       </div>
+      {/* 28em is the finished frame's own height, so the loop has room to type
+          without the page shifting and without a dead band under the last
+          line. Below md the loop doesn't run (see the effect) — the transcript
+          just flows, since a scroll box inside a phone screen is worse than a
+          tall one. */}
       <div
         ref={ref}
-        className="term-body term-stream h-[25em] overflow-y-auto overscroll-contain text-[13.5px] [scrollbar-width:thin]"
+        className="term-body term-stream overflow-y-auto overscroll-contain md:h-[28em] [scrollbar-width:thin]"
         dangerouslySetInnerHTML={{ __html: FINAL_FRAME }}
       />
     </div>

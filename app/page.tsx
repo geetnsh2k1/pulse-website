@@ -3,42 +3,50 @@ import { TrackLink, Reveal } from "@/components/interactive";
 import { InstallTabs } from "@/components/install-tabs";
 import { InspectTabs, type InspectTab } from "@/components/inspect-tabs";
 import { PulseLine } from "@/components/pulse-line";
-import { FlowDiagram } from "@/components/flow-diagram";
-import { Spotlight, CountUp } from "@/components/fx";
-import { ScrollProgress } from "@/components/scroll-progress";
+import { PulseLogo } from "@/components/mark";
+import { CountUp } from "@/components/fx";
 
 const GH = "https://github.com/geetnsh2k1/pulse";
 const GUIDE = `${GH}/blob/master/docs/GUIDE.md`;
 
-// Small right-aligned doc pathway at the end of a section.
-function LearnMore({ href, target, label }: { href: string; target: string; label: string }) {
+/* The page shell: 18px gutters on phones, 28px above. Most sections run to
+   1180px; the hero and the FAQ hold a narrower column of their own, so the
+   width is always stated next to GUTTER rather than baked into it (two
+   max-w-* utilities on one element resolve by stylesheet order, not by the
+   order you wrote them). Sections alternate page background and .slab. */
+const GUTTER = "px-[18px] min-[620px]:px-7";
+const SHELL = `mx-auto max-w-[1180px] ${GUTTER}`;
+const BAND_PAD = "py-[76px] min-[760px]:py-[104px]";
+const SECTION_PAD = "pt-[76px] pb-[76px] min-[760px]:pt-[112px] min-[760px]:pb-[104px]";
+
+// Centered section header: numbered eyebrow, headline, one line of lede.
+function Head({
+  idx, kick, title, lede, width = "max-w-[44ch]",
+}: {
+  idx: string; kick: string; title: React.ReactNode; lede?: React.ReactNode; width?: string;
+}) {
   return (
-    <div className="mt-7 text-right">
-      <TrackLink
-        href={href}
-        event="outbound"
-        props={{ target }}
-        className="font-mono text-[13px] text-amber transition-colors hover:text-amber-soft"
-      >
-        {label} →
-      </TrackLink>
+    <div className={`mx-auto text-center ${width}`}>
+      <span className="eyebrow">
+        <i>{idx}</i> {kick}
+      </span>
+      <h2 className="text-balance text-[clamp(26px,3.8vw,42px)] font-semibold leading-[1.14] tracking-[-0.035em]">
+        {title}
+      </h2>
+      {/* pretty, not balance: the headline above is balanced, but for body copy
+          we only want the last-line orphan avoided. Ignored where unsupported. */}
+      {lede && <p className="mt-3.5 text-[16px] leading-[1.65] text-dim [text-wrap:pretty]">{lede}</p>}
     </div>
   );
 }
 
-// ⚠️ PLACEHOLDER QUOTES below (see `testimonials`). Replace them with real
-// ones — or flip this to false — before sharing the site publicly.
-const SHOW_TESTIMONIALS = false; // flip when real quotes exist
-
-function SectionHead({ idx, kick, title, lede }: { idx: string; kick: string; title: string; lede?: string }) {
+// A ✓ bullet, the shape used in both feature rows.
+function Tick({ children }: { children: React.ReactNode }) {
   return (
-    <div className="max-w-[72ch]">
-      <p className="kick mb-4">
-        <span className="idx">[{idx}]</span> {kick}
-      </p>
-      <h2 className="text-balance text-[clamp(28px,4.5vw,44px)] font-bold leading-[1.08] tracking-tight">{title}</h2>
-      {lede && <p className="mt-4 text-[clamp(16px,2.1vw,18.5px)] leading-relaxed text-dim">{lede}</p>}
-    </div>
+    <li className="flex gap-2.5">
+      <span className="shrink-0 text-tgreen">✓</span>
+      {children}
+    </li>
   );
 }
 
@@ -48,7 +56,7 @@ function gap(v: string) {
     return (
       <>
         <span className="text-tred">✗</span>
-        {v !== "—" && <span className="ml-1.5 text-faint">{v}</span>}
+        {v !== "—" && <span className="ml-1.5">{v}</span>}
       </>
     );
   }
@@ -56,9 +64,17 @@ function gap(v: string) {
 }
 
 const GitHubIcon = (
-  <svg viewBox="0 0 16 16" fill="currentColor" className="h-4 w-4" aria-hidden="true">
+  <svg viewBox="0 0 16 16" fill="currentColor" className="size-4 shrink-0" aria-hidden="true">
     <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
   </svg>
+);
+
+const TermDots = (
+  <>
+    <span className="dot bg-[#ff5f57]" />
+    <span className="dot bg-[#febc2e]" />
+    <span className="dot bg-[#28c840]" />
+  </>
 );
 
 export default function Page() {
@@ -68,38 +84,48 @@ export default function Page() {
           scripts (naive validators can't read @graph). FAQ JSON is generated
           from the same `faqs` array that renders below, so the schema always
           matches the visible text — a Google requirement. */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(appLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }}
-      />
-      <ScrollProgress />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(appLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }} />
 
       {/* ───────────────────────── nav ───────────────────────── */}
-      <nav className="sticky top-0 z-50 border-b border-edge/70 bg-bg/75 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-[1160px] items-center gap-7 px-6">
-          <a href="#top" className="flex items-center gap-2.5 text-[17px] font-bold text-fg">
-            <PulseLine crop="tight" className="h-6 w-11" />
-            pulse
+      <nav className="sticky top-0 z-50 border-b border-edge/80 bg-bg/[0.78] backdrop-blur-[18px]">
+        <div className={`flex h-[70px] items-center gap-[34px] ${SHELL}`}>
+          <a href="#top" aria-label="pulse — back to top">
+            <PulseLogo />
           </a>
-          <div className="ml-4 hidden gap-5 whitespace-nowrap md:flex lg:gap-6">
-            <a className="text-[14px] text-dim transition-colors hover:text-fg" href="#features">Features</a>
-            <a className="text-[14px] text-dim transition-colors hover:text-fg" href="#journey">How it works</a>
-            <a className="text-[14px] text-dim transition-colors hover:text-fg" href="#inspect">Inspect</a>
-            <a className="text-[14px] text-dim transition-colors hover:text-fg" href="#compare">Compare</a>
-            <TrackLink className="text-[14px] text-dim transition-colors hover:text-fg" href={`${GH}/blob/master/docs/GUIDE.md`} event="outbound" props={{ target: "docs" }}>
-              Docs
-            </TrackLink>
+          {/* 940, not the design's 860: our GitHub button spells the word out
+              where the design showed a star count, so the row needs ~890px
+              before the links stop squeezing the CTAs into two lines. */}
+          <div className="hidden items-center gap-[26px] min-[940px]:flex">
+            {navLinks.map(([label, href]) => (
+              <a
+                key={href}
+                href={href}
+                /* py-1 lifts the 22px text to a 30px target (WCAG 2.5.8 wants
+                   24); the bar's fixed height absorbs it */
+                className="py-1 text-[14.5px] text-dim transition-colors hover:text-fg"
+              >
+                {label}
+              </a>
+            ))}
           </div>
-          <div className="ml-auto flex items-center gap-3 whitespace-nowrap">
-            <TrackLink href={GH} event="cta_click" props={{ cta: "github", location: "nav" }} className="btn btn-ghost !px-3.5 !py-2 text-[14px]" aria-label="pulse on GitHub">
-              {GitHubIcon}
-              <span className="hidden sm:inline md:hidden lg:inline">GitHub</span>
-            </TrackLink>
-            <TrackLink href="#get-started" event="cta_click" props={{ cta: "get-started", location: "nav" }} className="btn btn-primary !px-4 !py-2 text-[14px]">
+          <div className="ml-auto flex items-center gap-3">
+            <span className="hidden min-[620px]:block">
+              <TrackLink
+                href={GH}
+                event="cta_click"
+                props={{ cta: "github", location: "nav" }}
+                className="btn btn-ghost btn-sm whitespace-nowrap !font-medium !text-mute hover:!text-fg"
+              >
+                {GitHubIcon} GitHub
+              </TrackLink>
+            </span>
+            <TrackLink
+              href="#install"
+              event="cta_click"
+              props={{ cta: "get-started", location: "nav" }}
+              className="btn btn-primary btn-sm whitespace-nowrap"
+            >
               Get started
             </TrackLink>
           </div>
@@ -108,29 +134,42 @@ export default function Page() {
 
       {/* ───────────────────────── hero ───────────────────────── */}
       <header id="top" className="relative overflow-hidden">
-        <div className="pointer-events-none absolute inset-x-[-25%] top-[-45%] h-[95%] bg-[radial-gradient(58%_55%_at_50%_0%,rgba(255,171,51,0.14),transparent_70%)]" />
-        {/* near-invisible request pulses drifting through the hero — the motif */}
-        <PulseLine className="pointer-events-none absolute left-[-6%] top-[22%] h-8 w-[46%] opacity-[0.055]" />
-        <PulseLine className="pointer-events-none absolute right-[-8%] top-[38%] h-8 w-[52%] opacity-[0.045]" />
-        <div className="relative mx-auto grid max-w-[1160px] justify-items-center gap-7 px-6 pt-16 text-center sm:pt-24 md:pt-28">
-          <span className="chip">
+        <div className="pointer-events-none absolute inset-x-[-20%] top-[-34%] h-[92%] bg-[radial-gradient(52%_50%_at_50%_0%,rgba(255,171,51,0.13),transparent_70%)]" />
+        <div className="dotgrid pointer-events-none absolute inset-0 opacity-50" />
+
+        <div
+          className={`relative mx-auto grid max-w-[1000px] justify-items-center gap-[26px] pt-[52px] text-center min-[760px]:pt-[68px] ${GUTTER}`}
+        >
+          <span className="inline-flex items-center gap-2.5 rounded-full border border-amber/[0.28] bg-amber/[0.06] px-4 py-[7px] font-mono text-[12px] text-amber-soft">
             <span className="blip" aria-hidden="true" />
             v0.1.0 · open source · Apache-2.0
           </span>
-          <div>
-            <h1 className="mx-auto max-w-[24ch] text-balance text-[clamp(31px,5.6vw,64px)] font-bold leading-[1.06] tracking-[-0.02em]">
-              Run AWS Lambda, SQS and DynamoDB <em className="not-italic text-amber">locally</em> — without Docker
-            </h1>
-            <p className="mt-4 text-[clamp(16px,2.4vw,21px)] font-medium text-fg/90">
-              The dev server AWS Lambda never had.
-            </p>
-            <PulseLine crop="mid" className="mx-auto mt-5 h-10 w-[min(400px,78%)]" />
-          </div>
-          <div className="flex flex-wrap justify-center gap-3.5">
-            <TrackLink href="#get-started" event="cta_click" props={{ cta: "get-started", location: "hero" }} className="btn btn-primary btn-beat">
+
+          <h1 className="max-w-[17ch] text-balance text-[clamp(34px,6vw,68px)] font-bold leading-[1.06] tracking-[-0.035em]">
+            Run AWS Lambda, SQS and DynamoDB <em className="not-italic text-amber">locally</em> — without Docker
+          </h1>
+          <p className="max-w-[52ch] text-[clamp(15px,2vw,19px)] leading-[1.6] text-dim">
+            The dev server AWS Lambda never had. Your whole app — API, queues, workers, tables —
+            running natively on your laptop in 99 milliseconds.
+          </p>
+
+          {/* stacked on a phone, they read as two equal blocks rather than two
+              differently-sized pills */}
+          <div className="flex w-full flex-wrap justify-center gap-3 min-[520px]:w-auto">
+            <TrackLink
+              href="#install"
+              event="cta_click"
+              props={{ cta: "get-started", location: "hero" }}
+              className="btn btn-primary btn-beat w-full min-[520px]:w-auto"
+            >
               Install pulse
             </TrackLink>
-            <TrackLink href={GH} event="cta_click" props={{ cta: "github", location: "hero" }} className="btn btn-ghost">
+            <TrackLink
+              href={GH}
+              event="cta_click"
+              props={{ cta: "github", location: "hero" }}
+              className="btn btn-ghost w-full min-[520px]:w-auto"
+            >
               {GitHubIcon} Star on GitHub
             </TrackLink>
           </div>
@@ -138,756 +177,482 @@ export default function Page() {
           {/* the product IS the hero: real CLI, typed live */}
           <Terminal />
 
-          {/* the request path, one line, always moving */}
-          <div className="hidden w-full max-w-[880px] rounded-xl border border-edge/70 bg-panel/30 px-5 pb-3 pt-2.5 md:block">
-            <p className="mb-2 text-center font-mono text-[11px] text-faint">
-              edit · save · replay · deploy — never wait for Docker again
-            </p>
-            <FlowDiagram compact />
-          </div>
-
           {/* numbers with a "compared to what" (measured, not marketed) */}
-          <div className="grid w-full max-w-[880px] grid-cols-2 gap-3 lg:grid-cols-4" aria-label="performance, enforced by CI">
-            {([
-              [99, " ms", "engine ready", "containers: 10–30 s"],
-              [17, " ms", "warm invoke", "no cold containers"],
-              [50, " MB", "memory, app running", "Docker stacks: 2 GB+"],
-              [0, "", "", ""],
-            ] as [number, string, string, string][]).map(([n, s, l, c]) =>
-              l ? (
-                <div key={l} className="rounded-xl border border-edge bg-panel/50 px-4 py-3.5 text-center font-mono">
-                  <CountUp to={n} suffix={s} className="text-[22px] font-bold tabular-nums text-amber" />
-                  <span className="mt-0.5 block text-[12px] text-dim">{l}</span>
-                  <span className="mt-2 block border-t border-edge/70 pt-1.5 text-[10.5px] text-faint">{c}</span>
+          <div
+            className="tracks grid w-full grid-cols-1 gap-3.5 min-[620px]:grid-cols-2 min-[860px]:grid-cols-4"
+            aria-label="performance, enforced by CI"
+          >
+            {stats.map(([n, suffix, label, note]) => (
+              <div key={label} className="rounded-[14px] border border-edge bg-bg2 px-[18px] py-5 text-left">
+                <div className="text-[26px] font-bold tabular-nums tracking-[-0.03em] text-amber">
+                  {typeof n === "number" ? <CountUp to={n} suffix={suffix} /> : `${n}${suffix}`}
                 </div>
-              ) : (
-                <div key="zero" className="rounded-xl border border-edge bg-panel/50 px-4 py-3.5 text-center font-mono">
-                  <b className="text-[22px] font-bold tabular-nums text-amber">$0</b>
-                  <span className="mt-0.5 block text-[12px] text-dim">to learn & build</span>
-                  <span className="mt-2 block border-t border-edge/70 pt-1.5 text-[10.5px] text-faint">no AWS account needed</span>
-                </div>
-              )
-            )}
+                <div className="mt-1.5 text-[13.5px] font-medium text-fg">{label}</div>
+                <div className="mt-[3px] font-mono text-[11px] text-faint">{note}</div>
+              </div>
+            ))}
           </div>
           <TrackLink
             href={`${GH}/blob/master/internal/perf/perf_test.go`}
             event="outbound"
             props={{ target: "perf-ci" }}
-            className="-mt-2 font-mono text-[12px] text-faint underline decoration-edge underline-offset-4 transition-colors hover:text-dim"
+            className="py-1 font-mono text-[11.5px] text-faint underline decoration-edge underline-offset-4 transition-colors hover:text-dim"
           >
             measured on every CI run — a slower pulse is a failed build ↗
           </TrackLink>
         </div>
       </header>
 
-      {/* ─────────────────── works-with strip ─────────────────── */}
-      <div className="mt-12 border-y border-edge bg-bg2/60 md:mt-18">
-        <div className="mx-auto flex max-w-[1160px] flex-wrap items-center justify-center gap-x-3.5 gap-y-3 px-6 py-5">
-          <span className="mr-2 font-mono text-[12.5px] text-faint">integrates with what you already use</span>
-          {["boto3", "AWS SDK JS v3", "SAM · CDK · Serverless Framework deploys", "GitHub Actions", "macOS · Linux", "zsh · bash · fish"].map((t) => (
-            <span key={t} className="chip !text-fg/85">{t}</span>
-          ))}
-        </div>
-      </div>
+      {/* ───────────────────── 01 · features ───────────────────── */}
+      <section id="features" className={`${SHELL} ${SECTION_PAD}`}>
+        <Reveal section="features">
+          <Head
+            idx="01"
+            kick="features"
+            title="A local cloud that keeps up with your typing"
+            lede="No containers to build, no orchestration to debug. Just your app, running."
+          />
+        </Reveal>
 
-      {/* SEO lede — what pulse is, in one crawlable paragraph */}
-      <p className="mx-auto mt-14 max-w-[72ch] px-6 text-center text-[clamp(15px,2vw,17.5px)] leading-relaxed text-dim">
-        pulse is a fast local serverless development environment: build and debug AWS Lambda
-        functions with instant hot reload, real SQS queues, local DynamoDB tables, and event
-        replay. It speaks the real AWS protocols, so your production code runs unchanged —
-        no Docker, no AWS account, no mocks in your handlers.
-      </p>
-
-      <main className="mx-auto max-w-[1160px] px-6">
-        {/* ───────── the switch: what you do today vs with pulse ───────── */}
-        <section id="switch" className="pt-16 md:pt-20">
-          <Reveal section="switch">
-            <div className="mx-auto max-w-[900px]">
-              <p className="text-center text-[15.5px] text-dim">
-                Already using <b className="font-medium text-fg">LocalStack</b>,{" "}
-                <b className="font-medium text-fg">sam local</b>, or a hand-rolled{" "}
-                <b className="font-medium text-fg">docker-compose</b>? Here&apos;s the trade
-                you&apos;re making today:
-              </p>
-              <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                <div className="rounded-xl border border-edge bg-bg2/60 p-5">
-                  <p className="font-mono text-[11.5px] uppercase tracking-[0.14em] text-faint">your current loop</p>
-                  <ul className="mt-3 space-y-2.5 text-[13.5px] leading-snug text-dim">
-                    {[
-                      "start Docker, pull GB images",
-                      "wait 10–30 s for containers",
-                      "hand-wire endpoints & env vars",
-                      "restart after every change",
-                      "lose the event that crashed it",
-                    ].map((t) => (
-                      <li key={t} className="flex gap-2"><span className="shrink-0 text-tred">✗</span>{t}</li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="rounded-xl border border-amber/30 bg-panel p-5">
-                  <p className="font-mono text-[11.5px] uppercase tracking-[0.14em] text-amber">the pulse loop</p>
-                  <ul className="mt-3 space-y-2.5 text-[13.5px] leading-snug text-dim">
-                    {[
-                      "pulse start — one binary",
-                      "ready in 99 ms",
-                      "endpoints auto-configured",
-                      "save a file — it's live",
-                      "replay any event, byte for byte",
-                    ].map((t) => (
-                      <li key={t} className="flex gap-2"><span className="shrink-0 text-tgreen">✓</span>{t}</li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </Reveal>
-        </section>
-
-        {/* ─────────────── follow one request (signature) ─────────────── */}
-        <section id="journey" className="pt-20 md:pt-32">
-          <Reveal section="journey">
-            <div className="max-w-[72ch]">
-              <p className="kick mb-4">follow one request</p>
-              <h2 className="text-balance text-[clamp(28px,4.5vw,44px)] font-bold leading-[1.08] tracking-tight">
-                One order, end to end — entirely on your laptop
-              </h2>
-              <p className="mt-4 text-[clamp(16px,2.1vw,18.5px)] leading-relaxed text-dim">
-                From an empty directory to a replayable request — every line below is real output.
-              </p>
-            </div>
-          </Reveal>
-
-          {/* minmax(0,1fr), not 1fr: a plain fr track has min-width:auto, so a
-              wide <pre> would stretch the row past the viewport instead of
-              scrolling inside its own box (mobile overflow). */}
-          <div className="mt-12 max-w-[780px]">
-            {journey.map(([title, sub, snippet], i) => (
-              <div key={title} className="grid grid-cols-[22px_minmax(0,1fr)] gap-x-4 sm:gap-x-6">
-                <div className="flex flex-col items-center">
-                  <span className="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full border border-amber bg-bg shadow-[0_0_10px_rgba(255,171,51,0.5)]" />
-                  {i < journey.length - 1 && (
-                    <div className="vtrack my-1 w-0 flex-1">
-                      <span className="vdot" style={{ animationDelay: `${i * 0.3}s` }} />
-                    </div>
-                  )}
-                </div>
-                <Reveal delay={Math.min(i * 50, 200)} className={`min-w-0 ${i < journey.length - 1 ? "pb-7" : ""}`}>
-                  <div className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
-                    <h3 className="text-[16px] font-semibold">{title}</h3>
-                    <span className="font-mono text-[11.5px] text-faint">{sub}</span>
-                  </div>
-                  <pre
-                    className="mt-2.5 overflow-x-auto rounded-lg border border-edge bg-bg2/80 px-4 py-2.5 font-mono text-[12.3px] leading-[1.7]"
-                    dangerouslySetInnerHTML={{ __html: snippet }}
-                  />
-                </Reveal>
-              </div>
-            ))}
-          </div>
-          <LearnMore href={`${GUIDE}#1-start-here`} target="guide-journey" label="The full start-here walkthrough" />
-        </section>
-
-        {/* ───────────────────── features (bento) ───────────────────── */}
-        <section id="features" className="pt-20 md:pt-32">
-          <Reveal section="features">
-            <SectionHead
-              idx="01"
-              kick="features"
-              title="A local cloud that keeps up with your typing"
-              lede="Fidelity from the real AWS protocols, speed from native processes — here's what that buys you every day."
-            />
-          </Reveal>
-
-          <Spotlight className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-12">
-            {/* async loop — the differentiator */}
-            <Reveal className="md:col-span-2 lg:col-span-7" delay={0}>
-              <div className="bento h-full p-7">
-                <h3 className="text-[18px] font-semibold">The async loop, actually local</h3>
-                <p className="mt-2 max-w-[52ch] text-[14.5px] leading-relaxed text-dim">
-                  Local SQS queues deliver to workers — visibility timeouts, retries, DLQs —
-                  narrated live in your console.
+        <div className="tracks mt-13 flex flex-col gap-4">
+          {/* the async loop — the thing no other local tool does */}
+          <Reveal>
+            <div className="sheet tracks grid items-center gap-7 rounded-[20px] p-[26px] min-[980px]:grid-cols-2 min-[980px]:gap-10 min-[980px]:p-9">
+              <div>
+                <span className="inline-flex rounded-[7px] border border-amber/[0.28] bg-amber/[0.08] px-[11px] py-[5px] font-mono text-[11px] uppercase tracking-[0.14em] text-amber-soft">
+                  sqs · retries · dlq
+                </span>
+                <h3 className="mt-[18px] text-[23px] font-semibold tracking-[-0.028em]">
+                  Push to a queue, handle it in a worker
+                </h3>
+                <p className="mt-3 max-w-[44ch] text-[15px] leading-[1.7] text-dim">
+                  You never call a worker yourself. pulse watches the queue and delivers.
                 </p>
-                <div className="mt-7 flex items-center gap-3 font-mono text-[12px]">
-                  <span className="shrink-0 rounded-lg border border-edge bg-bg2 px-3 py-2 text-fg">POST /orders</span>
-                  <div className="qtrack h-6 min-w-0 flex-1 border-b border-dashed border-edge2">
-                    <span className="qdot" />
-                    <span className="qdot" style={{ animationDelay: "1s" }} />
-                    <span className="qdot" style={{ animationDelay: "2s" }} />
-                  </div>
-                  <span className="shrink-0 rounded-lg border border-edge bg-bg2 px-3 py-2 text-fg">
-                    worker <span className="text-tgreen">✓</span>
-                  </span>
-                </div>
-                <div className="mt-3.5 flex flex-wrap gap-x-5 gap-y-1.5 font-mono text-[11.5px] text-faint">
-                  <span>visibility timeouts</span>
-                  <span>automatic retries</span>
-                  <span>
-                    gave up? → <span className="text-tred">orders-dlq</span>
-                  </span>
-                </div>
-              </div>
-            </Reveal>
-
-            {/* millisecond loop */}
-            <Reveal className="lg:col-span-5" delay={70}>
-              <div className="bento h-full p-7">
-                <h3 className="text-[18px] font-semibold">Hot reload, measured in CI</h3>
-                <p className="mt-2 text-[14.5px] leading-relaxed text-dim">
-                  Hot reload for AWS Lambda: save a file, the next request runs the new code.
-                </p>
-                <div className="cycle mt-5 space-y-1.5 font-mono text-[12px]">
-                  <div className="flex items-center gap-2.5 rounded-lg border border-edge bg-bg px-3.5 py-2"><span className="text-amber">⌘S</span> handler.py saved</div>
-                  <div className="flex items-center gap-2.5 rounded-lg border border-edge bg-bg px-3.5 py-2"><span className="text-amber">⟳</span> pulse hot-reloads the function</div>
-                  <div className="flex items-center gap-2.5 rounded-lg border border-edge bg-bg px-3.5 py-2"><span className="text-tgreen">→</span> next request runs the new code</div>
-                </div>
-                <div className="mt-4 font-mono text-[12.5px] text-dim">
-                  <CountUp to={17} suffix=" ms" className="font-bold text-amber" /> warm invoke · ready in 99 ms ·{" "}
-                  <span className="text-faint">a slow pulse is a failed build</span>
-                </div>
-              </div>
-            </Reveal>
-
-            {/* time travel */}
-            <Reveal className="lg:col-span-5" delay={0}>
-              <div className="bento h-full p-7">
-                <h3 className="text-[18px] font-semibold">Time travel debugging</h3>
-                <p className="mt-2 text-[14.5px] leading-relaxed text-dim">
-                  Every trigger recorded byte-for-byte — replay yesterday&apos;s crash against
-                  today&apos;s fix.
-                </p>
-                <div className="mt-5 space-y-1.5 font-mono text-[12px]">
-                  <div className="flex items-center gap-3 rounded-lg border border-edge bg-bg px-3.5 py-2.5">
-                    <span className="text-faint">yesterday</span>
-                    <span className="truncate text-fg">sqs event → worker</span>
-                    <span className="ml-auto shrink-0 text-tred">✗ error</span>
-                  </div>
-                  <div className="flex items-center gap-2 pl-3.5 text-[11.5px] text-faint">
-                    <span className="text-amber">↻</span> pulse events replay 8931cf5b
-                  </div>
-                  <div className="flex items-center gap-3 rounded-lg border border-tgreen/25 bg-bg px-3.5 py-2.5">
-                    <span className="text-faint">today</span>
-                    <span className="truncate text-fg">same event · fixed code</span>
-                    <span className="ml-auto shrink-0 text-tgreen">✓ success</span>
-                  </div>
-                </div>
-              </div>
-            </Reveal>
-
-            {/* real protocols */}
-            <Reveal className="md:col-span-2 lg:col-span-7" delay={70}>
-              <div className="bento h-full p-7">
-                <h3 className="text-[18px] font-semibold">Runs like AWS — because it speaks AWS</h3>
-                <p className="mt-2 max-w-[54ch] text-[14.5px] leading-relaxed text-dim">
-                  Plain AWS SDK in your handlers, one env var from pulse — nothing to delete
-                  before you deploy.
-                </p>
-                <div className="mt-5 flex flex-wrap gap-2.5">
-                  {["Lambda Runtime API", "SQS wire protocol", "DynamoDB expressions"].map((p) => (
-                    <span key={p} className="chip !text-fg/90">{p}</span>
-                  ))}
-                </div>
-                <pre className="mt-5 overflow-x-auto rounded-lg border border-edge bg-bg px-4 py-3.5 font-mono text-[12.5px] leading-[1.8]">
-                  <span className="text-faint"># handler.py — no pulse imports, no endpoint config</span>{"\n"}
-                  <span className="text-tcyan">import</span> boto3{"\n"}
-                  sqs = boto3.client(<span className="text-tgreen">&quot;sqs&quot;</span>){"\n"}
-                  {"\n"}
-                  <span className="text-faint"># local  → AWS_ENDPOINT_URL points at pulse (set for you)</span>{"\n"}
-                  <span className="text-faint"># prod   → same code. no endpoint. talks to AWS.</span>
-                </pre>
-              </div>
-            </Reveal>
-
-            {/* persistent state */}
-            <Reveal className="lg:col-span-4" delay={0}>
-              <div className="bento h-full p-6.5">
-                <h3 className="text-[17px] font-semibold">State that survives restarts</h3>
-                <p className="mt-2 text-[14px] leading-relaxed text-dim">
-                  Local DynamoDB items, queues, history — SQLite under the hood. Free, by default.
-                </p>
-                <div className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1.5 font-mono text-[11px]">
-                  <span className="rounded-md border border-edge bg-bg px-2 py-1 text-fg">PutItem</span>
-                  <span className="text-faint">→</span>
-                  <span className="rounded-md border border-edge bg-bg px-2 py-1 text-dim">.pulse/data</span>
-                  <span className="text-faint">→</span>
-                  <span className="rounded-md border border-edge bg-bg px-2 py-1 text-dim">restart ⟳</span>
-                  <span className="text-faint">→</span>
-                  <span className="rounded-md border border-tgreen/30 bg-bg px-2 py-1 text-tgreen">✓ still there</span>
-                </div>
-              </div>
-            </Reveal>
-
-            {/* CLI that teaches */}
-            <Reveal className="lg:col-span-4" delay={70}>
-              <div className="bento h-full p-6.5">
-                <h3 className="text-[17px] font-semibold">A CLI that teaches</h3>
-                <p className="mt-2 text-[14px] leading-relaxed text-dim">
-                  Run any command bare and it asks instead of erroring. Errors ship their fix.
-                </p>
-                <pre className="mt-4 overflow-x-auto rounded-lg border border-edge bg-bg px-3.5 py-3 font-mono text-[12px] leading-[1.8]" dangerouslySetInnerHTML={{ __html: pickerMini }} />
-              </div>
-            </Reveal>
-
-            {/* one binary */}
-            <Reveal className="md:col-span-2 lg:col-span-4" delay={140}>
-              <div className="bento h-full p-6.5">
-                <h3 className="text-[17px] font-semibold">One 20 MB binary</h3>
-                <p className="mt-2 text-[14px] leading-relaxed text-dim">
-                  No Docker, no images, no daemons. Runs happily on battery.
-                </p>
-                <div className="mt-5 space-y-2.5 font-mono text-[11.5px]">
-                  <div>
-                    <div className="mb-1 flex justify-between text-faint"><span>pulse, app running</span><span className="text-amber">50 MB</span></div>
-                    <div className="h-1.5 rounded-full bg-bg"><span className="bar bg-amber" style={{ "--w": "9%" } as React.CSSProperties} /></div>
-                  </div>
-                  <div>
-                    <div className="mb-1 flex justify-between text-faint"><span>a container stack</span><span>2 GB+</span></div>
-                    <div className="h-1.5 rounded-full bg-bg"><span className="bar bg-edge2" style={{ "--w": "96%" } as React.CSSProperties} /></div>
-                  </div>
-                </div>
-              </div>
-            </Reveal>
-          </Spotlight>
-          <LearnMore href={`${GUIDE}#3-build`} target="guide-features" label="Every feature, hands-on, in the guide" />
-
-          <Reveal className="mt-6">
-            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-3 rounded-2xl border border-edge bg-panel/40 px-6 py-5">
-              <span className="font-mono text-[13px] text-dim">sold on the loop?</span>
-              <TrackLink href="#get-started" event="cta_click" props={{ cta: "get-started", location: "features" }} className="btn btn-primary !py-2.5">
-                Install pulse
-              </TrackLink>
-              <TrackLink href={`${GH}#two-minutes-to-a-running-app`} event="outbound" props={{ target: "quickstart-features" }} className="btn btn-ghost !py-2.5">
-                2-minute quickstart
-              </TrackLink>
-            </div>
-          </Reveal>
-        </section>
-
-        {/* ───────────────────── inspect ───────────────────── */}
-        <section id="inspect" className="pt-20 md:pt-32">
-          <Reveal section="inspect">
-            <SectionHead
-              idx="02"
-              kick="inspect"
-              title="X-ray vision for your local cloud"
-              lede="Logs are where debugging starts, not where it ends. pulse records everything and gives you four ways to debug your Lambda functions, queues, and tables locally."
-            />
-          </Reveal>
-          <Reveal className="mt-12">
-            <InspectTabs tabs={inspectTabs} />
-          </Reveal>
-          <LearnMore href={`${GUIDE}#4-inspect`} target="guide-inspect" label="All four views, step by step" />
-        </section>
-
-        {/* ───────────────────── why pulse ───────────────────── */}
-        <section id="why" className="band pb-16 pt-20 md:pb-24 md:pt-32">
-          <Reveal section="why">
-            <SectionHead
-              idx="03"
-              kick="why pulse"
-              title="Local serverless development is broken. Here's the fix."
-            />
-          </Reveal>
-
-          <div className="mt-10 grid gap-10 lg:grid-cols-2 lg:gap-14">
-            <Reveal>
-              <h3 className="text-[19px] font-semibold">Why pulse exists</h3>
-              <div className="mt-3.5 space-y-4 text-[15px] leading-relaxed text-dim">
-                <p className="text-[16px] text-fg/90">
-                  Express has <em className="not-italic text-amber">nodemon</em>. Next has{" "}
-                  <em className="not-italic text-amber">next dev</em>. Vite <i>is</i> the dev
-                  server. Rails has <em className="not-italic text-amber">bin/dev</em>.
-                </p>
-                <p className="text-[16px] font-medium text-fg">AWS Lambda never got one.</p>
-                <p className="text-[16px] font-semibold text-amber">pulse changes that.</p>
-                <p>Serverless made deployment easy — and development weirdly hard. The workarounds:</p>
-                <ul className="space-y-2 text-[14.5px]">
-                  <li className="flex gap-2"><span className="shrink-0 text-tred">✗</span><span><b className="font-medium text-fg">Deploy to debug</b> — minutes per iteration, a real AWS bill per log line</span></li>
-                  <li className="flex gap-2"><span className="shrink-0 text-tred">✗</span><span><b className="font-medium text-fg">Mock everything</b> — tests that pass against code that isn&apos;t real</span></li>
-                  <li className="flex gap-2"><span className="shrink-0 text-tred">✗</span><span><b className="font-medium text-fg">Emulate in Docker</b> — GB images, slow containers, config drift</span></li>
+                <ul className="mt-4 flex flex-col gap-2.5 text-[14px] leading-[1.5] text-dim">
+                  <Tick>Visibility timeouts and automatic retries</Tick>
+                  <Tick>Dead-letter queue when it keeps failing</Tick>
+                  <Tick>
+                    The one thing <i>sam local</i> can&apos;t do at all
+                  </Tick>
                 </ul>
+                <div className="mt-[22px] flex items-center gap-3.5 font-mono text-[12.5px]">
+                  <span className="shrink-0 rounded-[10px] border border-edge bg-bg px-3.5 py-2.5">POST /orders</span>
+                  <PulseLine stretch className="h-[46px] min-w-10 flex-1" />
+                  <span className="shrink-0 rounded-[10px] border border-tgreen/30 bg-bg px-3.5 py-2.5 text-tgreen">
+                    worker ✓
+                  </span>
+                </div>
               </div>
+              <div className="term term-inset">
+                <div className="term-head">
+                  {TermDots}
+                  <span className="ml-1.5">pulse start</span>
+                </div>
+                <div className="term-body">
+                  <span className="text-tcyan">⚙ sqs order-events → worker · batch of 1 · ok</span>
+                  {"\n"}
+                  {"  worker "}
+                  <span className="text-faint">|</span> processed order 9de0…{"\n"}
+                  <span className="text-faint">{"  worker !"}</span>{" "}
+                  <span className="text-tred">RuntimeError (attempt 1)</span>
+                  {"\n"}
+                  <span className="text-faint">{"  worker !"}</span>{" "}
+                  <span className="text-tred">RuntimeError (attempt 2)</span>
+                  {"\n"}
+                  <span className="text-tred">☠ moved to order-events-dlq after 3 receives</span>
+                </div>
+              </div>
+            </div>
+          </Reveal>
 
-            </Reveal>
-
-            <Reveal delay={80}>
-              <h3 className="text-[19px] font-semibold">Why not Docker?</h3>
-              <ul className="mt-3.5 space-y-2.5 text-[15px] leading-relaxed text-dim">
-                <li><b className="font-medium text-fg">Startup.</b> Containers boot in tens of seconds; pulse is ready in ~99 ms.</li>
-                <li><b className="font-medium text-fg">Memory.</b> Gigabytes idle vs ~50 MB for a whole app.</li>
-                <li><b className="font-medium text-fg">Iteration.</b> Rebuild-and-restart vs save-and-it&apos;s-live.</li>
-                <li><b className="font-medium text-fg">Fidelity.</b> pulse speaks the real Lambda Runtime API and SQS/DynamoDB wire protocols — the AWS SDK can&apos;t tell the difference.</li>
-              </ul>
-
-              {/* the boot moment, visualized: services come online in ~100 ms */}
-              <div className="mt-7 rounded-xl border border-edge bg-panel/60 p-5">
-                <p className="font-mono text-[11.5px] uppercase tracking-[0.14em] text-faint">
-                  pulse start — your local cloud coming online
+          {/* hot reload */}
+          <Reveal>
+            <div className="sheet tracks grid items-center gap-7 rounded-[20px] p-[26px] min-[980px]:grid-cols-2 min-[980px]:gap-10 min-[980px]:p-9">
+              <div>
+                <span className="inline-flex rounded-[7px] border border-tgreen/[0.28] bg-tgreen/[0.07] px-[11px] py-[5px] font-mono text-[11px] uppercase tracking-[0.14em] text-tgreen">
+                  hot reload
+                </span>
+                <h3 className="mt-[18px] text-[23px] font-semibold tracking-[-0.028em]">
+                  Build &amp; run Lambdas, measured in milliseconds
+                </h3>
+                <p className="mt-3 max-w-[44ch] text-[15px] leading-[1.7] text-dim">
+                  Save a file. The next request runs the new code. Restarts don&apos;t exist here.
                 </p>
-                <div className="mt-3.5 space-y-2.5 font-mono text-[12.5px]">
-                  {([
-                    ["gateway", "http · localhost:3000"],
-                    ["functions", "Lambda Runtime API · Node + Python"],
-                    ["queues", "SQS · retries · DLQs"],
-                    ["tables", "DynamoDB · SQLite-backed"],
-                  ] as [string, string][]).map(([name, sub]) => (
-                    <div key={name} className="boot-row flex items-center gap-2.5">
-                      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-tgreen shadow-[0_0_6px_rgba(122,219,143,0.7)]" />
-                      <span className="text-fg">{name}</span>
-                      <span className="ml-auto text-right text-[10.5px] text-faint">{sub}</span>
-                    </div>
-                  ))}
-                  <div className="boot-row flex items-center gap-2.5 border-t border-edge pt-2.5">
-                    <span className="blip" aria-hidden="true" />
-                    <span className="font-bold text-amber">ready in 99 ms</span>
-                    <span className="ml-auto text-[10.5px] text-faint">edits apply live</span>
+                <ul className="mt-4 flex flex-col gap-2.5 text-[14px] leading-[1.5] text-dim">
+                  <Tick>Real Lambda Runtime API, as a native process</Tick>
+                  <Tick>Plain boto3 or SDK v3 — no pulse imports</Tick>
+                  <Tick>
+                    <span>
+                      <code className="font-mono text-[13px] text-amber-soft">pulse.yaml</code> edits apply live too
+                    </span>
+                  </Tick>
+                </ul>
+                <div className="cycle mt-[22px] flex flex-col gap-2 font-mono text-[12.3px]">
+                  <div className="flex items-center gap-2.5 rounded-[10px] border border-edge bg-bg px-3.5 py-2.5">
+                    <span className="text-amber">⌘S</span> handler.py saved
+                  </div>
+                  <div className="flex items-center gap-2.5 rounded-[10px] border border-edge bg-bg px-3.5 py-2.5">
+                    <span className="text-amber">⟳</span> hot reload: worker (1 change)
+                  </div>
+                  <div className="flex items-center gap-2.5 rounded-[10px] border border-edge bg-bg px-3.5 py-2.5">
+                    <span className="text-tgreen">→</span> next invoke · 17 ms
                   </div>
                 </div>
               </div>
-            </Reveal>
-          </div>
-
-          {/* architecture, animated */}
-          <Reveal className="mt-14">
-            <h3 className="text-[19px] font-semibold">How it&apos;s put together</h3>
-            <p className="mt-2 max-w-[70ch] text-[14.5px] leading-relaxed text-dim">
-              One native process, one SQLite file — this is <code className="font-mono text-[13px] text-amber-soft">pulse start</code>:
-            </p>
-            <div className="mt-6 rounded-2xl border border-edge bg-panel/40 p-5 lg:p-6">
-              <FlowDiagram />
+              <div className="term term-inset">
+                <div className="term-head">
+                  {TermDots}
+                  <span className="ml-1.5">handler.py</span>
+                </div>
+                <div className="term-body">
+                  <span className="text-tcyan">import</span> boto3{"\n"}
+                  table = boto3.resource(<span className="text-tgreen">&quot;dynamodb&quot;</span>).Table(
+                  <span className="text-tgreen">&quot;orders&quot;</span>){"\n"}
+                  {"\n"}
+                  <span className="text-tcyan">def</span> handler(event, context):{"\n"}
+                  {"    "}
+                  <span className="text-tcyan">return</span> {"{"}
+                  <span className="text-tgreen">&quot;statusCode&quot;</span>: <span className="text-amber-soft">200</span>
+                  {"}"}
+                  {"\n"}
+                  {"\n"}
+                  <span className="text-faint"># local → AWS_ENDPOINT_URL set for you</span>
+                  {"\n"}
+                  <span className="text-faint"># prod  → same code, talks to AWS</span>
+                </div>
+              </div>
             </div>
-            <p className="mt-4 max-w-[72ch] text-[14px] leading-relaxed text-faint">
-              HTTP becomes API Gateway events, handlers run on the real Runtime API, the SDK
-              points at pulse through one env var, queues retry into DLQs, everything persists
-              to disk.
-            </p>
           </Reveal>
-        </section>
+        </div>
 
-        {/* ───────────────────── use cases ───────────────────── */}
-        <section id="use-cases" className="pt-20 md:pt-32">
-          <Reveal section="use-cases">
-            <SectionHead
-              idx="04"
-              kick="use cases"
-              title="What people build with pulse"
-              lede="If it's Lambda + HTTP + SQS + DynamoDB, it runs locally — the whole loop, not a fragment of it."
+        {/* three cards in two columns leaves the third stranded beside a hole,
+            so in that range it takes the whole row */}
+        <Reveal className="mt-4">
+          <div className="tracks grid gap-4 min-[620px]:grid-cols-2 min-[620px]:[&>*:last-child]:col-span-2 min-[980px]:grid-cols-3 min-[980px]:[&>*:last-child]:col-span-1">
+            {featureCards.map(([glyph, title, body]) => (
+              <div key={title} className="lift h-full rounded-[18px] border border-edge bg-panel p-7">
+                <span
+                  aria-hidden="true"
+                  className="grid size-[38px] place-items-center rounded-[11px] border border-amber/25 bg-amber/[0.08] font-mono text-[16px] text-amber"
+                >
+                  {glyph}
+                </span>
+                <h3 className="mt-[18px] text-[17px] font-semibold tracking-[-0.02em]">{title}</h3>
+                <p className="mt-2.5 text-[14.5px] leading-[1.65] text-dim">{body}</p>
+              </div>
+            ))}
+          </div>
+        </Reveal>
+      </section>
+
+      {/* ───────────────────── 02 · how it works ───────────────────── */}
+      <section id="how" className="slab">
+        <div className={`${SHELL} ${BAND_PAD}`}>
+          <Reveal section="how">
+            <Head
+              idx="02"
+              kick="how it works"
+              title="One engine, entirely on your laptop"
+              lede="One native process, one SQLite file. Four steps from empty folder to replayable request."
             />
           </Reveal>
-          <div className="mt-11 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {useCases.map(([title, body], i) => (
-              <Reveal key={title} delay={(i % 3) * 70}>
-                <div className="bento h-full p-6">
-                  <h3 className="text-[16.5px] font-semibold">{title}</h3>
-                  <p className="mt-2 text-[14px] leading-relaxed text-dim">{body}</p>
+
+          <div className="mx-auto mt-13 flex max-w-[760px] flex-col gap-3.5">
+            {steps.map(([title, body, cmd], i) => (
+              <Reveal key={title} delay={Math.min(i * 60, 180)}>
+                <div className="grid grid-cols-[38px_minmax(0,1fr)] items-start gap-5">
+                  <span className="grid size-[38px] place-items-center rounded-full border border-amber/30 bg-amber/[0.07] font-mono text-[12px] text-amber">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <div className="min-w-0 rounded-[16px] border border-edge bg-panel px-[26px] py-6">
+                    <h3 className="text-[17.5px] font-semibold tracking-[-0.02em]">{title}</h3>
+                    <p className="mt-2 max-w-[58ch] text-[14.5px] leading-[1.65] text-dim">{body}</p>
+                    <code className="mt-4 block overflow-x-auto whitespace-nowrap rounded-[10px] border border-edge bg-bg px-[15px] py-[11px] font-mono text-[12.5px] text-amber">
+                      $ {cmd}
+                    </code>
+                  </div>
                 </div>
               </Reveal>
             ))}
           </div>
-          <Reveal className="mt-8">
-            <div className="flex flex-wrap items-center gap-2.5">
-              <span className="mr-1 font-mono text-[12.5px] text-faint">built for</span>
-              {["backend engineers", "AWS developers", "platform teams", "startups", "indie hackers", "students learning AWS"].map((w) => (
-                <span key={w} className="chip">{w}</span>
-              ))}
-            </div>
-          </Reveal>
-        </section>
+        </div>
+      </section>
 
-        {/* ───────────────────── templates ───────────────────── */}
-        <section id="templates" className="pt-20 md:pt-32">
-          <Reveal section="templates">
-            <SectionHead
-              idx="05"
-              kick="templates"
-              title="A learning path, not a pile of boilerplate"
-              lede="Each starter adds exactly one concept. All ship in Python and Node, use the plain AWS SDK, and run unchanged in real AWS."
-            />
-          </Reveal>
-          <div className="mt-11 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {templates.map(([name, tag, body], i) => (
-              <Reveal key={name} delay={i * 70}>
-                <div className="bento h-full p-6">
-                  <p className="font-mono text-[13px]">
-                    <span className="text-faint">$ pulse init -t </span>
-                    <b className="font-medium text-amber">{name}</b>
-                  </p>
-                  <p className="mt-3 text-[14px] leading-relaxed text-dim">{body}</p>
-                  <p className="mt-4 font-mono text-[11.5px] text-faint">{tag}</p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-          <LearnMore href={`${GUIDE}#3-build`} target="guide-templates" label="What each template teaches" />
-        </section>
+      {/* ───────────────────── 03 · debugging ───────────────────── */}
+      <section id="inspect" className={`${SHELL} ${SECTION_PAD}`}>
+        <Reveal section="inspect">
+          <Head
+            idx="03"
+            kick="debugging"
+            title="You never lose the event that broke it"
+            lede="Logs are where debugging starts, not where it ends. Four ways to see what actually happened."
+            width="max-w-[46ch]"
+          />
+        </Reveal>
+        <Reveal className="mt-12">
+          <InspectTabs tabs={inspectTabs} />
+        </Reveal>
+      </section>
 
-        {/* ───────────────────── compare ───────────────────── */}
-        <section id="compare" className="band pb-16 pt-20 md:pb-24 md:pt-32">
+      {/* ───────────────────── 04 · compare ───────────────────── */}
+      <section id="compare" className="slab">
+        <div className={`${SHELL} ${BAND_PAD}`}>
           <Reveal section="compare">
-            <SectionHead
-              idx="06"
+            <Head
+              idx="04"
               kick="compare"
               title="Built for the inner loop"
-              lede="Searching for a LocalStack alternative, or wondering how pulse compares to sam local? Different tools do different jobs — here's the honest version."
+              lede="LocalStack tests your infra. SAM deploys. pulse owns the five hundred iterations before staging."
+              width="max-w-[46ch]"
             />
           </Reveal>
-          {/* the gap, drawn to linear scale — the sliver is the point */}
-          <Reveal className="mt-10">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="bento p-6">
-                <p className="font-mono text-[11.5px] uppercase tracking-[0.14em] text-faint">cold start to working</p>
-                <div className="mt-4 space-y-4 font-mono text-[12px]">
-                  <div>
-                    <div className="mb-1.5 flex justify-between"><span className="text-fg">pulse</span><b className="text-amber">99 ms</b></div>
-                    <div className="h-2 rounded-full bg-bg"><span className="bar bg-amber shadow-[0_0_8px_rgba(255,171,51,0.5)]" style={{ "--w": "2%", minWidth: 5 } as React.CSSProperties} /></div>
-                  </div>
-                  <div>
-                    <div className="mb-1.5 flex justify-between text-dim"><span>container stacks</span><span>10–30 s</span></div>
-                    <div className="h-2 rounded-full bg-bg"><span className="bar bg-edge2" style={{ "--w": "100%" } as React.CSSProperties} /></div>
-                  </div>
-                </div>
-              </div>
-              <div className="bento p-6">
-                <p className="font-mono text-[11.5px] uppercase tracking-[0.14em] text-faint">memory while developing</p>
-                <div className="mt-4 space-y-4 font-mono text-[12px]">
-                  <div>
-                    <div className="mb-1.5 flex justify-between"><span className="text-fg">pulse</span><b className="text-amber">~50 MB</b></div>
-                    <div className="h-2 rounded-full bg-bg"><span className="bar bg-amber shadow-[0_0_8px_rgba(255,171,51,0.5)]" style={{ "--w": "2.4%", minWidth: 5 } as React.CSSProperties} /></div>
-                  </div>
-                  <div>
-                    <div className="mb-1.5 flex justify-between text-dim"><span>Docker stacks</span><span>2 GB+</span></div>
-                    <div className="h-2 rounded-full bg-bg"><span className="bar bg-edge2" style={{ "--w": "100%" } as React.CSSProperties} /></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <p className="mt-3 text-center font-mono text-[11px] text-faint">
-              bars drawn to linear scale — the sliver is the point
-            </p>
-          </Reveal>
 
-          <Reveal className="mt-8">
-            <div className="overflow-x-auto rounded-2xl border border-edge">
-              <table className="w-full min-w-[660px] border-collapse text-[14.5px] tabular-nums">
+          {/* 890px is what every cell needs to stay on one line; the design's
+              680 let the browser squeeze the pulse column — the one that
+              matters — to 136px and wrap all 28 cells. Below 620 the min drops
+              and only the *values* keep nowrap, so a phone's first screenful is
+              the feature plus the pulse answer rather than labels alone. */}
+          <Reveal className="mt-11">
+            <div className="overflow-x-auto rounded-[18px] border border-edge">
+              <table className="cmp w-full min-w-[690px] border-collapse text-[14.5px] tabular-nums min-[620px]:min-w-[890px]">
                 <thead>
                   <tr className="bg-panel text-dim">
-                    <th className="px-5 py-3.5 text-left font-medium"></th>
-                    <th className="border-x border-amber/15 bg-[rgba(255,171,51,0.07)] px-5 py-3.5 text-left font-semibold text-amber">pulse</th>
-                    <th className="px-5 py-3.5 text-left font-medium">sam local</th>
-                    <th className="px-5 py-3.5 text-left font-medium">LocalStack</th>
+                    <th className="px-[22px] py-4 text-left text-[13.5px] font-medium">Feature</th>
+                    <th className="bg-amber/[0.06] px-[22px] py-4 text-left font-semibold text-amber">pulse</th>
+                    <th className="px-[22px] py-4 text-left font-medium">sam local</th>
+                    <th className="px-[22px] py-4 text-left font-medium">LocalStack</th>
                   </tr>
                 </thead>
                 <tbody>
                   {compare.map((row) => (
-                    <tr key={row[0]} className="transition-colors hover:bg-white/[0.02]">
-                      <td className="border-t border-edge px-5 py-3.5 text-dim">{row[0]}</td>
-                      <td className="border-t border-edge border-x border-amber/15 bg-[rgba(255,171,51,0.05)] px-5 py-3.5 font-medium">
-                        {row[1].startsWith("✓") ? (<><span className="text-tgreen">✓</span>{row[1].slice(1)}</>) : row[1]}
+                    <tr key={row[0]}>
+                      <td className="border-t border-edge px-[22px] py-4 text-dim">{row[0]}</td>
+                      <td className="border-t border-edge bg-amber/[0.035] px-[22px] py-4 font-medium whitespace-nowrap text-amber-soft">
+                        {row[1].startsWith("✓") ? (
+                          <>
+                            <span className="text-tgreen">✓</span>
+                            {row[1].slice(1)}
+                          </>
+                        ) : (
+                          row[1]
+                        )}
                       </td>
-                      <td className="border-t border-edge px-5 py-3.5 text-dim">{gap(row[2])}</td>
-                      <td className="border-t border-edge px-5 py-3.5 text-dim">{gap(row[3])}</td>
+                      <td className="border-t border-edge px-[22px] py-4 whitespace-nowrap text-faint">{gap(row[2])}</td>
+                      <td className="border-t border-edge px-[22px] py-4 whitespace-nowrap text-faint">{gap(row[3])}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
           </Reveal>
-          <p className="mt-6 max-w-[68ch] text-[15.5px] leading-relaxed text-dim">
-            Different tools for different jobs. LocalStack emulates ~100 services and tests your
-            infrastructure code; SAM deploys. pulse owns the five hundred iterations before staging —
-            and pairs with either at deploy time, because your code is vanilla SDK throughout.
+          {/* the table scrolls under ~946px; say so rather than leaving it to
+              be discovered */}
+          <p className="mt-3 text-center font-mono text-[11.5px] text-faint min-[946px]:hidden">
+            swipe the table to compare →
           </p>
-          <Reveal>
-            <div className="mt-9 max-w-[68ch] rounded-r-xl border-l-[3px] border-amber bg-panel/50 py-4 pl-6 pr-5 text-dim">
-              <b className="text-fg">Honesty by design.</b> pulse does one workflow completely — CRUD
-              APIs with background jobs (HTTP, SQS, DynamoDB, Lambda). Everything outside that subset
-              fails loudly with a message saying exactly what isn&apos;t supported. Never silently
-              wrong. S3, SNS, EventBridge, Step Functions: on the roadmap, not pretended.
-            </div>
-          </Reveal>
 
-          {/* support matrix */}
-          <div className="mt-10 grid gap-4 md:grid-cols-2">
-            <Reveal>
-              <div className="bento h-full p-6.5">
-                <h3 className="font-mono text-[13px] uppercase tracking-[0.14em] text-tgreen">Works today</h3>
-                <ul className="mt-4 space-y-2 text-[14.5px] text-dim">
-                  {[
-                    "AWS Lambda functions — Node.js & Python, real Runtime API",
-                    "HTTP APIs — API Gateway v1/v2 events, {param} & {proxy+} routes",
-                    "SQS queues — visibility timeouts, retries, dead-letter queues",
-                    "DynamoDB — CRUD, Query/Scan, condition & update expressions",
-                    "Hot reload for code and pulse.yaml",
-                    "Event replay, request stories, live monitor, tables browser",
-                    "SQLite persistence across restarts",
-                  ].map((f) => (
-                    <li key={f} className="flex gap-2.5">
-                      <span className="mt-px shrink-0 text-tgreen">✓</span>
-                      <span>{f}</span>
-                    </li>
-                  ))}
-                </ul>
+          <p className="mx-auto mt-7 max-w-[72ch] border-l-[3px] border-amber py-1.5 pl-5 text-[15px] leading-[1.7] text-dim">
+            <b className="font-semibold text-fg">Honesty by design.</b> pulse does one workflow completely — CRUD
+            APIs with background jobs. Anything outside that subset fails loudly with a message saying so, never
+            silently wrong. S3, SNS, EventBridge and Step Functions are on the roadmap, not pretended.
+          </p>
+        </div>
+      </section>
+
+      {/* ───────────────────── 05 · build ───────────────────── */}
+      <section id="build" className={`${SHELL} ${SECTION_PAD}`}>
+        <Reveal section="build">
+          <Head
+            idx="05"
+            kick="build"
+            title="Grow your app one command at a time"
+            lede={
+              <>
+                Every piece — a function, a route, a queue, a table — is one command. Run it bare and it asks instead
+                of demanding flags; each edits{" "}
+                <code className="font-mono text-[14px] text-amber-soft">pulse.yaml</code> for you and applies live.
+              </>
+            }
+            width="max-w-[46ch]"
+          />
+        </Reveal>
+
+        <Reveal className="mt-12">
+          <div className="tracks grid gap-4 min-[980px]:grid-cols-2">
+            {commands.map(([cmd, title, body]) => (
+              <div key={title} className="lift h-full rounded-[16px] border border-edge bg-panel px-7 py-[26px]">
+                <code className="block overflow-x-auto whitespace-nowrap font-mono text-[13px] text-amber">
+                  $ {cmd}
+                </code>
+                <h3 className="mt-3.5 text-[16.5px] font-semibold tracking-[-0.02em]">{title}</h3>
+                <p className="mt-2 text-[14.5px] leading-[1.65] text-dim">{body}</p>
               </div>
-            </Reveal>
-            <Reveal delay={70}>
-              <div className="bento h-full p-6.5">
-                <h3 className="font-mono text-[13px] uppercase tracking-[0.14em] text-dim">On the roadmap</h3>
-                <ul className="mt-4 space-y-2 text-[14.5px] text-dim">
-                  {["S3 buckets", "SNS topics", "EventBridge rules", "Step Functions"].map((f) => (
-                    <li key={f} className="flex gap-2.5">
-                      <span className="mt-px shrink-0 text-faint">○</span>
-                      <span>{f}</span>
-                    </li>
-                  ))}
-                </ul>
-                <p className="mt-5 border-t border-edge pt-4 text-[13.5px] leading-relaxed text-faint">
-                  Until then, touching an unsupported service fails loudly with a clear message —
-                  pulse never silently fakes a response it can&apos;t honor.
+            ))}
+          </div>
+        </Reveal>
+
+        <p className="mx-auto mt-5 max-w-[64ch] text-center text-[13.5px] leading-[1.7] text-faint">
+          <code className="font-mono text-dim">pulse remove</code> is the exact inverse — it unwires the piece and
+          never deletes your code or data.
+        </p>
+
+        <div className="mt-16">
+          <Reveal>
+            <div className="flex flex-wrap items-end justify-between gap-8">
+              <div>
+                <h3 className="text-[22px] font-semibold tracking-[-0.028em]">Or start from a template</h3>
+                <p className="mt-2.5 max-w-[52ch] text-[15px] leading-[1.7] text-dim [text-wrap:pretty]">
+                  Four starters, each adding exactly one concept. All ship in{" "}
+                  <b className="font-medium text-fg">Python and Node</b>, use the plain AWS SDK, and run unchanged in
+                  real AWS.
                 </p>
               </div>
-            </Reveal>
-          </div>
-
-          <Reveal className="mt-10">
-            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-3 rounded-2xl border border-edge bg-panel/40 px-6 py-5">
-              <span className="font-mono text-[13px] text-dim">the inner loop is yours</span>
-              <TrackLink href="#get-started" event="cta_click" props={{ cta: "get-started", location: "compare" }} className="btn btn-primary !py-2.5">
-                Install pulse
-              </TrackLink>
-              <TrackLink href={GH} event="cta_click" props={{ cta: "github", location: "compare" }} className="btn btn-ghost !py-2.5">
-                {GitHubIcon} Star on GitHub
-              </TrackLink>
+              <code className="font-mono text-[12.5px] text-faint">$ pulse init --list</code>
             </div>
           </Reveal>
-
-          <p className="mt-6 text-center font-mono text-[13px] text-dim">
-            deep dives:{" "}
-            <a className="text-amber transition-colors hover:text-amber-soft" href="/vs/localstack">pulse vs LocalStack →</a>
-            {"  ·  "}
-            <a className="text-amber transition-colors hover:text-amber-soft" href="/vs/sam-local">pulse vs sam local →</a>
-          </p>
-        </section>
-
-        {/* ───────────────────── FAQ ───────────────────── */}
-        <section id="faq" className="pt-20 md:pt-32">
-          <Reveal section="faq">
-            <SectionHead
-              idx="07"
-              kick="faq"
-              title="Questions people actually ask"
-            />
+          <Reveal className="mt-7">
+            <div className="tracks grid gap-4 min-[620px]:grid-cols-2 min-[860px]:grid-cols-4">
+              {templates.map(([name, tag, body], i) => {
+                const star = i === templates.length - 1;
+                return (
+                  <div
+                    key={name}
+                    className={
+                      star
+                        ? "h-full rounded-[16px] border border-amber/[0.32] bg-amber/[0.05] p-6"
+                        : "lift h-full rounded-[16px] border border-edge bg-panel p-6"
+                    }
+                  >
+                    <code className="font-mono text-[13px] text-amber">{name}</code>
+                    <p className={`mt-3 text-[14px] leading-[1.65] ${star ? "text-mute" : "text-dim"}`}>{body}</p>
+                    <p
+                      className={`mt-3.5 border-t pt-3 font-mono text-[11px] ${
+                        star ? "border-amber/20 text-amber-soft" : "border-edge text-faint"
+                      }`}
+                    >
+                      {tag}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
           </Reveal>
-          <Reveal className="faq mt-10 max-w-[860px]">
-            {faqs.map(([q, a]) => (
-              <details key={q}>
+        </div>
+      </section>
+
+      {/* ───────────────────── 06 · faq ───────────────────── */}
+      <section id="faq" className="slab">
+        <div className={`mx-auto max-w-[880px] ${GUTTER} ${BAND_PAD}`}>
+          <Reveal section="faq">
+            <div className="text-center">
+              <span className="eyebrow">
+                <i>06</i> faq
+              </span>
+              <h2 className="text-[clamp(26px,3.8vw,42px)] font-semibold leading-[1.14] tracking-[-0.035em]">
+                Questions people actually ask
+              </h2>
+            </div>
+          </Reveal>
+          <Reveal className="faq mt-9">
+            {faqs.map(([q, a], i) => (
+              <details key={q} open={i === 0}>
                 <summary>{q}</summary>
                 <p className="a">{a}</p>
               </details>
             ))}
           </Reveal>
-        </section>
+        </div>
+      </section>
 
-        {/* ───────────────────── testimonials ───────────────────── */}
-        {SHOW_TESTIMONIALS && (
-          <section id="testimonials" className="pt-20 md:pt-32">
-            <Reveal section="testimonials">
-              <SectionHead idx="08" kick="early signal" title="What early users say" />
-            </Reveal>
-            <div className="mt-11 grid grid-cols-1 gap-4 md:grid-cols-3">
-              {testimonials.map((t, i) => (
-                <Reveal key={t.role} delay={i * 70}>
-                  <figure className="bento flex h-full flex-col p-6.5">
-                    <PulseLine crop="tight" className="h-4 w-8 opacity-70" />
-                    <blockquote className="mt-4 flex-1 text-[15px] leading-relaxed text-fg/90">&ldquo;{t.quote}&rdquo;</blockquote>
-                    <figcaption className="mt-5 border-t border-edge pt-4 font-mono text-[12px] text-dim">
-                      {t.role} <span className="text-faint">· {t.org}</span>
-                    </figcaption>
-                  </figure>
-                </Reveal>
-              ))}
-            </div>
-            <Reveal className="mt-5">
-              <TrackLink
-                href={`${GH}/issues/new`}
-                event="outbound"
-                props={{ target: "share-feedback" }}
-                className="group flex items-center justify-between rounded-2xl border border-dashed border-edge px-6.5 py-5 transition-colors hover:border-amber/40"
-              >
-                <span className="text-[15px] text-dim transition-colors group-hover:text-fg">
-                  Using pulse? Tell us what clicked — and what broke.
-                </span>
-                <span className="font-mono text-[13px] text-amber">open an issue ↗</span>
-              </TrackLink>
-            </Reveal>
-          </section>
-        )}
-
-        {/* ───────────────────── CTA ───────────────────── */}
-        <section id="get-started" className="pt-20 md:pt-32">
-          <Reveal section="get-started">
-            <div className="relative overflow-hidden rounded-3xl border border-edge bg-gradient-to-b from-panel to-bg2 px-5 py-12 text-center md:px-7 md:py-16">
-              <PulseLine className="pointer-events-none absolute left-1/2 top-9 h-8 w-[720px] -translate-x-1/2 opacity-25" />
-              <div className="relative">
-                <p className="kick mb-4">get started</p>
-                <h2 className="text-balance text-[clamp(28px,4.5vw,44px)] font-bold tracking-tight">
-                  Your local cloud, one command away
-                </h2>
-                <p className="mx-auto mt-4 max-w-[44ch] text-balance text-[15.5px] leading-relaxed text-dim">
-                  Every modern framework has a dev server.
-                  <span className="block font-medium text-fg">AWS Lambda finally has one.</span>
-                </p>
-                <div className="mt-8 flex justify-center">
-                  <InstallTabs location="cta" />
-                </div>
-                <p className="mt-6 text-[14.5px] text-dim">
-                  then run <code className="font-mono text-[13.5px] text-amber">pulse tour</code> — five minutes, hands-on, nothing simulated
-                </p>
-                <div className="mt-7 flex flex-wrap justify-center gap-3.5">
-                  <TrackLink href={`${GH}#two-minutes-to-a-running-app`} event="outbound" props={{ target: "quickstart-cta" }} className="btn btn-ghost">
-                    2-minute quickstart
-                  </TrackLink>
-                  <TrackLink href={`${GH}/blob/master/docs/GUIDE.md`} event="outbound" props={{ target: "guide-cta" }} className="btn btn-ghost">
-                    Read the guide
-                  </TrackLink>
-                  <TrackLink href={GH} event="cta_click" props={{ cta: "github", location: "cta" }} className="btn btn-ghost">
-                    {GitHubIcon} GitHub
-                  </TrackLink>
-                </div>
+      {/* ───────────────────── install ───────────────────── */}
+      <section id="install" className={`${SHELL} pt-[76px] pb-[76px] min-[760px]:py-[112px]`}>
+        <Reveal section="install">
+          <div className="relative overflow-hidden rounded-[26px] border border-edge bg-gradient-to-b from-panel to-band px-5 py-12 text-center min-[620px]:px-10 min-[620px]:py-[72px]">
+            <div className="pointer-events-none absolute inset-x-[-20%] top-[-60%] h-[120%] bg-[radial-gradient(45%_45%_at_50%_30%,rgba(255,171,51,0.13),transparent_70%)]" />
+            {/* scales down instead of being cropped to its middle on a phone */}
+            <PulseLine
+              stretch
+              className="pointer-events-none absolute left-1/2 top-[30px] h-[34px] w-full max-w-[680px] -translate-x-1/2 opacity-30"
+            />
+            <div className="relative">
+              <h2 className="text-balance text-[clamp(28px,4.2vw,48px)] font-semibold leading-[1.08] tracking-[-0.04em]">
+                Ready for the instant dev loop?
+              </h2>
+              <p className="mx-auto mt-4 max-w-[44ch] text-[16px] leading-[1.65] text-dim">
+                Install pulse with one command and boot your first Lambda in under 100 milliseconds.
+              </p>
+              <div className="mt-[34px] flex justify-center">
+                <InstallTabs location="cta" />
+              </div>
+              <p className="mt-[22px] text-[14.5px] text-dim">
+                then run <code className="font-mono text-[13.5px] text-amber">pulse tour</code> — five minutes,
+                hands-on, nothing simulated
+              </p>
+              <div className="mt-7 flex flex-wrap justify-center gap-3">
+                <TrackLink
+                  href={`${GH}#two-minutes-to-a-running-app`}
+                  event="outbound"
+                  props={{ target: "quickstart-cta" }}
+                  className="btn btn-primary w-full !px-6 !py-[13px] !text-[15px] min-[520px]:w-auto"
+                >
+                  Read the quickstart
+                </TrackLink>
+                <TrackLink
+                  href={GUIDE}
+                  event="outbound"
+                  props={{ target: "guide-cta" }}
+                  className="btn btn-ghost w-full !px-6 !py-[13px] !text-[15px] min-[520px]:w-auto"
+                >
+                  {GitHubIcon} Browse GitHub docs
+                </TrackLink>
               </div>
             </div>
-          </Reveal>
-        </section>
-      </main>
+          </div>
+        </Reveal>
+      </section>
 
       {/* ───────────────────── footer ───────────────────── */}
-      <footer className="mt-20 border-t border-edge bg-bg2/70 md:mt-28">
-        <div className="mx-auto grid max-w-[1160px] grid-cols-2 gap-8 px-6 py-14 md:grid-cols-4">
-          <div>
-            <span className="flex items-center gap-2.5 text-[17px] font-bold text-fg">
-              <PulseLine crop="tight" className="h-6 w-11" />
-              pulse
-            </span>
-            <p className="mt-3.5 max-w-[34ch] text-sm leading-relaxed text-dim">
-              The dev server AWS Lambda never had. Run the whole app locally, in milliseconds.
+      <footer className="border-t border-edge bg-band">
+        <div className={`tracks grid grid-cols-2 gap-x-7 gap-y-9 py-14 min-[760px]:grid-cols-3 min-[980px]:grid-cols-[1.5fr_1fr_1fr_1fr] ${SHELL}`}>
+          <div className="col-span-full min-[980px]:col-span-1">
+            <PulseLogo />
+            <p className="mt-3.5 max-w-[34ch] text-[14px] leading-[1.7] text-dim">
+              Fast, Docker-free local AWS Lambda, SQS and DynamoDB emulation. Apache-2.0 open source.
             </p>
-            <TrackLink href={`${GH}/releases`} event="outbound" props={{ target: "releases-footer" }} className="chip mt-4">
+            <TrackLink href={`${GH}/releases`} event="outbound" props={{ target: "releases-footer" }} className="chip mt-4 !text-[11.5px]">
               v0.1.0 · changelog
             </TrackLink>
           </div>
           {footerCols.map((col) => (
             <div key={col.title}>
-              <h3 className="mb-3.5 font-mono text-[12px] font-semibold uppercase tracking-[0.14em] text-faint">{col.title}</h3>
-              {col.links.map(([label, href]) => (
-                <TrackLink key={label} href={href} event="outbound" props={{ target: label.toLowerCase().replace(/\s/g, "-") }}
-                  className="my-2 block text-[14.5px] text-fg/85 transition-colors hover:text-amber">
-                  {label}
-                </TrackLink>
-              ))}
+              <h3 className="text-[12.5px] font-semibold uppercase tracking-[0.06em] text-faint">{col.title}</h3>
+              {/* py-1/-my-1: a 14px link is a 21px tap target, under the 24px
+                  WCAG 2.5.8 minimum. The padding grows the hit box; the
+                  negative margin gives the space back, so the 10px rhythm the
+                  design specifies is unchanged. */}
+              <div className="mt-4 flex flex-col gap-2.5">
+                {col.links.map(([label, href]) => (
+                  <TrackLink
+                    key={label}
+                    href={href}
+                    event="outbound"
+                    props={{ target: label.toLowerCase().replace(/\s/g, "-") }}
+                    className="-my-1 w-fit py-1 text-[14px] text-mute transition-colors hover:text-amber"
+                  >
+                    {label}
+                  </TrackLink>
+                ))}
+              </div>
             </div>
           ))}
         </div>
-        <div className="mx-auto flex max-w-[1160px] flex-wrap gap-5 border-t border-edge px-6 py-5 pb-7 text-[13px] text-faint">
-          <span>Apache-2.0 © Geetansh Garg</span>
-          <span>Not affiliated with Amazon Web Services. AWS, Lambda, SQS, and DynamoDB are trademarks of Amazon.com, Inc.</span>
+        <div className="border-t border-edge">
+          <div className={`flex flex-wrap gap-5 pt-5 pb-7 text-[12.5px] text-faint ${SHELL}`}>
+            <span>Apache-2.0 © Geetansh Garg</span>
+            <span>
+              Not affiliated with Amazon Web Services. AWS, Lambda, SQS and DynamoDB are trademarks of Amazon.com, Inc.
+            </span>
+          </div>
         </div>
       </footer>
     </>
@@ -898,53 +663,90 @@ export default function Page() {
    Every terminal frame below is verbatim output from the real CLI
    (captured in docs/GUIDE.md and live sessions) — nothing invented. */
 
+const navLinks: [string, string][] = [
+  ["Features", "#features"],
+  ["How it works", "#how"],
+  ["Debugging", "#inspect"],
+  ["Compare", "#compare"],
+  ["FAQ", "#faq"],
+];
+
+// [value, suffix, label, what it's compared against]. A number counts up;
+// a string is rendered as-is.
+const stats: [number | string, string, string, string][] = [
+  [99, "ms", "Engine ready", "containers: 10–30 s"],
+  [17, "ms", "Warm invoke", "no cold containers"],
+  [50, " MB", "Total memory", "Docker stacks: 2 GB+"],
+  ["$0", "", "To learn & build", "no AWS account needed"],
+];
+
+const featureCards: [string, string, string][] = [
+  ["↻", "Time travel debugging", "Replay yesterday's crash against today's fix — byte for byte."],
+  ["◈", "Runs like AWS", "Real wire protocols throughout — the AWS SDK can't tell the difference."],
+  [">_", "A CLI that teaches", "Run any command bare and it asks instead of erroring. Errors ship their fix."],
+];
+
+// [title, body, command] — four steps, empty folder to replayable request.
+const steps: [string, string, string][] = [
+  [
+    "Spin up the dev loop",
+    "Working handlers, a pulse.yaml, dependencies installed. Then the API, queues and tables all come online together.",
+    "pulse init shop -t api-and-worker && pulse start",
+  ],
+  [
+    "Call it over plain HTTP",
+    "Your route becomes a real API Gateway event — path params, query strings, body, exactly like production.",
+    `curl -X POST localhost:3000/orders -d '{"sku":"A1"}'`,
+  ],
+  [
+    "Let a worker finish the job",
+    "Your handler queues a message and replies immediately; pulse delivers it, retries failures and dead-letters repeat offenders.",
+    `pulse send order-events '{"id":"e9b4"}'`,
+  ],
+  [
+    "Replay whatever broke",
+    "Every payload is recorded. Fix the handler, re-fire the actual event against your current code, watch it pass.",
+    "pulse events replay 8931cf5b",
+  ],
+];
+
 const inspectTabs: InspectTab[] = [
   {
     id: "story",
-    label: "request story",
+    label: "One request's whole story",
     cmd: "pulse logs --request d90e5295",
     caption:
       "One id, the whole story: the exact payload that arrived, everything the function printed, how it ended — and the command to re-run it.",
     frame:
-      '<span class="text-amber">$ pulse logs --request d90e5295</span>\n<span class="text-amber">⚡ request</span> <b>d90e5295</b>  <span class="text-tcyan">sqs</span> <span class="text-dim">→</span> processWebhook · <span class="text-tred">error</span> <span class="text-dim">· 2ms · 00:08</span>\n\n<span class="text-amber">event</span>\n  {\n    "Records": [\n      { <span class="text-dim">…the exact payload that arrived, pretty-printed…</span> }\n  <span class="text-dim">… 6 more line(s)</span>\n\n<span class="text-amber">logs</span>\n  <span class="text-dim">00:08:15.903  stderr</span>  Traceback (most recent call last): …\n\n<span class="text-amber">error</span>\n  <span class="text-tred">RuntimeError: webhook 3625d493 failed on purpose (attempt 3)</span>\n\n<span class="text-dim">re-run it against your current code:</span> <span class="text-amber">pulse events replay d90e5295</span>',
+      '<span class="text-amber">$ pulse logs --request d90e5295</span>\n<span class="text-amber">⚡ request</span> <b class="font-medium text-fg">d90e5295</b>  <span class="text-tcyan">sqs</span> <span class="text-faint">→</span> processWebhook · <span class="text-tred">error</span> <span class="text-faint">· 2ms · 00:08</span>\n\n<span class="text-amber">event</span>\n  {\n    "Records": [\n      { <span class="text-faint">…the exact payload that arrived, pretty-printed…</span> }\n<span class="text-faint">  … 6 more line(s)</span>\n\n<span class="text-amber">logs</span>\n<span class="text-faint">  00:08:15.903  stderr</span>  Traceback (most recent call last): …\n\n<span class="text-amber">error</span>\n<span class="text-tred">  RuntimeError: webhook 3625d493 failed on purpose (attempt 3)</span>\n\n<span class="text-faint">re-run it against your current code:</span> <span class="text-amber">pulse events replay d90e5295</span>',
   },
   {
     id: "replay",
-    label: "history & replay",
-    cmd: "pulse events",
+    label: "History & replay",
+    cmd: "pulse events replay 8931cf5b",
     caption:
       "Every trigger ever recorded, byte for byte. Fix the handler, replay yesterday's actual crash, watch it pass — no reconstructing inputs from log fragments.",
     frame:
-      '<span class="text-amber">$ pulse events</span>\n  <b>8931cf5b</b>  <span class="text-dim">Aug  5 01:01</span>   sqs    <span class="text-dim">→</span> processWebhook · <span class="text-tred">error</span>   <span class="text-dim">· 1ms</span>\n  <b>7275f6ee</b>  <span class="text-dim">Aug  5 01:01</span>   http   <span class="text-dim">→</span> receiveWebhook · <span class="text-tgreen">success</span> <span class="text-dim">· 1ms</span>\n\n<span class="text-dim">replay any: pulse events replay &lt;id&gt; · narrow: --function &lt;fn&gt;</span>\n\n<span class="text-amber">$ pulse events replay 8931cf5b</span>\n<span class="text-tgreen">✓ processWebhook · success · 0ms</span>  <span class="text-dim">← same payload, fixed code</span>',
+      '<span class="text-amber">$ pulse events -n 6</span>\n  <b class="font-medium text-fg">8931cf5b</b>  <span class="text-faint">Aug  5 01:01</span>   sqs    <span class="text-faint">→</span> processWebhook · <span class="text-tred">error</span>   <span class="text-faint">· 1ms</span>\n  <b class="font-medium text-fg">7275f6ee</b>  <span class="text-faint">Aug  5 01:01</span>   http   <span class="text-faint">→</span> receiveWebhook · <span class="text-tgreen">success</span> <span class="text-faint">· 1ms</span>\n  <b class="font-medium text-fg">4c1ad0e2</b>  <span class="text-faint">Aug  5 00:58</span>   sqs    <span class="text-faint">→</span> worker         · <span class="text-tgreen">success</span> <span class="text-faint">· 3ms</span>\n  <b class="font-medium text-fg">b60f7a19</b>  <span class="text-faint">Aug  5 00:58</span>   http   <span class="text-faint">→</span> createOrder    · <span class="text-tgreen">success</span> <span class="text-faint">· 2ms</span>\n  <b class="font-medium text-fg">2ff8c447</b>  <span class="text-faint">Aug  5 00:57</span>   replay <span class="text-faint">→</span> worker         · <span class="text-tgreen">success</span> <span class="text-faint">· 1ms</span>\n  <b class="font-medium text-fg">0a4e91bd</b>  <span class="text-faint">Aug  5 00:57</span>   http   <span class="text-faint">→</span> getOrder       · <span class="text-tgreen">success</span> <span class="text-faint">· 1ms</span>\n\n<span class="text-faint">replay any: pulse events replay &lt;id&gt; · narrow: --function &lt;fn&gt;</span>\n\n<span class="text-amber">$ pulse events replay 8931cf5b</span>\n<span class="text-faint">↻ replaying 8931cf5b — sqs → processWebhook, originally Aug  5 01:01</span>\n\n<span class="text-tgreen">✓ processWebhook · success · 0ms · request 94aacd31</span>\n<span class="text-faint">← same payload, byte for byte, against your current code</span>',
   },
   {
     id: "monitor",
-    label: "live monitor",
+    label: "Live dashboard",
     cmd: "pulse monitor",
     caption:
-      "The full-screen cockpit: ✓/✗ per function, live queue depths — a filling dead-letter queue turns red — streaming logs with incremental filtering, and Enter replays the selected event.",
+      "The full-screen cockpit: ✓/✗ per function, live queue depths (a filling DLQ turns red), streaming filtered logs, and Enter replays the selected event.",
     frame:
-      '<span class="text-amber">⚡ pulse</span> <b>shop</b> · <span class="text-tgreen">● live</span>\n\n<span class="text-amber">functions</span>              <span class="text-amber">logs</span> <span class="text-dim">— / filters</span>\n createOrder <span class="text-dim">12✓</span>        <span class="text-dim">14:02</span> createOrder <span class="text-dim">|</span> order saved\n worker      <span class="text-dim">11✓</span> <span class="text-tred">1✗</span>     <span class="text-dim">14:02</span> <span class="text-tcyan">⚙ order-events → worker</span>\n\n<span class="text-amber">queues</span>                 <span class="text-dim">14:02</span> worker <span class="text-dim">|</span> processed\n order-events <span class="text-dim">0·0·0</span>\n orders-dlq   <span class="text-tred">1·0·0 !</span>\n\n<span class="text-amber">events</span> <span class="text-dim">— ↑↓ · Enter replays</span>\n<span class="text-amber">▸</span> <b>8931cf5b</b> sqs → worker · <span class="text-tred">error</span>',
+      '<span class="text-amber">⚡ pulse</span> <b class="font-medium text-fg">shop</b> · <span class="text-tgreen">● live</span> · api http://localhost:3000\n\n<span class="text-amber">functions</span>              <span class="text-amber">logs</span> <span class="text-faint">— / filters</span>\n createOrder <span class="text-faint">12✓</span>        <span class="text-faint">14:02</span> createOrder <span class="text-faint">|</span> order saved\n worker      <span class="text-faint">11✓</span> <span class="text-tred">1✗</span>     <span class="text-faint">14:02</span> <span class="text-tcyan">⚙ order-events → worker</span>\n\n<span class="text-amber">queues</span>                 <span class="text-faint">14:02</span> worker <span class="text-faint">|</span> processed\n order-events <span class="text-faint">0·0·0</span>\n orders-dlq   <span class="text-tred">1·0·0 !</span>\n\n<span class="text-amber">events</span> <span class="text-faint">— ↑↓ · Enter replays</span>\n<span class="text-amber">▸</span> <b class="font-medium text-fg">8931cf5b</b> sqs → worker · <span class="text-tred">error</span>\n  <b class="font-medium text-fg">7275f6ee</b> http → createOrder · <span class="text-tgreen">success</span>\n\n<span class="text-faint">q quit · tab focus events · ↑↓ select · Enter replay · / filter</span>',
   },
   {
     id: "tables",
-    label: "tables & queues",
+    label: "Tables & queues",
     cmd: "pulse tables · pulse peek",
     caption:
       "No aws-cli, no console tab. Browse table items decoded for humans; peek at waiting messages without consuming them.",
     frame:
-      '<span class="text-amber">$ pulse tables orders</span>\n<b>orders</b> <span class="text-dim">— 2 item(s) shown</span>\n  <b>e9b4e51a-…</b>  <span class="text-dim">createdAt="…" ·</span> qty="2" · sku="A1" · status=<span class="text-tgreen">"processed"</span>\n  <b>parked-1</b>    <span class="text-dim">processedAt="…" ·</span> status=<span class="text-tgreen">"processed"</span>\n\n<span class="text-amber">$ pulse peek order-events</span>\n<b>order-events</b> <span class="text-dim">— 1 message(s), oldest first (peeking doesn\'t consume)</span>\n  <b>473b4539</b>  <span class="text-tgreen">visible</span>  {"id":"parked-1"}',
+      '<span class="text-amber">$ pulse tables</span>\n  <b class="font-medium text-fg">orders</b>     <span class="text-faint">4 item(s)</span>   <span class="text-faint">pk id</span>\n  <b class="font-medium text-fg">customers</b>  <span class="text-faint">2 item(s)</span>   <span class="text-faint">pk email</span>\n\n<span class="text-amber">$ pulse tables orders</span>\n<b class="font-medium text-fg">orders</b> <span class="text-faint">— 4 item(s) shown</span>\n  <b class="font-medium text-fg">e9b4e51a-…</b>  <span class="text-faint">createdAt="…" ·</span> qty="2" · sku="A1" · status=<span class="text-tgreen">"processed"</span>\n  <b class="font-medium text-fg">7c02d8f4-…</b>  <span class="text-faint">createdAt="…" ·</span> qty="1" · sku="B7" · status=<span class="text-tgreen">"processed"</span>\n  <b class="font-medium text-fg">1de6b90a-…</b>  <span class="text-faint">createdAt="…" ·</span> qty="9" · sku="X" · status=<span class="text-tred">"failed"</span>\n  <b class="font-medium text-fg">parked-1</b>    <span class="text-faint">processedAt="…" ·</span> status=<span class="text-tgreen">"processed"</span>\n\n<span class="text-amber">$ pulse peek order-events</span>\n<b class="font-medium text-fg">order-events</b> <span class="text-faint">— 2 message(s), oldest first (peeking doesn\'t consume)</span>\n  <b class="font-medium text-fg">473b4539</b>  <span class="text-tgreen">visible</span>     {"id":"parked-1"}\n  <b class="font-medium text-fg">9a1c77e0</b>  <span class="text-faint">hidden 4s</span>  <span class="text-faint">retried ×2</span>  {"id":"1de6b90a"}',
   },
-];
-
-const pickerMini =
-  '<span class="text-amber">$ pulse invoke</span>\n<span class="text-dim">? which function ›</span>\n<span class="text-amber">▸ createOrder</span>\n  <span class="text-dim">worker</span>';
-
-const templates: [string, string, string][] = [
-  ["hello", "your first function", "One function behind GET /hello — the smallest possible start."],
-  ["todo-api", "+ a real table", "Real CRUD on one DynamoDB table: create, list, complete, delete."],
-  ["webhook-relay", "+ a queue & DLQ", "Ack-fast webhooks with retries and a dead-letter queue."],
-  ["api-and-worker ★", "everything together", "The full loop: API + queue + worker + table, wired and narrated."],
 ];
 
 const compare: [string, string, string, string][] = [
@@ -957,72 +759,62 @@ const compare: [string, string, string, string][] = [
   ["Data persists across restarts", "✓ free, default", "n/a", "paid tier"],
 ];
 
-// ⚠️ PLACEHOLDERS — swap in real quotes (name + permission) before launch,
-// or set SHOW_TESTIMONIALS = false at the top of this file.
-const testimonials = [
-  {
-    quote:
-      "Deleted a 400-line docker-compose the same afternoon. The queue → worker → DLQ loop just runs — on battery, on a train.",
-    role: "Backend engineer",
-    org: "fintech startup",
-  },
-  {
-    quote:
-      "pulse tour is the best five minutes of CLI onboarding I've seen. Sent it to the whole team; everyone's local env finally matches.",
-    role: "Platform lead",
-    org: "B2B SaaS",
-  },
-  {
-    quote:
-      "Replaying yesterday's crashing payload against today's fix — byte for byte — changed how I debug Lambdas. I don't guess anymore.",
-    role: "Solo founder",
-    org: "indie AWS shop",
-  },
+// [command, title, what it actually writes]
+const commands: [string, string, React.ReactNode][] = [
+  [
+    "pulse add function notifier",
+    "Add a function",
+    <>
+      Writes <span className="text-mute">services/notifier/handler.py</span> — a working, commented Lambda handler —
+      and registers it.
+    </>,
+  ],
+  [
+    "pulse add route POST /notify --function notifier",
+    "Give it a URL",
+    "Functions and routes stay separate on purpose — exactly how real AWS models them.",
+  ],
+  [
+    "pulse add queue emails --worker send-email --dlq",
+    "Add a queue & worker",
+    <>
+      Queue, worker function, wiring and dead-letter queue in one line. Then{" "}
+      <span className="text-mute">pulse send emails &apos;{"{…}"}&apos;</span>.
+    </>,
+  ],
+  [
+    "pulse add table customers --pk email",
+    "Add a table",
+    "A table's whole schema is its key — every other field is just code. No migrations, ever.",
+  ],
 ];
 
-// The signature walkthrough: [stage, qualifier, real output line(s)].
-const journey: [string, string, string][] = [
-  ["Sixty seconds of setup", "one command scaffolds it, one starts it",
-    '<span class="text-amber">$ pulse init shop -t api-and-worker --lang python && cd shop</span>\n<span class="text-tgreen">✓</span> created project <b>shop</b> <span class="text-dim">· installing python dependencies — done (6.6s)</span>\n<span class="text-amber">$ pulse start</span>\n<span class="text-tgreen">ready in 99ms</span> <span class="text-dim">— edits apply live</span>'],
-  ["A request arrives", "plain HTTP · port 3000",
-    '<span class="text-amber">$ curl -X POST localhost:3000/orders -d \'{"sku":"A1","qty":2}\'</span>'],
-  ["The gateway shapes it", "an API Gateway v2 event — exactly like production",
-    '<span class="text-dim">{"routeKey":"POST /orders","body":"{\\"sku\\":\\"A1\\",\\"qty\\":2}", …}</span>'],
-  ["Your Lambda handler runs", "real Runtime API · hot-reloaded code",
-    '<span class="text-dim">201</span> {"id":"e9b4…","status":"pending"}'],
-  ["It queues a background job", "local SQS · real wire protocol",
-    '<span class="text-tcyan">⚙ sqs order-events → worker · ok</span>'],
-  ["The worker processes it", "visibility timeouts · retries · DLQ if it keeps failing",
-    'worker <span class="text-dim">|</span> processed  <span class="text-dim">→ status:</span> <span class="text-tgreen">"processed"</span>'],
-  ["Everything was recorded", "payload, logs, outcome — byte for byte",
-    '  <b>7275f6ee</b>  <span class="text-dim">Aug  5 01:01</span>   http   <span class="text-dim">→</span> createOrder · <span class="text-tgreen">success</span> <span class="text-dim">· 1ms</span>'],
-  ["So you can time travel", "the exact payload, against your current code",
-    '<span class="text-amber">$ pulse events replay 7275f6ee</span>\n<span class="text-tgreen">✓ createOrder · success · 0ms</span>'],
-  ["Then ship it, unchanged", "pulse is dev-time only",
-    '<span class="text-amber">$ sam deploy</span>   <span class="text-dim"># the code that ran here is the code that ships</span>'],
+const templates: [string, string, React.ReactNode][] = [
+  [
+    "hello",
+    "your first function",
+    <>
+      One function behind <span className="text-mute">GET /hello</span> — the smallest possible start.
+    </>,
+  ],
+  ["todo-api", "+ a real table", "Real CRUD on one DynamoDB table: create, list, complete, delete."],
+  ["webhook-relay", "+ a queue & DLQ", "Ack-fast webhook handling with retries and a dead-letter queue."],
+  ["api-and-worker ★", "everything together", "The full loop: API + queue + worker + table, wired and narrated."],
 ];
 
-const useCases: [string, string][] = [
-  ["REST APIs on Lambda", "Routes hit real Lambda handlers, hot reload on every save."],
-  ["Webhook receivers", "Ack fast, retry async — then replay the exact delivery that failed."],
-  ["Background jobs & queue workers", "The full SQS → worker → DLQ loop, running on your machine."],
-  ["Event-driven systems", "Chain functions through queues; every event keeps its story."],
-  ["Learning AWS serverless", "No account, no bill — four templates from first function to full app."],
-  ["Prototyping", "Build offline on a plane; deploy the same code with SAM or CDK."],
-];
-
-// Rendered as the FAQ accordions AND serialized into FAQPage JSON-LD below.
+// Rendered as the FAQ accordions AND serialized into FAQPage JSON-LD below —
+// one array, so the schema can never drift from the visible text (a Google
+// requirement). Adding a question here adds it to both.
+//
+// The five the design ships. Five more (replaces sam local? / requires Docker?
+// / which languages? / works offline? / debug SQS locally?) were written and
+// then cut for length — recover them from git history rather than rewriting.
 const faqs: [string, string][] = [
-  ["Can I run AWS Lambda locally with pulse?", "Yes. pulse runs your Lambda functions natively on your machine against the real Lambda Runtime API — the same contract AWS uses in production. Node.js and Python are supported, no Docker is required, and the engine is ready in about 100 milliseconds."],
-  ["Is pulse a LocalStack alternative?", "For the inner development loop, yes. LocalStack emulates ~100 AWS services inside Docker and shines at testing infrastructure code. pulse does one workflow completely — Lambda, HTTP, SQS, DynamoDB — natively, in milliseconds, with dev-server ergonomics: hot reload, event replay, a live monitor. Many teams build with pulse and verify infra with LocalStack or a staging account."],
-  ["Does pulse replace sam local?", "They do different jobs. sam local spins up a container per invocation and can't run the queue → worker → dead-letter-queue loop continuously. pulse runs your whole app as a long-lived local cloud. Your deploy pipeline keeps using SAM (or CDK) — pulse never touches it."],
-  ["Does pulse require Docker?", "No. pulse is one ~20 MB binary that runs your functions as native processes. A complete app idles around 50 MB of memory — no images to pull, no containers to boot."],
-  ["Does pulse work with boto3 and the AWS SDK?", "Yes. Handlers use the plain AWS SDK — boto3 in Python, AWS SDK for JavaScript v3 in Node. pulse sets AWS_ENDPOINT_URL for your functions automatically, so the same code talks to pulse locally and to real AWS in production."],
-  ["Which languages does pulse support?", "Node.js and Python today. Every template ships in both, and handlers are plain SDK code with no pulse imports to remove later."],
-  ["Does pulse work offline?", "Yes. Functions, queues, tables, and event history all live on your machine in SQLite. Build on a plane — no AWS account needed."],
-  ["Can I debug SQS queues locally?", "Yes. pulse runs local SQS queues with visibility timeouts, automatic retries, and dead-letter queues. Peek at waiting messages without consuming them, watch deliveries live, and replay the exact event that failed."],
-  ["Does my data survive restarts?", "Yes. DynamoDB items, queued messages, and event history persist in .pulse/data (SQLite). Stop the engine, restart tomorrow — everything is still there, free, by default."],
-  ["How do I deploy an app built with pulse?", "With whatever you already use — SAM, CDK, or the Serverless Framework. pulse is development-time only and your code is vanilla AWS SDK throughout, so there is nothing to strip out before deploying."],
+  ["Can I really run AWS Lambda locally?", "Yes. pulse runs your functions natively against the real Lambda Runtime API — the same contract AWS uses in production. Node.js and Python, no Docker, ready in about 100 milliseconds."],
+  ["Is pulse a LocalStack alternative?", "For the inner development loop, yes. LocalStack emulates ~100 AWS services inside Docker and shines at testing infrastructure code. pulse does one workflow completely — Lambda, HTTP, SQS, DynamoDB — natively, with dev-server ergonomics: hot reload, event replay, a live monitor."],
+  ["Does it work with boto3 and the AWS SDK?", "Yes — plain boto3 in Python, AWS SDK for JavaScript v3 in Node. pulse sets AWS_ENDPOINT_URL for your functions automatically, so the same code talks to pulse locally and to real AWS in production."],
+  ["Does my data survive restarts?", "Yes. DynamoDB items, queued messages and event history persist in .pulse/data (SQLite). Stop the engine, restart tomorrow — everything is still there, free, by default."],
+  ["How do I deploy an app built with pulse?", "With whatever you already use — SAM, CDK or the Serverless Framework. pulse is development-time only and your code is vanilla AWS SDK throughout, so there is nothing to strip out."],
 ];
 
 const appLd = {
@@ -1054,7 +846,7 @@ const faqLd = {
 };
 
 const footerCols = [
-  { title: "Product", links: [["Features", "#features"], ["vs LocalStack", "/vs/localstack"], ["vs sam local", "/vs/sam-local"], ["Changelog", `${GH}/releases`], ["Roadmap", `${GH}/blob/master/PLAN.md`]] as [string, string][] },
-  { title: "Docs", links: [["The guide", GUIDE], ["Quickstart", `${GH}#two-minutes-to-a-running-app`], ["Templates", `${GUIDE}#3-build`], ["Cheat sheet", `${GUIDE}#7-command-cheat-sheet`]] as [string, string][] },
+  { title: "Product", links: [["Features", "#features"], ["vs LocalStack", "/vs/localstack"], ["vs sam local", "/vs/sam-local"], ["Roadmap", `${GH}/blob/master/PLAN.md`]] as [string, string][] },
+  { title: "Resources", links: [["The guide", GUIDE], ["Quickstart", `${GH}#two-minutes-to-a-running-app`], ["Templates", `${GUIDE}#3-build`], ["Cheat sheet", `${GUIDE}#7-command-cheat-sheet`]] as [string, string][] },
   { title: "Community", links: [["GitHub", GH], ["Issues", `${GH}/issues`], ["Share feedback", `${GH}/issues/new`]] as [string, string][] },
 ];

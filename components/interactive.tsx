@@ -3,16 +3,27 @@
 // Client-side leaves: tracked links and scroll reveals. Every user action
 // sends one deliberate PostHog event (autocapture stays off).
 import { useEffect, useRef } from "react";
+import Link from "next/link";
 import { track } from "./posthog-provider";
 
+// Route links ("/vs/…") navigate client-side; hashes and off-site URLs stay
+// plain anchors. Callers just pass an href and stop thinking about it.
 export function TrackLink({
   href, event, props, className, children, "aria-label": ariaLabel,
 }: {
   href: string; event: string; props?: Record<string, string>; className?: string;
   children: React.ReactNode; "aria-label"?: string;
 }) {
+  const onClick = () => track(event, props);
+  if (href.startsWith("/")) {
+    return (
+      <Link href={href} className={className} aria-label={ariaLabel} onClick={onClick}>
+        {children}
+      </Link>
+    );
+  }
   return (
-    <a href={href} className={className} aria-label={ariaLabel} onClick={() => track(event, props)}>
+    <a href={href} className={className} aria-label={ariaLabel} onClick={onClick}>
       {children}
     </a>
   );

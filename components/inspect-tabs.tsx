@@ -1,8 +1,8 @@
 "use client";
 
-// The observability showcase: a rail of four X-ray views beside one
-// terminal. Each rail card carries its command (eyebrow), name, and
-// description — always visible, so nothing hides in a caption below.
+// The debugging showcase: a rail of four X-ray views beside one terminal.
+// Each rail card carries its command and its name; the pane below the
+// output explains what you're looking at, so the frame stays uncluttered.
 // Reader-driven; each switch fires inspect_tab so we learn which
 // capability actually pulls people in.
 import { useState } from "react";
@@ -25,9 +25,13 @@ export function InspectTabs({ tabs }: { tabs: InspectTab[] }) {
   };
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[350px_minmax(0,1fr)] lg:gap-8">
+    <div className="grid items-start gap-6 min-[1040px]:grid-cols-[320px_minmax(0,1fr)]">
       {/* rail */}
-      <div role="tablist" aria-label="inspect views" className="grid grid-cols-2 gap-2.5 lg:grid-cols-1">
+      <div
+        role="tablist"
+        aria-label="debugging views"
+        className="grid gap-[9px] min-[620px]:grid-cols-2 min-[1040px]:grid-cols-1"
+      >
         {tabs.map((t, i) => {
           const on = i === active;
           return (
@@ -36,35 +40,54 @@ export function InspectTabs({ tabs }: { tabs: InspectTab[] }) {
               role="tab"
               aria-selected={on}
               onClick={() => pick(i)}
-              className={`group cursor-pointer rounded-xl border p-4 text-left transition-colors duration-300 ${
-                on ? "border-amber/35 bg-panel" : "border-edge bg-transparent hover:border-edge2"
+              className={`group flex cursor-pointer flex-col gap-[7px] rounded-[14px] border px-[18px] py-4 text-left transition-colors duration-200 ${
+                on ? "border-amber/40 bg-amber/[0.06]" : "border-edge bg-panel hover:border-edge2"
               }`}
             >
-              <p className={`truncate font-mono text-[11px] ${on ? "text-amber" : "text-faint"}`}>
+              <span className={`truncate font-mono text-[11px] ${on ? "text-amber" : "text-faint"}`}>
                 $ {t.cmd}
-              </p>
-              <h3 className={`mt-1.5 text-[15.5px] font-semibold transition-colors ${on ? "text-fg" : "text-dim group-hover:text-fg"}`}>
+              </span>
+              <span
+                className={`text-[15px] font-semibold tracking-[-0.02em] transition-colors ${
+                  on ? "text-fg" : "text-dim group-hover:text-fg"
+                }`}
+              >
                 {t.label}
-              </h3>
-              <p className="mt-1.5 hidden text-[13px] leading-snug text-dim lg:block">{t.caption}</p>
+              </span>
             </button>
           );
         })}
       </div>
 
-      {/* terminal frame for the active view */}
-      <div className="term self-start">
+      {/* the active view, with its caption pinned under the output */}
+      <div className="term min-w-0 shadow-[0_30px_80px_-40px_rgba(0,0,0,0.9)]">
         <div className="term-head">
           <span className="dot bg-[#ff5f57]" />
           <span className="dot bg-[#febc2e]" />
           <span className="dot bg-[#28c840]" />
           <span className="ml-2 truncate">{tabs[active].cmd}</span>
         </div>
-        <div
-          key={active}
-          className="term-body rise min-h-[21em] text-[12.8px]"
-          dangerouslySetInnerHTML={{ __html: tabs[active].frame }}
-        />
+        {/* fixed stage on desktop so switching tabs never resizes the page;
+            free-flowing below that, where the frames are the tallest thing
+            on screen anyway */}
+        <div className="flex flex-col min-[1040px]:h-[32.2em]">
+          <div className="min-h-0 flex-1 overflow-auto">
+            <div
+              key={active}
+              className="term-body rise !pb-6 !text-[12.8px]"
+              dangerouslySetInnerHTML={{ __html: tabs[active].frame }}
+            />
+          </div>
+          <div className="flex shrink-0 items-start gap-3.5 border-t border-edge bg-bg px-6 py-4">
+            <span
+              aria-hidden="true"
+              className="grid size-6 shrink-0 place-items-center rounded-[7px] border border-amber/[0.28] bg-amber/[0.08] font-mono text-[12px] text-amber"
+            >
+              i
+            </span>
+            <p className="text-[13.5px] leading-[1.6] text-dim">{tabs[active].caption}</p>
+          </div>
+        </div>
       </div>
     </div>
   );

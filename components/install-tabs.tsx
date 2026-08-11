@@ -49,9 +49,9 @@ export function InstallTabs({ location, className = "" }: { location: string; cl
   };
 
   return (
-    <div className={`w-full max-w-[680px] overflow-hidden rounded-xl border border-edge bg-bg2 text-left ${className}`}>
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-edge px-3 py-2.5">
-        <div role="tablist" aria-label="install method" className="seg border-0 bg-transparent p-0">
+    <div className={`w-full max-w-[660px] overflow-hidden rounded-[14px] border border-edge bg-bg text-left ${className}`}>
+      <div className="flex flex-wrap items-center justify-between gap-2.5 border-b border-edge px-3 py-2.5">
+        <div role="tablist" aria-label="install method" className="seg">
           {METHODS.map((mm, i) => (
             <button
               key={mm.id}
@@ -63,17 +63,20 @@ export function InstallTabs({ location, className = "" }: { location: string; cl
             </button>
           ))}
         </div>
-        <span className="px-1.5 font-mono text-[11.5px] text-faint">{m.note}</span>
+        <span className="pr-1.5 font-mono text-[11.5px] text-faint">{m.note}</span>
       </div>
-      <div className="flex items-center gap-3 px-4 py-3.5">
+      <div className="flex items-center gap-3 px-[18px] py-4">
         <span className="select-none font-mono text-amber">$</span>
-        <code className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap font-mono text-[13.5px] [scrollbar-width:none]">
+        {/* wraps on a phone rather than scrolling: a command truncated mid-word
+            behind the copy button reads as broken, and this is the one line on
+            the page a visitor actually needs to see in full */}
+        <code className="min-w-0 flex-1 break-all font-mono text-[13.5px] min-[620px]:overflow-x-auto min-[620px]:break-normal min-[620px]:whitespace-nowrap min-[620px]:[scrollbar-width:none]">
           {m.cmd}
         </code>
         <button
           onClick={copy}
           aria-label={`Copy ${m.label} install command`}
-          className={`shrink-0 cursor-pointer rounded-md border px-3 py-1.5 font-mono text-xs transition-colors ${
+          className={`shrink-0 cursor-pointer rounded-lg border px-3.5 py-[7px] font-mono text-[12px] transition-colors ${
             copied
               ? "border-amber bg-amber/15 text-amber"
               : "border-edge text-dim hover:border-amber hover:text-amber"

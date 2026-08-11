@@ -4,6 +4,7 @@
 import Link from "next/link";
 
 import { PulseLine } from "./pulse-line";
+import { PulseLogo } from "./mark";
 import { TrackLink, Reveal } from "./interactive";
 import { InstallTabs } from "./install-tabs";
 
@@ -46,10 +47,9 @@ export function VsPage({ data }: { data: VsData }) {
     <>
       {/* slim header */}
       <nav className="sticky top-0 z-50 border-b border-edge/70 bg-bg/75 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-[1000px] items-center gap-5 px-6">
-          <Link href="/" className="flex items-center gap-2.5 text-[17px] font-bold text-fg">
-            <PulseLine crop="tight" className="h-6 w-11" />
-            pulse
+        <div className="mx-auto flex h-[70px] max-w-[1000px] items-center gap-5 px-6">
+          <Link href="/" aria-label="pulse — home">
+            <PulseLogo markClass="h-[26px] w-[26px]" className="!text-[17px]" />
           </Link>
           <Link href="/" className="hidden text-[14px] text-dim transition-colors hover:text-fg sm:block">
             ← everything pulse does
@@ -210,8 +210,8 @@ export function VsPage({ data }: { data: VsData }) {
 
       <footer className="border-t border-edge bg-bg2/70">
         <div className="mx-auto flex max-w-[1000px] flex-wrap items-center gap-x-5 gap-y-2 px-6 py-6 text-[13px] text-faint">
-          <Link href="/" className="flex items-center gap-2 font-bold text-fg">
-            <PulseLine crop="tight" className="h-4 w-8" /> pulse
+          <Link href="/" aria-label="pulse — home">
+            <PulseLogo markClass="h-[18px] w-[18px]" className="!gap-2 !text-[14px]" />
           </Link>
           <span>Apache-2.0 © Geetansh Garg</span>
           <span>Not affiliated with Amazon Web Services{data.competitor === "LocalStack" ? " or LocalStack GmbH" : ""}. All trademarks belong to their owners.</span>

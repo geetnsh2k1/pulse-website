@@ -1,12 +1,21 @@
 import type { Metadata } from "next";
-import { Geist, JetBrains_Mono } from "next/font/google";
+import { Poppins, JetBrains_Mono } from "next/font/google";
 import { PostHogProvider } from "@/components/posthog-provider";
 import "./globals.css";
 
 // display "optional": if the webfont isn't ready within the swap window the
 // fallback stays — no mid-view font swap, no layout shift on the big
 // headline (Lighthouse flagged CLS 0.11 from exactly that).
-const geist = Geist({ subsets: ["latin"], variable: "--font-geist", display: "optional" });
+//
+// Poppins is not a variable font on Google Fonts, so the weights the design
+// uses are listed explicitly — 400 body, 500 nav/summaries, 600 headings,
+// 700 the h1 and stat numbers.
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-poppins",
+  display: "optional",
+});
 const jetbrains = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains", display: "optional" });
 
 const SITE = "https://www.getpulse.run";
@@ -49,7 +58,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     // suppressHydrationWarning: the inline script below adds .js to <html>
     // before hydration (progressive enhancement) — that class delta is the
     // only expected mismatch on this element.
-    <html lang="en" suppressHydrationWarning className={`${geist.variable} ${jetbrains.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${poppins.variable} ${jetbrains.variable}`}>
       <head>
         {/* Progressive enhancement flag: scroll-reveal styles only apply when
             JS actually runs (html.js), so crawlers, reader mode, and no-JS

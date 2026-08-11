@@ -1,40 +1,8 @@
 "use client";
 
-// Small visual physics: the cursor spotlight over bento cards and the
-// count-up stats. Both degrade to static under reduced motion.
+// The count-up stat: the hero numbers land on their real value instead of
+// just being there. Degrades to the final value under reduced motion.
 import { useEffect, useRef } from "react";
-
-// One mousemove listener for a whole grid; positions each card's radial
-// highlight via --mx/--my custom properties (consumed by .bento::before).
-export function Spotlight({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const root = ref.current;
-    if (!root || window.matchMedia("(hover: none)").matches) return;
-    let raf = 0;
-    const onMove = (e: MouseEvent) => {
-      if (raf) return;
-      raf = requestAnimationFrame(() => {
-        raf = 0;
-        root.querySelectorAll<HTMLElement>(".bento").forEach((card) => {
-          const r = card.getBoundingClientRect();
-          card.style.setProperty("--mx", `${e.clientX - r.left}px`);
-          card.style.setProperty("--my", `${e.clientY - r.top}px`);
-        });
-      });
-    };
-    root.addEventListener("mousemove", onMove);
-    return () => {
-      root.removeEventListener("mousemove", onMove);
-      if (raf) cancelAnimationFrame(raf);
-    };
-  }, []);
-  return (
-    <div ref={ref} className={className}>
-      {children}
-    </div>
-  );
-}
 
 // Animates 0 → to when scrolled into view, ease-out, ~1.2s.
 export function CountUp({
